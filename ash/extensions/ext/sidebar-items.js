@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BufferDeviceAddress","CalibratedTimestamps","DebugMarker","DebugReport","DebugUtils","ExtendedDynamicState","ExtendedDynamicState2","FullScreenExclusive","HeadlessSurface","MetalSurface","PhysicalDeviceDrm","PrivateData","ToolingInfo"]};

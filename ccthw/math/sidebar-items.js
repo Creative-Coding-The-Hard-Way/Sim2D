@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"type":["Mat4","Vec2","Vec3","Vec4"]};

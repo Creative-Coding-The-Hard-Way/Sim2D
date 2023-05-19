@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SpinStrategy"],"fn":["native_sleep","sleep"],"struct":["LoopHelper","LoopHelperBuilder","SpinSleeper"],"type":["Nanoseconds","RatePerSecond","Seconds","SubsecondNanoseconds"]};

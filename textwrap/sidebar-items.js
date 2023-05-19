@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["dedent","fill","fill_inplace","indent","refill","termwidth","unfill","wrap","wrap_columns"],"mod":["core"],"struct":["HyphenSplitter","NoHyphenation","Options"],"trait":["WordSplitter"]};
