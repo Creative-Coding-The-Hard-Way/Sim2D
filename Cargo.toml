@@ -1,0 +1,37 @@
+[package]
+name = "ccthw"
+version = "0.1.0"
+authors = ["Bradley Lyman <lyman.brad3211@gmail.com>"]
+edition = "2018"
+
+[profile.dev]
+opt-level = 1               # Use slightly better optimizations
+
+[dependencies]
+anyhow = "*"
+flexi_logger = { version = "*", features = ["async"] }
+log = "*"
+ash = { version = "*", features = ["linked"] }
+aquamarine = "*"
+nalgebra = "*"
+memoffset = "*"
+thiserror = "*"
+spin_sleep = "*"
+image = "*"
+indoc = "*"
+regex = "*"
+ccthw_ash_instance = { git = "https://github.com/Creative-Coding-The-Hard-Way/ash_instance.git" }
+ccthw_ash_allocator = { git = "https://github.com/Creative-Coding-The-Hard-Way/ash_allocator.git" }
+scopeguard = "*"
+
+[build-dependencies]
+anyhow = "*"
+glob = "*"
+
+[dependencies.glfw]
+version = "*"
+features = [ "vulkan" ]
+
+[dependencies.textwrap]
+features = ["terminal_size"]
+version = "*"
