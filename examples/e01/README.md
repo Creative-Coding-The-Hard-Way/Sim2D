@@ -1,7 +1,6 @@
-# Example 01 - Render Device
+# Example 01 - Hello G2D
 
-This example shows how to create the Render Device which is used to create and
-destroy vulkan resources.
+Show how to use the G2D graphics API.
 
 ## Commands
 

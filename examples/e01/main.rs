@@ -1,52 +1,37 @@
 use {
     anyhow::Result,
     ccthw::{
-        application::{Application, GlfwWindow, State},
-        graphics::vulkan_api::RenderDevice,
+        application::{GlfwWindow, Sketch, State},
+        graphics::{
+            g2d::G2D,
+            vulkan_api::{TextureAtlas, TextureId},
+        },
     },
-    ccthw_ash_instance::PhysicalDeviceFeatures,
-    std::sync::Arc,
 };
 
-struct RenderDeviceExample {
-    _render_device: Arc<RenderDevice>,
+#[derive(Default)]
+struct HelloG2D {
+    gasp_texture: TextureId,
 }
 
-impl State for RenderDeviceExample {
-    fn new(window: &mut GlfwWindow) -> Result<Self> {
-        window.set_key_polling(true);
-        let render_device = unsafe {
-            window.create_default_render_device(
-                PhysicalDeviceFeatures::default(),
-            )?
-        };
-
-        log::info!("Created render device: {}", render_device);
-
-        Ok(Self {
-            _render_device: render_device,
-        })
+impl State for HelloG2D {
+    fn new(_window: &mut GlfwWindow, g2d: &mut G2D) -> Result<Self> {
+        g2d.clear_color = [0.0, 0.0, 0.0, 1.0];
+        Ok(Self::default())
     }
 
-    fn handle_event(
-        &mut self,
-        window: &mut GlfwWindow,
-        window_event: glfw::WindowEvent,
-    ) -> Result<()> {
-        use glfw::{Action, Key, WindowEvent};
-        match window_event {
-            WindowEvent::Key(Key::Space, _, Action::Release, _) => {
-                window.toggle_fullscreen()?;
-            }
-            WindowEvent::Key(Key::Escape, _, Action::Release, _) => {
-                window.set_should_close(true);
-            }
-            _ => (),
-        }
+    fn preload(&mut self, texture_atlas: &mut TextureAtlas) -> Result<()> {
+        self.gasp_texture = texture_atlas.load_file("examples/e01/Gasp.png");
+        Ok(())
+    }
+
+    fn update(&mut self, g2d: &mut G2D) -> Result<()> {
+        g2d.rect(-0.75, -0.25, TextureId::no_texture());
+        g2d.rect(0.25, -0.25, self.gasp_texture);
         Ok(())
     }
 }
 
 fn main() -> Result<()> {
-    Application::<RenderDeviceExample>::run()
+    Sketch::<HelloG2D>::run()
 }
