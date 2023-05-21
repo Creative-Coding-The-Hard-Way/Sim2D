@@ -1,8 +1,13 @@
 use {
-    super::Frame,
-    crate::graphics::{
-        vulkan_api::{raii, FramesInFlight, RenderDevice, Texture2D},
-        GraphicsError,
+    super::{Frame, WriteStatus},
+    crate::{
+        graphics::{
+            vulkan_api::{
+                raii, FramesInFlight, MappedBuffer, RenderDevice, Texture2D,
+            },
+            GraphicsError,
+        },
+        math::Mat4,
     },
     ash::vk,
     std::sync::Arc,
@@ -19,15 +24,33 @@ pub struct BindlessVertex {
     pub color: [f32; 4],
 }
 
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[repr(C)]
+pub struct UniformData {
+    /// Collumn-major projection matrix.
+    pub projection: [f32; 16],
+}
+
+impl Default for UniformData {
+    fn default() -> Self {
+        let mut projection = [0.0; 16];
+        projection.copy_from_slice(Mat4::identity().as_slice());
+        Self { projection }
+    }
+}
+
 /// A utility for rendering high-performance textured triangles using bindless
 /// textures.
 pub struct BindlessTriangles {
     textures: Vec<Arc<Texture2D>>,
 
-    vertex_count: u32,
-    vertex_buffers: Vec<raii::Buffer>,
-    vertex_buffer_ptrs: Vec<*mut BindlessVertex>,
+    uniform_data: UniformData,
+    uniform_buffers: Vec<MappedBuffer<UniformData>>,
+    vertex_buffers: Vec<MappedBuffer<BindlessVertex>>,
+    index_buffers: Vec<MappedBuffer<u32>>,
 
+    //projection_buffers: Vec<raii::Buffer>,
+    //projection_buffer_ptrs: Vec<*mut [f32; 16]>,
     sampler: raii::Sampler,
     descriptor_pool: raii::DescriptorPool,
     _descriptor_set_layout: raii::DescriptorSetLayout,
@@ -94,21 +117,41 @@ impl BindlessTriangles {
             },
         )?;
 
+        let uniform_data = UniformData::default();
+
         let vertex_buffer_count = frames_in_flight.frame_count();
         let mut vertex_buffers = Vec::with_capacity(vertex_buffer_count);
-        let mut vertex_buffer_ptrs = Vec::with_capacity(vertex_buffer_count);
+        let mut uniform_buffers = Vec::with_capacity(vertex_buffer_count);
+        let mut index_buffers = Vec::with_capacity(vertex_buffer_count);
         for _ in 0..vertex_buffer_count {
-            let (buffer, ptr) =
-                Self::allocate_vertex_buffer(&render_device, 1000)?;
-            vertex_buffer_ptrs.push(ptr);
-            vertex_buffers.push(buffer);
+            vertex_buffers.push(MappedBuffer::new(
+                render_device.clone(),
+                1000,
+                vk::BufferUsageFlags::STORAGE_BUFFER,
+            )?);
+            index_buffers.push(MappedBuffer::new(
+                render_device.clone(),
+                1000,
+                vk::BufferUsageFlags::INDEX_BUFFER,
+            )?);
+            let mut uniform_buffer = MappedBuffer::new(
+                render_device.clone(),
+                1,
+                vk::BufferUsageFlags::UNIFORM_BUFFER,
+            )?;
+            uniform_buffer.write(&[uniform_data])?;
+            uniform_buffers.push(uniform_buffer);
         }
 
-        for (index, vertex_buffer) in vertex_buffers.iter().enumerate() {
+        for (index, (vertex_buffer, uniform_buffer)) in vertex_buffers
+            .iter()
+            .zip(uniform_buffers.iter())
+            .enumerate()
+        {
             Self::write_descriptor_set(
                 &render_device,
-                &descriptor_pool,
-                index,
+                descriptor_pool.descriptor_set(index),
+                uniform_buffer,
                 vertex_buffer,
                 textures,
                 &sampler,
@@ -117,9 +160,10 @@ impl BindlessTriangles {
 
         Ok(Self {
             textures: textures.to_owned(),
-            vertex_count: 0,
+            uniform_data,
+            uniform_buffers,
             vertex_buffers,
-            vertex_buffer_ptrs,
+            index_buffers,
             sampler,
             descriptor_pool,
             _descriptor_set_layout: descriptor_set_layout,
@@ -133,36 +177,30 @@ impl BindlessTriangles {
         &mut self,
         frame: &Frame,
         vertices: &[BindlessVertex],
+        indices: &[u32],
     ) -> Result<(), GraphicsError> {
-        if self.vertex_buffers[frame.frame_index()]
-            .allocation()
-            .size_in_bytes()
-            < std::mem::size_of_val(vertices) as u64
-        {
-            unsafe {
-                self.reallocate_vertex_buffer(frame, vertices.len() as u64)?;
+        unsafe {
+            let status =
+                self.vertex_buffers[frame.frame_index()].write(vertices)?;
+            if status == WriteStatus::CompleteWithReallocation {
                 Self::write_descriptor_set(
                     &self.render_device,
-                    &self.descriptor_pool,
-                    frame.frame_index(),
+                    self.descriptor_pool.descriptor_set(frame.frame_index()),
+                    &self.uniform_buffers[frame.frame_index()],
                     &self.vertex_buffers[frame.frame_index()],
                     &self.textures,
                     &self.sampler,
                 );
-            };
+            }
+            let _ = self.index_buffers[frame.frame_index()].write(indices)?;
         }
-
-        let buffer_data = unsafe {
-            std::slice::from_raw_parts_mut(
-                self.vertex_buffer_ptrs[frame.frame_index()],
-                vertices.len(),
-            )
-        };
-        buffer_data.copy_from_slice(vertices);
-
-        self.vertex_count = vertices.len() as u32;
-
         Ok(())
+    }
+
+    pub fn set_projection(&mut self, projection: &Mat4) {
+        self.uniform_data
+            .projection
+            .copy_from_slice(projection.as_slice());
     }
 
     /// Add commands to the frame's command buffer to draw the vertices.
@@ -172,10 +210,12 @@ impl BindlessTriangles {
     /// Unsafe because:
     ///   - The render pass must already be started.
     pub unsafe fn draw_vertices(
-        &self,
+        &mut self,
         frame: &Frame,
         viewport: vk::Extent2D,
     ) -> Result<(), GraphicsError> {
+        self.write_uniform_data_for_frame(frame)?;
+
         self.render_device.device().cmd_bind_pipeline(
             frame.command_buffer(),
             vk::PipelineBindPoint::GRAPHICS,
@@ -211,10 +251,17 @@ impl BindlessTriangles {
             &[self.descriptor_pool.descriptor_set(frame.frame_index())],
             &[],
         );
-        self.render_device.device().cmd_draw(
+        self.render_device.device().cmd_bind_index_buffer(
             frame.command_buffer(),
-            self.vertex_count,
+            self.index_buffers[frame.frame_index()].raw(),
+            0,
+            vk::IndexType::UINT32,
+        );
+        self.render_device.device().cmd_draw_indexed(
+            frame.command_buffer(),
+            self.index_buffers[frame.frame_index()].count() as u32,
             1,
+            0,
             0,
             0,
         );
@@ -224,66 +271,25 @@ impl BindlessTriangles {
 }
 
 impl BindlessTriangles {
-    /// Reallocate's the current frame's vertex buffer to have capacity for the
-    /// requested vertex count.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    ///   - A graphics error can render the BindlessTriangles entirely unusable.
-    unsafe fn reallocate_vertex_buffer(
+    fn write_uniform_data_for_frame(
         &mut self,
         frame: &Frame,
-        vertex_count: u64,
     ) -> Result<(), GraphicsError> {
-        let index = frame.frame_index();
-
-        self.vertex_buffers[index]
-            .allocation()
-            .unmap(self.render_device.device())?;
-        self.vertex_buffer_ptrs[index] = std::ptr::null_mut();
-
-        let (buffer, ptr) =
-            Self::allocate_vertex_buffer(&self.render_device, vertex_count)?;
-        self.vertex_buffers[index] = buffer;
-        self.vertex_buffer_ptrs[index] = ptr;
-
+        unsafe {
+            let status = self.uniform_buffers[frame.frame_index()]
+                .write(&[self.uniform_data])?;
+            if status == WriteStatus::CompleteWithReallocation {
+                Self::write_descriptor_set(
+                    &self.render_device,
+                    self.descriptor_pool.descriptor_set(frame.frame_index()),
+                    &self.uniform_buffers[frame.frame_index()],
+                    &self.vertex_buffers[frame.frame_index()],
+                    &self.textures,
+                    &self.sampler,
+                );
+            }
+        }
         Ok(())
-    }
-
-    /// Allocate a vertex buffer.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    ///   - The application must not use the associated memory-mapped pointer
-    ///     once the buffer has been dropped.
-    unsafe fn allocate_vertex_buffer(
-        render_device: &Arc<RenderDevice>,
-        vertex_count: u64,
-    ) -> Result<(raii::Buffer, *mut BindlessVertex), GraphicsError> {
-        let queue_family_index = render_device.graphics_queue().family_index();
-        let create_info = vk::BufferCreateInfo {
-            size: std::mem::size_of::<BindlessVertex>() as u64 * vertex_count,
-            usage: vk::BufferUsageFlags::STORAGE_BUFFER,
-            queue_family_index_count: 1,
-            p_queue_family_indices: &queue_family_index,
-            sharing_mode: vk::SharingMode::EXCLUSIVE,
-            ..Default::default()
-        };
-        let buffer = raii::Buffer::new(
-            render_device.clone(),
-            &create_info,
-            vk::MemoryPropertyFlags::HOST_VISIBLE
-                | vk::MemoryPropertyFlags::HOST_COHERENT,
-        )?;
-        let ptr = buffer.allocation().map(render_device.device())?;
-        debug_assert!(
-            ptr as usize % std::mem::align_of::<BindlessVertex>() == 0,
-            "CPU Ptr must be align for Vertex data!"
-        );
-
-        Ok((buffer, ptr as *mut BindlessVertex))
     }
 
     /// Write the descriptor set for frame index.
@@ -294,16 +300,21 @@ impl BindlessTriangles {
     ///   - the descriptor set must not be in use by the GPU when it is written.
     unsafe fn write_descriptor_set(
         render_device: &RenderDevice,
-        descriptor_pool: &raii::DescriptorPool,
-        index: usize,
-        vertex_buffer: &raii::Buffer,
+        descriptor_set: vk::DescriptorSet,
+        uniform_buffer: &MappedBuffer<UniformData>,
+        vertex_buffer: &MappedBuffer<BindlessVertex>,
         textures: &[Arc<Texture2D>],
         sampler: &raii::Sampler,
     ) {
         let buffer_info = vk::DescriptorBufferInfo {
             buffer: vertex_buffer.raw(),
             offset: 0,
-            range: vertex_buffer.allocation().size_in_bytes(),
+            range: vk::WHOLE_SIZE,
+        };
+        let uniform_buffer_info = vk::DescriptorBufferInfo {
+            buffer: uniform_buffer.raw(),
+            offset: 0,
+            range: vk::WHOLE_SIZE,
         };
         let image_infos = textures
             .iter()
@@ -316,7 +327,7 @@ impl BindlessTriangles {
         render_device.device().update_descriptor_sets(
             &[
                 vk::WriteDescriptorSet {
-                    dst_set: descriptor_pool.descriptor_set(index),
+                    dst_set: descriptor_set,
                     dst_binding: 0,
                     dst_array_element: 0,
                     descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
@@ -325,8 +336,17 @@ impl BindlessTriangles {
                     ..vk::WriteDescriptorSet::default()
                 },
                 vk::WriteDescriptorSet {
-                    dst_set: descriptor_pool.descriptor_set(index),
+                    dst_set: descriptor_set,
                     dst_binding: 1,
+                    dst_array_element: 0,
+                    descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
+                    descriptor_count: 1,
+                    p_buffer_info: &uniform_buffer_info,
+                    ..vk::WriteDescriptorSet::default()
+                },
+                vk::WriteDescriptorSet {
+                    dst_set: descriptor_set,
+                    dst_binding: 2,
                     dst_array_element: 0,
                     descriptor_type: vk::DescriptorType::COMBINED_IMAGE_SAMPLER,
                     descriptor_count: image_infos.len() as u32,

@@ -23,6 +23,13 @@ pub unsafe fn create_layouts(
             },
             vk::DescriptorSetLayoutBinding {
                 binding: 1,
+                descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
+                descriptor_count: 1,
+                stage_flags: vk::ShaderStageFlags::VERTEX,
+                ..vk::DescriptorSetLayoutBinding::default()
+            },
+            vk::DescriptorSetLayoutBinding {
+                binding: 2,
                 descriptor_type: vk::DescriptorType::COMBINED_IMAGE_SAMPLER,
                 descriptor_count: texture_count,
                 stage_flags: vk::ShaderStageFlags::FRAGMENT,

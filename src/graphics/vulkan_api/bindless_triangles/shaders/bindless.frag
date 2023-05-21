@@ -7,7 +7,7 @@ layout(location = 2) flat in int textureIndex;
 
 layout(location = 0) out vec4 out_color;
 
-layout(set = 0, binding = 1) uniform sampler2D tex[];
+layout(set = 0, binding = 2) uniform sampler2D tex[];
 
 void main() {
   vec4 tex_color = vec4(1.0);

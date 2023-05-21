@@ -2,14 +2,18 @@
 
 mod glfw_window;
 mod logging;
+mod state;
 
 use {
-    crate::graphics::{
-        g2d::G2D,
-        vulkan_api::{
-            BindlessTriangles, ColorPass, FrameStatus, FramesInFlight,
-            RenderDevice, TextureAtlas,
+    crate::{
+        graphics::{
+            g2d::G2D,
+            vulkan_api::{
+                BindlessTriangles, ColorPass, FrameStatus, FramesInFlight,
+                RenderDevice, TextureAtlas,
+            },
         },
+        math::{ortho_projection, Mat4},
     },
     anyhow::Result,
     ash::vk,
@@ -18,66 +22,12 @@ use {
     std::sync::Arc,
 };
 
-pub use self::glfw_window::GlfwWindow;
-
-/// State is created after the GLFW window is created, but is allowed to
-/// configure the window for things like resizability and event polling.
-pub trait State {
-    /// Create a new instance of this state.
-    ///
-    /// # Params
-    ///
-    /// * `window` - A fully constructed application window. The implementation
-    ///   can use this handle to resize the window, apply GLFW window hints,
-    ///   toggle fullscren, and construct a Vulkan instance which can present
-    ///   surfaces to the window.
-    /// * `g2d` - The 2d graphics state machine.
-    fn new(window: &mut GlfwWindow, g2d: &mut G2D) -> Result<Self>
-    where
-        Self: Sized;
-
-    /// Load any textures needed by the sketch.
-    ///
-    /// # Params
-    ///
-    /// * `texture_atlas` - The texture atlas can be used to create / load
-    ///   textures from disk and keep their texture ids.
-    fn preload(&mut self, _texture_atlas: &mut TextureAtlas) -> Result<()> {
-        Ok(())
-    }
-
-    /// Handle a GLFW event and update the application state.
-    ///
-    /// # Params
-    ///
-    /// * `window` - The fully constructed application window. The application
-    ///   can exit by calling `set_should_close` on the window.
-    /// * `window_event` - The event currently being processed by the window.
-    fn handle_event(
-        &mut self,
-        _window: &mut GlfwWindow,
-        _window_event: glfw::WindowEvent,
-    ) -> Result<()> {
-        Ok(())
-    }
-
-    /// Called each time through the main application loop after all events
-    /// have been processed.
-    ///
-    /// Update is not called while an application is paused while minimized.
-    ///
-    /// # Params
-    ///
-    /// * `g2d` - The 2D graphics state machine.
-    fn update(&mut self, _g2d: &mut G2D) -> Result<()> {
-        Ok(())
-    }
-}
+pub use self::{glfw_window::GlfwWindow, state::Sketch};
 
 /// Every sketch is comprised of a State type and a GLFW window.
 /// Sketches automatically pause if they are minimized or the window is
 /// resized such that there is no drawing area.
-pub struct Sketch<S: State> {
+pub struct Application<S: Sketch> {
     state: S,
 
     g2d: G2D,
@@ -92,9 +42,9 @@ pub struct Sketch<S: State> {
 
 // Public API
 
-impl<S> Sketch<S>
+impl<S> Application<S>
 where
-    S: Sized + State,
+    S: Sized + Sketch,
 {
     /// Create and run the Application until the window is closed.
     ///
@@ -107,9 +57,9 @@ where
 
 // Private API
 
-impl<S> Sketch<S>
+impl<S> Application<S>
 where
-    S: Sized + State,
+    S: Sized + Sketch,
 {
     /// Create a new running application.
     fn new(window_title: impl AsRef<str>) -> Result<Self> {
@@ -171,7 +121,7 @@ where
 
         let textures = atlas.load_all_textures(render_device.clone())?;
 
-        let bindless_triangles = unsafe {
+        let mut bindless_triangles = unsafe {
             BindlessTriangles::new(
                 render_device.clone(),
                 color_pass.render_pass(),
@@ -179,6 +129,9 @@ where
                 &textures,
             )?
         };
+
+        bindless_triangles
+            .set_projection(&Self::projection_for_window(&window));
 
         Ok(Self {
             state,
@@ -215,6 +168,11 @@ where
             }
             WindowEvent::FramebufferSize(width, height) => {
                 self.paused = width == 0 || height == 0;
+                if !self.paused {
+                    self.bindless_triangles.set_projection(
+                        &Self::projection_for_window(&self.window),
+                    );
+                }
             }
             _ => (),
         }
@@ -240,8 +198,11 @@ where
             self.color_pass
                 .begin_render_pass_inline(&frame, self.g2d.clear_color);
 
-            self.bindless_triangles
-                .write_vertices_for_frame(&frame, self.g2d.get_vertices())?;
+            self.bindless_triangles.write_vertices_for_frame(
+                &frame,
+                self.g2d.get_vertices(),
+                self.g2d.get_indices(),
+            )?;
             self.g2d.reset_vertices();
 
             self.bindless_triangles.draw_vertices(
@@ -269,5 +230,12 @@ where
             )?;
         };
         Ok(())
+    }
+
+    fn projection_for_window(glfw_window: &GlfwWindow) -> Mat4 {
+        let (w, h) = glfw_window.get_framebuffer_size();
+        let half_w = w as f32 / 2.0;
+        let half_h = h as f32 / 2.0;
+        ortho_projection(-half_w, half_w, -half_h, half_h, 0.0, 1.0)
     }
 }
