@@ -126,31 +126,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2fff2a6927b3bb87f9595d67196a70493f627687a71d87a0d692242c33f58c11"
 
 [[package]]
-name = "ccthw"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "approx",
- "aquamarine",
- "ash",
- "ccthw_ash_allocator",
- "ccthw_ash_instance",
- "flexi_logger",
- "glfw",
- "glob",
- "image",
- "indoc",
- "log",
- "memoffset",
- "nalgebra",
- "regex",
- "scopeguard",
- "spin_sleep",
- "textwrap",
- "thiserror",
-]
-
-[[package]]
 name = "ccthw_ash_allocator"
 version = "0.1.0"
 source = "git+https://github.com/Creative-Coding-The-Hard-Way/ash_allocator.git#6af652bb765a8fddb1b2d43891dbc48143d0bb45"
@@ -904,6 +879,31 @@ name = "semver-parser"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
+
+[[package]]
+name = "sim2d"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "approx",
+ "aquamarine",
+ "ash",
+ "ccthw_ash_allocator",
+ "ccthw_ash_instance",
+ "flexi_logger",
+ "glfw",
+ "glob",
+ "image",
+ "indoc",
+ "log",
+ "memoffset",
+ "nalgebra",
+ "regex",
+ "scopeguard",
+ "spin_sleep",
+ "textwrap",
+ "thiserror",
+]
 
 [[package]]
 name = "simba"

@@ -1,6 +1,6 @@
 use {
     anyhow::Result,
-    ccthw::{
+    sim2d::{
         application::{Application, GlfwWindow, Sketch},
         graphics::{
             g2d::G2D,
@@ -11,7 +11,8 @@ use {
 
 #[derive(Default)]
 struct HelloG2D {
-    gasp_texture: TextureId,
+    gasp: TextureId,
+    t: f32,
 }
 
 impl Sketch for HelloG2D {
@@ -21,13 +22,21 @@ impl Sketch for HelloG2D {
     }
 
     fn preload(&mut self, texture_atlas: &mut TextureAtlas) -> Result<()> {
-        self.gasp_texture = texture_atlas.load_file("examples/e01/Gasp.png");
+        self.gasp = texture_atlas.load_file("examples/e01/Gasp.png");
         Ok(())
     }
 
     fn update(&mut self, g2d: &mut G2D) -> Result<()> {
-        g2d.rect(200.0, 200.0, 200.0, 200.0, self.gasp_texture);
-        g2d.rect(-200.0, -200.0, 200.0, 200.0, self.gasp_texture);
+        self.t += 0.001;
+
+        let x = self.t.cos() * 500.0;
+        let y = self.t.sin() * 500.0;
+        g2d.texture = TextureId::no_texture();
+        g2d.line(0.0, 0.0, x, y);
+
+        g2d.texture = self.gasp;
+        g2d.rect_centered(x, y, 200.0, 200.0);
+
         Ok(())
     }
 }
