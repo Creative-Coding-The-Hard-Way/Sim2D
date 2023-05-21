@@ -149,7 +149,7 @@ where
 
     fn main_loop(mut self) -> Result<()> {
         let event_receiver = self.window.event_receiver.take().unwrap();
-        while !self.window.should_close() {
+        while !(self.window.should_close() || self.g2d.should_close) {
             self.window.glfw.poll_events();
             for (_, window_event) in glfw::flush_messages(&event_receiver) {
                 self.handle_event(window_event)?;
@@ -203,7 +203,7 @@ where
                 self.g2d.get_vertices(),
                 self.g2d.get_indices(),
             )?;
-            self.g2d.reset_vertices();
+            self.g2d.reset();
 
             self.bindless_triangles.draw_vertices(
                 &frame,

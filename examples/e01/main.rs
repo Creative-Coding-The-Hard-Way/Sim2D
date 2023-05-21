@@ -12,7 +12,6 @@ use {
 #[derive(Default)]
 struct HelloG2D {
     gasp: TextureId,
-    t: f32,
 }
 
 impl Sketch for HelloG2D {
@@ -27,10 +26,10 @@ impl Sketch for HelloG2D {
     }
 
     fn update(&mut self, g2d: &mut G2D) -> Result<()> {
-        self.t += 0.001;
+        let angle = g2d.time_since_start() * std::f32::consts::PI;
 
-        let x = self.t.cos() * 500.0;
-        let y = self.t.sin() * 500.0;
+        let x = angle.cos() * 500.0;
+        let y = angle.sin() * 500.0;
         g2d.texture = TextureId::no_texture();
         g2d.line(0.0, 0.0, x, y);
 
