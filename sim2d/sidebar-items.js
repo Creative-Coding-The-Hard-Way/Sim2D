@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["application","graphics","math","sim2d"]};

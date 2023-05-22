@@ -11,7 +11,6 @@ var sourcesIndex = JSON.parse('{\
 "bitflags":["",[],["lib.rs"]],\
 "bytemuck":["",[],["allocation.rs","anybitpattern.rs","checked.rs","contiguous.rs","internal.rs","lib.rs","no_uninit.rs","offset_of.rs","pod.rs","pod_in_option.rs","transparent.rs","zeroable.rs","zeroable_in_option.rs"]],\
 "byteorder":["",[],["io.rs","lib.rs"]],\
-"ccthw":["",[["application",[],["glfw_window.rs","logging.rs","mod.rs"]],["graphics",[["vulkan_api",[["bindless_triangles",[],["mod.rs","pipeline.rs"]],["command_buffer",[],["mod.rs"]],["frames_in_flight",[],["frame.rs","frame_sync.rs","mod.rs"]],["raii",[],["buffer.rs","command_pool.rs","descriptor_pool.rs","descriptor_set_layout.rs","image.rs","mod.rs","pipeline.rs","pipeline_layout.rs","shader_module.rs"]],["render_device",[],["mod.rs","queue.rs","queue_finder.rs","window_surface.rs"]],["render_pass",[],["color_pass.rs","mod.rs"]],["swapchain",[],["acquire_present.rs","mod.rs","selection.rs"]],["texture",[],["mod.rs"]]],["mod.rs"]]],["error.rs","mod.rs"]],["math",[],["mod.rs"]]],["lib.rs"]],\
 "ccthw_ash_allocator":["",[["allocation_requirements",[],["dedicated_resource_handle.rs","mod.rs"]],["memory_allocator",[["page_suballocator",[],["mod.rs","page_arena.rs"]]],["composable_allocator.rs","dedicated_allocator.rs","device_allocator.rs","fake_allocator.rs","memory_type_pool_allocator.rs","mod.rs","pool_allocator.rs","sized_allocator.rs","trace_allocator.rs"]]],["allocation.rs","device_memory.rs","error.rs","lib.rs","memory_properties.rs","pretty_wrappers.rs"]],\
 "ccthw_ash_instance":["",[["logical_device",[],["mod.rs","queue_family_info.rs"]],["physical_device",[["physical_device_features",[],["is_supported_by.rs","mod.rs"]]],["mod.rs","physical_device_properties.rs"]],["vulkan_instance",[],["create_instance.rs","debug_callback.rs","mod.rs"]]],["error.rs","ffi.rs","lib.rs"]],\
 "cfg_if":["",[],["lib.rs"]],\
@@ -30,7 +29,7 @@ var sourcesIndex = JSON.parse('{\
 "flume":["",[],["async.rs","lib.rs","select.rs","signal.rs"]],\
 "futures_core":["",[["task",[["__internal",[],["atomic_waker.rs","mod.rs"]]],["mod.rs","poll.rs"]]],["future.rs","lib.rs","stream.rs"]],\
 "futures_sink":["",[],["lib.rs"]],\
-"getrandom":["",[],["error.rs","lib.rs","linux_android.rs","use_file.rs","util.rs","util_libc.rs"]],\
+"getrandom":["",[],["error.rs","error_impls.rs","lib.rs","linux_android.rs","use_file.rs","util.rs","util_libc.rs"]],\
 "gif":["",[["reader",[],["decoder.rs","mod.rs"]]],["common.rs","encoder.rs","lib.rs","traits.rs"]],\
 "glfw":["",[["ffi",[],["link.rs","mod.rs"]]],["callbacks.rs","lib.rs"]],\
 "glfw_sys":["",[],["lib.rs"]],\
@@ -66,10 +65,14 @@ var sourcesIndex = JSON.parse('{\
 "pin_project":["",[],["lib.rs"]],\
 "pin_project_internal":["",[["pin_project",[],["args.rs","attribute.rs","derive.rs","mod.rs"]]],["lib.rs","pinned_drop.rs","utils.rs"]],\
 "png":["",[["decoder",[],["mod.rs","stream.rs","zlib.rs"]]],["chunk.rs","common.rs","encoder.rs","filter.rs","lib.rs","srgb.rs","text_metadata.rs","traits.rs","utils.rs"]],\
+"ppv_lite86":["",[["x86_64",[],["mod.rs","sse2.rs"]]],["lib.rs","soft.rs","types.rs"]],\
 "proc_macro2":["",[],["detection.rs","fallback.rs","lib.rs","marker.rs","parse.rs","rcvec.rs","wrapper.rs"]],\
 "proc_macro_error":["",[["imp",[],["fallback.rs"]]],["diagnostic.rs","dummy.rs","lib.rs","macros.rs","sealed.rs"]],\
 "proc_macro_error_attr":["",[],["lib.rs","parse.rs","settings.rs"]],\
 "quote":["",[],["ext.rs","format.rs","ident_fragment.rs","lib.rs","runtime.rs","spanned.rs","to_tokens.rs"]],\
+"rand":["",[["distributions",[],["bernoulli.rs","distribution.rs","float.rs","integer.rs","mod.rs","other.rs","slice.rs","uniform.rs","utils.rs","weighted.rs","weighted_index.rs"]],["rngs",[["adapter",[],["mod.rs","read.rs","reseeding.rs"]]],["mock.rs","mod.rs","std.rs","thread.rs"]],["seq",[],["index.rs","mod.rs"]]],["lib.rs","prelude.rs","rng.rs"]],\
+"rand_chacha":["",[],["chacha.rs","guts.rs","lib.rs"]],\
+"rand_core":["",[],["block.rs","error.rs","impls.rs","le.rs","lib.rs","os.rs"]],\
 "rawpointer":["",[],["lib.rs"]],\
 "rayon":["",[["collections",[],["binary_heap.rs","btree_map.rs","btree_set.rs","hash_map.rs","hash_set.rs","linked_list.rs","mod.rs","vec_deque.rs"]],["compile_fail",[],["cannot_collect_filtermap_data.rs","cannot_zip_filtered_data.rs","cell_par_iter.rs","mod.rs","must_use.rs","no_send_par_iter.rs","rc_par_iter.rs"]],["iter",[["collect",[],["consumer.rs","mod.rs"]],["find_first_last",[],["mod.rs"]],["plumbing",[],["mod.rs"]]],["chain.rs","chunks.rs","cloned.rs","copied.rs","empty.rs","enumerate.rs","extend.rs","filter.rs","filter_map.rs","find.rs","flat_map.rs","flat_map_iter.rs","flatten.rs","flatten_iter.rs","fold.rs","for_each.rs","from_par_iter.rs","inspect.rs","interleave.rs","interleave_shortest.rs","intersperse.rs","len.rs","map.rs","map_with.rs","mod.rs","multizip.rs","noop.rs","once.rs","panic_fuse.rs","par_bridge.rs","positions.rs","product.rs","reduce.rs","repeat.rs","rev.rs","skip.rs","splitter.rs","step_by.rs","sum.rs","take.rs","try_fold.rs","try_reduce.rs","try_reduce_with.rs","unzip.rs","update.rs","while_some.rs","zip.rs","zip_eq.rs"]],["slice",[],["chunks.rs","mergesort.rs","mod.rs","quicksort.rs","rchunks.rs"]]],["array.rs","delegate.rs","lib.rs","math.rs","option.rs","par_either.rs","prelude.rs","private.rs","range.rs","range_inclusive.rs","result.rs","split_producer.rs","str.rs","string.rs","vec.rs"]],\
 "rayon_core":["",[["compile_fail",[],["mod.rs","quicksort_race1.rs","quicksort_race2.rs","quicksort_race3.rs","rc_return.rs","rc_upvar.rs","scope_join_bad.rs"]],["join",[],["mod.rs"]],["scope",[],["mod.rs"]],["sleep",[],["counters.rs","mod.rs"]],["spawn",[],["mod.rs"]],["thread_pool",[],["mod.rs"]]],["job.rs","latch.rs","lib.rs","log.rs","private.rs","registry.rs","unwind.rs"]],\
@@ -81,6 +84,7 @@ var sourcesIndex = JSON.parse('{\
 "scopeguard":["",[],["lib.rs"]],\
 "semver":["",[],["lib.rs","version.rs","version_req.rs"]],\
 "semver_parser":["",[],["common.rs","lib.rs","range.rs","recognize.rs","version.rs"]],\
+"sim2d":["",[["application",[],["glfw_window.rs","logging.rs","mod.rs","state.rs"]],["graphics",[["vulkan_api",[["bindless_triangles",[],["mod.rs","per_frame.rs","pipeline.rs"]],["command_buffer",[],["mod.rs"]],["frames_in_flight",[],["frame.rs","frame_sync.rs","mod.rs"]],["raii",[],["buffer.rs","command_pool.rs","descriptor_pool.rs","descriptor_set_layout.rs","image.rs","mod.rs","pipeline.rs","pipeline_layout.rs","shader_module.rs"]],["render_device",[],["mod.rs","queue.rs","queue_finder.rs","window_surface.rs"]],["render_pass",[],["color_pass.rs","mod.rs"]],["swapchain",[],["acquire_present.rs","mod.rs","selection.rs"]],["texture",[],["mod.rs","texture_atlas.rs","texture_loader.rs"]]],["mapped_buffer.rs","mod.rs"]]],["error.rs","g2d.rs","mod.rs"]],["math",[],["mod.rs"]],["sim2d",[["window_state",[],["glfw_api.rs","mod.rs"]]],["mod.rs","timer.rs"]]],["lib.rs"]],\
 "simba":["",[["scalar",[],["complex.rs","field.rs","mod.rs","real.rs","subset.rs"]],["simd",[],["auto_simd_impl.rs","mod.rs","simd_bool.rs","simd_complex.rs","simd_option.rs","simd_partial_ord.rs","simd_real.rs","simd_signed.rs","simd_value.rs","wide_simd_impl.rs"]]],["lib.rs"]],\
 "smallvec":["",[],["lib.rs"]],\
 "smawk":["",[],["lib.rs","monge.rs"]],\
