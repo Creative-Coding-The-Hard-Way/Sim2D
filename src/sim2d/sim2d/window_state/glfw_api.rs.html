@@ -128,11 +128,30 @@
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">super</span>::WindowState,
     <span class="kw">crate</span>::math::Vec2,
     anyhow::{Context, <span class="prelude-ty">Result</span>},
-    glfw::{WindowEvent, WindowMode},
+    glfw::{MouseButton, WindowEvent, WindowMode},
 };
 
 <span class="kw">impl </span>WindowState {
@@ -156,6 +175,9 @@
             height: h <span class="kw">as </span>f32,
 
             mouse_pos: Vec2::new(mouse_x <span class="kw">as </span>f32, mouse_y <span class="kw">as </span>f32),
+            left_button_pressed: <span class="bool-val">false</span>,
+            middle_button_pressed: <span class="bool-val">false</span>,
+            right_button_pressed: <span class="bool-val">false</span>,
         }
     }
 
@@ -184,6 +206,22 @@
         window_event: <span class="kw-2">&amp;</span>WindowEvent,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">match </span><span class="kw-2">*</span>window_event {
+            WindowEvent::MouseButton(button, glfw::Action::Press, <span class="kw">_</span>) =&gt; {
+                <span class="kw">match </span>button {
+                    MouseButton::Button1 =&gt; <span class="self">self</span>.left_button_pressed = <span class="bool-val">true</span>,
+                    MouseButton::Button2 =&gt; <span class="self">self</span>.right_button_pressed = <span class="bool-val">true</span>,
+                    MouseButton::Button3 =&gt; <span class="self">self</span>.middle_button_pressed = <span class="bool-val">true</span>,
+                    <span class="kw">_ </span>=&gt; (),
+                }
+            }
+            WindowEvent::MouseButton(button, glfw::Action::Release, <span class="kw">_</span>) =&gt; {
+                <span class="kw">match </span>button {
+                    MouseButton::Button1 =&gt; <span class="self">self</span>.left_button_pressed = <span class="bool-val">false</span>,
+                    MouseButton::Button2 =&gt; <span class="self">self</span>.right_button_pressed = <span class="bool-val">false</span>,
+                    MouseButton::Button3 =&gt; <span class="self">self</span>.middle_button_pressed = <span class="bool-val">false</span>,
+                    <span class="kw">_ </span>=&gt; (),
+                }
+            }
             WindowEvent::CursorPos(x, y) =&gt; {
                 <span class="self">self</span>.mouse_pos.x = x <span class="kw">as </span>f32 - <span class="number">0.5 </span>* <span class="self">self</span>.width;
                 <span class="self">self</span>.mouse_pos.y = <span class="number">0.5 </span>* <span class="self">self</span>.height - y <span class="kw">as </span>f32;

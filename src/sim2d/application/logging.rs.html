@@ -108,8 +108,8 @@
             .unwrap()
             .log_to_file(FileSpec::default().directory(<span class="string">&quot;logs&quot;</span>))
             .format(multiline_format)
-            .duplicate_to_stdout(Duplicate::Warn)
-            .write_mode(WriteMode::Async)
+            .duplicate_to_stdout(Duplicate::Info)
+            .write_mode(WriteMode::Direct)
             .start()
             .expect(<span class="string">&quot;Unable to start the logger!&quot;</span>);
         <span class="kw">let </span>matcher = Regex::new(<span class="string">r&quot;(┃)(.*)$&quot;</span>).unwrap();

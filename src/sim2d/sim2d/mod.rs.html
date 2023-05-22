@@ -107,7 +107,7 @@
         <span class="self">self</span>.delta_time = <span class="self">self</span>.update_timer.tock();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(duration) = <span class="self">self</span>.update_timer.report_average() {
             <span class="kw">let </span>secs = duration.as_secs_f32();
-            <span class="macro">log::warn!</span>(
+            <span class="macro">log::info!</span>(
                 <span class="string">&quot;Avg Simulation Time: {}ms\nAvg Ticks Per second: {}&quot;</span>,
                 (secs * <span class="number">1000.0 </span>* <span class="number">100.0</span>).floor() / <span class="number">100.0</span>,
                 (<span class="number">1.0 </span>/ secs).floor(),
