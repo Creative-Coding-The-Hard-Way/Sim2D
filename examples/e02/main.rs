@@ -36,35 +36,35 @@ impl Sprite {
     }
 
     pub fn draw(&self, sim: &mut Sim2D) {
-        sim.g.rect_centered(self.pos.x, self.pos.y, 25.0, 40.0);
+        sim.g.rect_centered(self.pos.x, self.pos.y, 35.0, 35.0);
     }
 }
 
 #[derive(Default)]
-struct HelloG2D {
-    gasp: TextureId,
+struct BunnyMark {
+    bunny: TextureId,
     sprites: Vec<Sprite>,
 }
 
-impl Sketch for HelloG2D {
+impl Sketch for BunnyMark {
     fn new(sim: &mut Sim2D) -> Result<Self> {
         sim.g.clear_color = [0.0, 0.0, 0.0, 1.0];
         Ok(Self::default())
     }
 
     fn preload(&mut self, texture_atlas: &mut TextureAtlas) -> Result<()> {
-        self.gasp = texture_atlas.load_file("examples/e02/Gasp.png");
+        self.bunny = texture_atlas.load_file("examples/e02/bunny.png");
         Ok(())
     }
 
     fn mouse_released(&mut self, sim: &mut Sim2D) -> Result<()> {
         let mut rng = rand::thread_rng();
 
-        self.sprites.extend((0..10_000).map(|_| Sprite {
+        self.sprites.extend((0..1_000).map(|_| Sprite {
             pos: sim.w.mouse_pos(),
             vel: Vec2::new(
-                rng.gen_range(-200.0..200.0),
-                rng.gen_range(-200.0..200.0),
+                rng.gen_range(-100.0..100.0),
+                rng.gen_range(-400.0..50.0),
             ),
         }));
         log::info!("Total Sprites: {}", self.sprites.len());
@@ -72,26 +72,16 @@ impl Sketch for HelloG2D {
     }
 
     fn update(&mut self, sim: &mut Sim2D) -> Result<()> {
-        sim.g.texture = self.gasp;
-
+        sim.g.texture = self.bunny;
         for sprite in &mut self.sprites {
-            sprite.update(sim.dt());
-            sprite.update(sim.dt());
             sprite.update(sim.dt());
             sprite.constrain(sim);
             sprite.draw(sim);
         }
-
-        sim.g.rect_centered(
-            sim.w.mouse_pos().x,
-            sim.w.mouse_pos().y,
-            200.0,
-            200.0,
-        );
         Ok(())
     }
 }
 
 fn main() -> Result<()> {
-    Application::<HelloG2D>::run()
+    Application::<BunnyMark>::run()
 }
