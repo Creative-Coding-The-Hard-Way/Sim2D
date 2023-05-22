@@ -287,6 +287,8 @@ impl RenderDevice {
         features: PhysicalDeviceFeatures,
         window_surface: &WindowSurface,
     ) -> Result<PhysicalDevice, GraphicsError> {
+        log::trace!("Enumerate supported devices!");
+
         let all_devices =
             PhysicalDevice::enumerate_supported_devices(instance, &features)?;
 

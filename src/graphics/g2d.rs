@@ -1,9 +1,6 @@
-use {
-    crate::{
-        graphics::vulkan_api::{BindlessVertex, TextureId},
-        math::Vec2,
-    },
-    std::time::Instant,
+use crate::{
+    graphics::vulkan_api::{BindlessVertex, TextureId},
+    math::Vec2,
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
@@ -15,10 +12,7 @@ pub struct ShapeVertex {
 pub struct G2D {
     vertices: Vec<BindlessVertex>,
     indices: Vec<u32>,
-    application_start_time: Instant,
-    last_reset_time: Instant,
 
-    pub should_close: bool,
     pub clear_color: [f32; 4],
     pub fill_color: [f32; 4],
     pub texture: TextureId,
@@ -28,9 +22,6 @@ pub struct G2D {
 impl Default for G2D {
     fn default() -> Self {
         Self {
-            application_start_time: Instant::now(),
-            last_reset_time: Instant::now(),
-            should_close: false,
             vertices: Vec::with_capacity(10_000),
             indices: Vec::with_capacity(10_1000),
             clear_color: [1.0, 1.0, 1.0, 1.0],
@@ -44,14 +35,6 @@ impl Default for G2D {
 impl G2D {
     pub fn new() -> Self {
         Default::default()
-    }
-
-    pub fn dt(&self) -> f32 {
-        (Instant::now() - self.last_reset_time).as_secs_f32()
-    }
-
-    pub fn time_since_start(&self) -> f32 {
-        (Instant::now() - self.application_start_time).as_secs_f32()
     }
 
     pub fn line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32) {
@@ -145,6 +128,5 @@ impl G2D {
     pub(crate) fn reset(&mut self) {
         self.vertices.clear();
         self.indices.clear();
-        self.last_reset_time = Instant::now();
     }
 }

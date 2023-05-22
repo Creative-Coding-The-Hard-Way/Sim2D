@@ -1,8 +1,5 @@
 use {
-    crate::{
-        application::GlfwWindow,
-        graphics::{g2d::G2D, vulkan_api::TextureAtlas},
-    },
+    crate::{graphics::vulkan_api::TextureAtlas, sim2d::Sim2D},
     anyhow::Result,
 };
 
@@ -10,15 +7,7 @@ use {
 /// configure the window for things like resizability and event polling.
 pub trait Sketch {
     /// Create a new instance of this sketch.
-    ///
-    /// # Params
-    ///
-    /// * `window` - A fully constructed application window. The implementation
-    ///   can use this handle to resize the window, apply GLFW window hints,
-    ///   toggle fullscren, and construct a Vulkan instance which can present
-    ///   surfaces to the window.
-    /// * `g2d` - The 2d graphics state machine.
-    fn new(window: &mut GlfwWindow, g2d: &mut G2D) -> Result<Self>
+    fn new(sim: &mut Sim2D) -> Result<Self>
     where
         Self: Sized;
 
@@ -32,30 +21,17 @@ pub trait Sketch {
         Ok(())
     }
 
-    /// Handle a GLFW event and update the application sketch.
+    /// Called any time the mouse is moved on screen.
     ///
-    /// # Params
-    ///
-    /// * `window` - The fully constructed application window. The application
-    ///   can exit by calling `set_should_close` on the window.
-    /// * `window_event` - The event currently being processed by the window.
-    fn handle_event(
-        &mut self,
-        _window: &mut GlfwWindow,
-        _window_event: glfw::WindowEvent,
-    ) -> Result<()> {
+    /// Sim2D retains all information regarding the mouse's position and
+    /// movement.
+    fn mouse_moved(&mut self, _sim: &mut Sim2D) -> Result<()> {
         Ok(())
     }
 
     /// Called each time through the main application loop after all events
     /// have been processed.
-    ///
-    /// Update is not called while an application is paused while minimized.
-    ///
-    /// # Params
-    ///
-    /// * `g2d` - The 2D graphics state machine.
-    fn update(&mut self, _g2d: &mut G2D) -> Result<()> {
+    fn update(&mut self, _sim: &mut Sim2D) -> Result<()> {
         Ok(())
     }
 }

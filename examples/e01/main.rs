@@ -1,11 +1,9 @@
 use {
     anyhow::Result,
     sim2d::{
-        application::{Application, GlfwWindow, Sketch},
-        graphics::{
-            g2d::G2D,
-            vulkan_api::{TextureAtlas, TextureId},
-        },
+        application::{Application, Sketch},
+        graphics::vulkan_api::{TextureAtlas, TextureId},
+        sim2d::Sim2D,
     },
 };
 
@@ -15,9 +13,12 @@ struct HelloG2D {
 }
 
 impl Sketch for HelloG2D {
-    fn new(_window: &mut GlfwWindow, g2d: &mut G2D) -> Result<Self> {
-        g2d.clear_color = [0.0, 0.0, 0.0, 1.0];
-        Ok(Self::default())
+    fn new(sim: &mut Sim2D) -> Result<Self> {
+        sim.g.clear_color = [0.0, 0.0, 0.0, 1.0];
+
+        Ok(Self {
+            ..Default::default()
+        })
     }
 
     fn preload(&mut self, texture_atlas: &mut TextureAtlas) -> Result<()> {
@@ -25,17 +26,14 @@ impl Sketch for HelloG2D {
         Ok(())
     }
 
-    fn update(&mut self, g2d: &mut G2D) -> Result<()> {
-        let angle = g2d.time_since_start() * std::f32::consts::PI;
-
-        let x = angle.cos() * 500.0;
-        let y = angle.sin() * 500.0;
-        g2d.texture = TextureId::no_texture();
-        g2d.line(0.0, 0.0, x, y);
-
-        g2d.texture = self.gasp;
-        g2d.rect_centered(x, y, 200.0, 200.0);
-
+    fn update(&mut self, sim: &mut Sim2D) -> Result<()> {
+        sim.g.texture = self.gasp;
+        sim.g.rect_centered(
+            sim.w.mouse_pos().x,
+            sim.w.mouse_pos().y,
+            200.0,
+            200.0,
+        );
         Ok(())
     }
 }

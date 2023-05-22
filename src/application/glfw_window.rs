@@ -13,8 +13,6 @@ use {
 /// GlfwWindow derefs as a raw GLFW window handle so application state can
 /// configure the window however is convenient.
 pub struct GlfwWindow {
-    window_pos: (i32, i32),
-    window_size: (i32, i32),
     window_handle: glfw::Window,
 
     /// The receiver for the Window's events.
@@ -53,67 +51,10 @@ impl GlfwWindow {
             .context("Creating the GLFW Window failed!")?;
 
         Ok(Self {
-            window_pos: window_handle.get_pos(),
-            window_size: window_handle.get_size(),
             event_receiver: Some(event_receiver),
             window_handle,
             glfw,
         })
-    }
-
-    /// Toggle application fullscreen.
-    ///
-    /// If the window is currently windowed then swap to fullscreen using
-    /// whatever the primary monitor advertises as the primary video mode.
-    ///
-    /// If the window is currently fullscreen, then swap to windowed and
-    /// restore the window's previous size and location.
-    pub fn toggle_fullscreen(&mut self) -> Result<()> {
-        let is_fullscreen =
-            self.window_handle.with_window_mode(|mode| match mode {
-                WindowMode::Windowed => false,
-                WindowMode::FullScreen(_) => true,
-            });
-
-        if is_fullscreen {
-            // Switch to windowed mode.
-            let (x, y) = self.window_pos;
-            let (w, h) = self.window_size;
-            self.window_handle.set_monitor(
-                WindowMode::Windowed,
-                x,
-                y,
-                w as u32,
-                h as u32,
-                None,
-            );
-        } else {
-            // Switch to fullscreen mode.
-            // Record the size and position of the non-fullscreen window
-            // before switching modes.
-            self.window_size = self.window_handle.get_size();
-            self.window_pos = self.window_handle.get_pos();
-            let window = &mut self.window_handle;
-            self.glfw.with_primary_monitor_mut(
-                |_, monitor_opt| -> Result<()> {
-                    let monitor = monitor_opt
-                        .context("Unable to determine the primary monitor!")?;
-                    let video_mode = monitor
-                        .get_video_mode()
-                        .context("Unable to get a primary video mode for the primary monitor!")?;
-                    window.set_monitor(
-                        WindowMode::FullScreen(monitor),
-                        0,
-                        0,
-                        video_mode.width,
-                        video_mode.height,
-                        Some(video_mode.refresh_rate),
-                    );
-                    Ok(())
-                },
-            )?;
-        }
-        Ok(())
     }
 
     /// Create a render device with no additional instanc extensions or layers.
