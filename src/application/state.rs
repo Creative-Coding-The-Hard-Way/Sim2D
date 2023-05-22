@@ -29,6 +29,19 @@ pub trait Sketch {
         Ok(())
     }
 
+    /// Called any time the mouse is pressed.
+    ///
+    /// Sim2D retains all information regarding the mouse's position and
+    /// movement.
+    fn mouse_pressed(&mut self, _sim: &mut Sim2D) -> Result<()> {
+        Ok(())
+    }
+
+    /// Called any time the mouse is released.
+    fn mouse_released(&mut self, _sim: &mut Sim2D) -> Result<()> {
+        Ok(())
+    }
+
     /// Called each time through the main application loop after all events
     /// have been processed.
     fn update(&mut self, _sim: &mut Sim2D) -> Result<()> {

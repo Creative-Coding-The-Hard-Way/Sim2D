@@ -28,6 +28,9 @@ pub struct WindowState {
 
     // Input state variables
     mouse_pos: Vec2,
+    left_button_pressed: bool,
+    right_button_pressed: bool,
+    middle_button_pressed: bool,
 }
 
 // Public API
@@ -42,6 +45,18 @@ impl WindowState {
         self.width = width;
         self.height = height;
         self.needs_resized = true;
+    }
+
+    pub fn is_left_mouse_button_pressed(&self) -> bool {
+        self.left_button_pressed
+    }
+
+    pub fn is_right_mouse_button_pressed(&self) -> bool {
+        self.right_button_pressed
+    }
+
+    pub fn is_middle_mouse_button_pressed(&self) -> bool {
+        self.middle_button_pressed
     }
 
     pub fn mouse_pos(&self) -> Vec2 {

@@ -172,6 +172,12 @@ where
     fn handle_event(&mut self, window_event: WindowEvent) -> Result<()> {
         self.sim.w.handle_event(&window_event)?;
         match window_event {
+            WindowEvent::MouseButton(_, glfw::Action::Press, _) => {
+                self.state.mouse_pressed(&mut self.sim)?;
+            }
+            WindowEvent::MouseButton(_, glfw::Action::Release, _) => {
+                self.state.mouse_released(&mut self.sim)?;
+            }
             WindowEvent::CursorPos(_, _) => {
                 self.state.mouse_moved(&mut self.sim)?;
             }

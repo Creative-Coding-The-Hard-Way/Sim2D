@@ -49,32 +49,25 @@ struct HelloG2D {
 impl Sketch for HelloG2D {
     fn new(sim: &mut Sim2D) -> Result<Self> {
         sim.g.clear_color = [0.0, 0.0, 0.0, 1.0];
-
-        let mut rng = rand::thread_rng();
-        let half_w = sim.w.width() / 2.0;
-        let half_h = sim.w.height() / 2.0;
-
-        let sprites = (0..10_000)
-            .map(|_| Sprite {
-                pos: Vec2::new(
-                    rng.gen_range(-half_w..half_w),
-                    rng.gen_range(-half_h..half_h),
-                ),
-                vel: Vec2::new(
-                    rng.gen_range(-200.0..200.0),
-                    rng.gen_range(-200.0..200.0),
-                ),
-            })
-            .collect();
-
-        Ok(Self {
-            sprites,
-            ..Default::default()
-        })
+        Ok(Self::default())
     }
 
     fn preload(&mut self, texture_atlas: &mut TextureAtlas) -> Result<()> {
         self.gasp = texture_atlas.load_file("examples/e02/Gasp.png");
+        Ok(())
+    }
+
+    fn mouse_released(&mut self, sim: &mut Sim2D) -> Result<()> {
+        let mut rng = rand::thread_rng();
+
+        self.sprites.extend((0..10_000).map(|_| Sprite {
+            pos: sim.w.mouse_pos(),
+            vel: Vec2::new(
+                rng.gen_range(-200.0..200.0),
+                rng.gen_range(-200.0..200.0),
+            ),
+        }));
+        log::info!("Total Sprites: {}", self.sprites.len());
         Ok(())
     }
 

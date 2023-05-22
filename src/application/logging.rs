@@ -27,8 +27,8 @@ pub fn setup() {
             .unwrap()
             .log_to_file(FileSpec::default().directory("logs"))
             .format(multiline_format)
-            .duplicate_to_stdout(Duplicate::Warn)
-            .write_mode(WriteMode::Async)
+            .duplicate_to_stdout(Duplicate::Info)
+            .write_mode(WriteMode::Direct)
             .start()
             .expect("Unable to start the logger!");
         let matcher = Regex::new(r"(┃)(.*)$").unwrap();

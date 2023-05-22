@@ -2,7 +2,7 @@ use {
     super::WindowState,
     crate::math::Vec2,
     anyhow::{Context, Result},
-    glfw::{WindowEvent, WindowMode},
+    glfw::{MouseButton, WindowEvent, WindowMode},
 };
 
 impl WindowState {
@@ -26,6 +26,9 @@ impl WindowState {
             height: h as f32,
 
             mouse_pos: Vec2::new(mouse_x as f32, mouse_y as f32),
+            left_button_pressed: false,
+            middle_button_pressed: false,
+            right_button_pressed: false,
         }
     }
 
@@ -54,6 +57,22 @@ impl WindowState {
         window_event: &WindowEvent,
     ) -> Result<()> {
         match *window_event {
+            WindowEvent::MouseButton(button, glfw::Action::Press, _) => {
+                match button {
+                    MouseButton::Button1 => self.left_button_pressed = true,
+                    MouseButton::Button2 => self.right_button_pressed = true,
+                    MouseButton::Button3 => self.middle_button_pressed = true,
+                    _ => (),
+                }
+            }
+            WindowEvent::MouseButton(button, glfw::Action::Release, _) => {
+                match button {
+                    MouseButton::Button1 => self.left_button_pressed = false,
+                    MouseButton::Button2 => self.right_button_pressed = false,
+                    MouseButton::Button3 => self.middle_button_pressed = false,
+                    _ => (),
+                }
+            }
             WindowEvent::CursorPos(x, y) => {
                 self.mouse_pos.x = x as f32 - 0.5 * self.width;
                 self.mouse_pos.y = 0.5 * self.height - y as f32;
