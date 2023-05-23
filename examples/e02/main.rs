@@ -60,7 +60,7 @@ impl Sketch for BunnyMark {
     fn mouse_released(&mut self, sim: &mut Sim2D) -> Result<()> {
         let mut rng = rand::thread_rng();
 
-        self.sprites.extend((0..1_000).map(|_| Sprite {
+        self.sprites.extend((0..20_000).map(|_| Sprite {
             pos: sim.w.mouse_pos(),
             vel: Vec2::new(
                 rng.gen_range(-100.0..100.0),

@@ -72,9 +72,7 @@ impl<T: Copy> MappedBuffer<T> {
         data: &[T],
     ) -> Result<WriteStatus, GraphicsError> {
         let mut write_status = WriteStatus::Complete;
-        if self.buffer.allocation().size_in_bytes()
-            < std::mem::size_of_val(data) as u64
-        {
+        if self.capacity_in_bytes() < std::mem::size_of_val(data) as u64 {
             let (buffer, host_ptr) = Self::allocate_mapped_buffer(
                 self.render_device.clone(),
                 data.len(),
@@ -115,6 +113,12 @@ impl<T: Copy> MappedBuffer<T> {
     /// Get the current length of the buffer based on the element count.
     pub fn current_size_in_bytes(&self) -> u64 {
         Self::size_in_bytes(self.element_count)
+    }
+
+    /// Get the current maximum capacity for this buffer. This can change if
+    /// the buffer is reallocated in a call to write().
+    pub fn capacity_in_bytes(&self) -> u64 {
+        self.buffer.allocation().size_in_bytes()
     }
 
     /// Get the raw Vulkan buffer handle.

@@ -9,7 +9,7 @@ use {
         graphics::{
             g2d::G2D,
             vulkan_api::{
-                BindlessTriangles, ColorPass, FrameStatus, FramesInFlight,
+                BindlessSprites, ColorPass, FrameStatus, FramesInFlight,
                 RenderDevice, TextureAtlas,
             },
         },
@@ -34,7 +34,7 @@ pub struct Application<S: Sketch> {
     sim: Sim2D,
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
-    bindless_triangles: BindlessTriangles,
+    bindless_sprites: BindlessSprites,
     render_device: Arc<RenderDevice>,
 
     paused: bool,
@@ -123,8 +123,8 @@ where
 
         let textures = atlas.load_all_textures(render_device.clone())?;
 
-        let mut bindless_triangles = unsafe {
-            BindlessTriangles::new(
+        let mut bindless_sprites = unsafe {
+            BindlessSprites::new(
                 render_device.clone(),
                 color_pass.render_pass(),
                 &frames_in_flight,
@@ -132,7 +132,7 @@ where
             )?
         };
 
-        bindless_triangles.set_projection(&Self::ortho_projection(
+        bindless_sprites.set_projection(&Self::ortho_projection(
             sim.w.width(),
             sim.w.height(),
         ));
@@ -143,7 +143,7 @@ where
             sim,
             frames_in_flight,
             color_pass,
-            bindless_triangles,
+            bindless_sprites,
             render_device,
 
             paused: false,
@@ -184,7 +184,7 @@ where
             WindowEvent::FramebufferSize(width, height) => {
                 self.paused = width == 0 || height == 0;
                 if !self.paused {
-                    self.bindless_triangles.set_projection(
+                    self.bindless_sprites.set_projection(
                         &Self::ortho_projection(
                             self.sim.w.width(),
                             self.sim.w.height(),
@@ -212,14 +212,11 @@ where
             self.color_pass
                 .begin_render_pass_inline(&frame, self.sim.g.clear_color);
 
-            self.bindless_triangles.write_vertices_for_frame(
-                &frame,
-                self.sim.g.get_vertices(),
-                self.sim.g.get_indices(),
-            )?;
+            self.bindless_sprites
+                .write_sprites_for_frame(&frame, self.sim.g.get_sprites())?;
             self.sim.g.reset();
 
-            self.bindless_triangles.draw_vertices(
+            self.bindless_sprites.draw_vertices(
                 &frame,
                 self.frames_in_flight.swapchain().extent(),
             )?;
