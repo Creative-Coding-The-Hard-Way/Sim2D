@@ -28,7 +28,8 @@ struct SpriteData {
     vec2 pos;
     vec2 size;
     vec4 rgba;
-    int texture_id;
+    float texture_id;
+    float angle;
 };
 
 layout(set = 0, binding = 0) readonly buffer SpriteBlock {
@@ -52,9 +53,12 @@ void main() {
 
     uv = uvs[vertex_index];
     rgba = sprite.rgba;
-    texture_index = sprite.texture_id;
+    texture_index = int(sprite.texture_id);
 
-    vec2 vertex_pos = sprite.pos + vertices[vertex_index] * sprite.size;
+    float c = cos(sprite.angle);
+    float s = sin(sprite.angle);
+    mat2 rotate = mat2(c, -s, s, c);
+    vec2 vertex_pos = sprite.pos + (rotate*vertices[vertex_index]) * sprite.size;
     gl_Position =
         uniformData.projection * vec4(vertex_pos.x, vertex_pos.y, 0.0, 1.0);
 }

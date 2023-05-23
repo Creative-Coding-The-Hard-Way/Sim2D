@@ -22,8 +22,9 @@ pub struct SpriteData {
     pub pos: [f32; 2],
     pub size: [f32; 2],
     pub rgba: [f32; 4],
-    pub tex: i32,
-    pub pad: [i32; 3],
+    pub tex: f32,
+    pub angle: f32,
+    pub pad: [f32; 2],
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]

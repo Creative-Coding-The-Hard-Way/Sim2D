@@ -35,12 +35,13 @@ impl G2D {
         Default::default()
     }
 
-    pub fn rect_centered(&mut self, x: f32, y: f32, width: f32, height: f32) {
+    pub fn rect_centered(&mut self, pos: Vec2, size: Vec2, angle: f32) {
         self.sprites.push(SpriteData {
-            pos: [x, y],
-            size: [width, height],
+            pos: [pos.x, pos.y],
+            size: [size.x, size.y],
             rgba: self.fill_color,
-            tex: self.texture.get_index(),
+            tex: self.texture.get_index() as f32,
+            angle,
             ..Default::default()
         });
     }

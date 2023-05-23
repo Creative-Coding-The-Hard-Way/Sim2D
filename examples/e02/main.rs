@@ -12,6 +12,7 @@ use {
 struct Sprite {
     pub pos: Vec2,
     pub vel: Vec2,
+    pub angle: f32,
 }
 
 impl Sprite {
@@ -36,7 +37,8 @@ impl Sprite {
     }
 
     pub fn draw(&self, sim: &mut Sim2D) {
-        sim.g.rect_centered(self.pos.x, self.pos.y, 35.0, 35.0);
+        sim.g
+            .rect_centered(self.pos, Vec2::new(35.0, 35.0), self.angle);
     }
 }
 
@@ -66,6 +68,7 @@ impl Sketch for BunnyMark {
                 rng.gen_range(-100.0..100.0),
                 rng.gen_range(-400.0..50.0),
             ),
+            angle: rng.gen_range(0.0..std::f32::consts::TAU),
         }));
         log::info!("Total Sprites: {}", self.sprites.len());
         Ok(())
