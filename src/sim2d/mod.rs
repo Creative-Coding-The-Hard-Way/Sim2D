@@ -18,7 +18,6 @@ pub struct Sim2D {
 // ----------
 
 impl Sim2D {
-    /// The time since the last tick.
     pub fn dt(&self) -> f32 {
         self.delta_time
     }
@@ -49,7 +48,7 @@ impl Sim2D {
         if let Some(duration) = self.update_timer.report_average() {
             let secs = duration.as_secs_f32();
             log::info!(
-                "Avg Simulation Time: {}ms\nAvg Ticks Per second: {}",
+                "Frame Time: {}ms\nFPS: {}",
                 (secs * 1000.0 * 100.0).floor() / 100.0,
                 (1.0 / secs).floor(),
             );

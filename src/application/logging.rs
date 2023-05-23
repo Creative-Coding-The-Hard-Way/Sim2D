@@ -1,8 +1,8 @@
 use {
     anyhow::Result,
     flexi_logger::{
-        DeferredNow, Duplicate, FileSpec, Logger, LoggerHandle, Record,
-        WriteMode,
+        Criterion, DeferredNow, Duplicate, FileSpec, Logger, LoggerHandle,
+        Naming, Record, WriteMode,
     },
     regex::Regex,
     std::{fmt::Write as FmtWrite, sync::Once},
@@ -26,6 +26,11 @@ pub fn setup() {
         let handle = Logger::try_with_env_or_str("trace")
             .unwrap()
             .log_to_file(FileSpec::default().directory("logs"))
+            .rotate(
+                Criterion::AgeOrSize(flexi_logger::Age::Hour, 1024 * 1024 * 8),
+                Naming::Timestamps,
+                flexi_logger::Cleanup::KeepLogFiles(3),
+            )
             .format(multiline_format)
             .duplicate_to_stdout(Duplicate::Info)
             .write_mode(WriteMode::Direct)

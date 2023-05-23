@@ -42,8 +42,7 @@ pub trait Sketch {
         Ok(())
     }
 
-    /// Called each time through the main application loop after all events
-    /// have been processed.
+    /// Called once per frame.
     fn update(&mut self, _sim: &mut Sim2D) -> Result<()> {
         Ok(())
     }

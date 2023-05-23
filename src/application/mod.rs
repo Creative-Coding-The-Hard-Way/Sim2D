@@ -162,7 +162,6 @@ where
             self.sim.w.update_window_to_match(&mut self.window)?;
 
             if !self.paused {
-                self.sim.update_timer();
                 self.update()?
             }
         }
@@ -182,7 +181,15 @@ where
                 self.state.mouse_moved(&mut self.sim)?;
             }
             WindowEvent::FramebufferSize(width, height) => {
+                let was_paused = self.paused;
                 self.paused = width == 0 || height == 0;
+
+                if was_paused && !self.paused {
+                    // reset the tick when unpaused
+                    self.sim.reset_timer();
+                    log::warn!("Unpaused");
+                }
+
                 if !self.paused {
                     self.bindless_sprites.set_projection(
                         &Self::ortho_projection(
@@ -199,6 +206,7 @@ where
     }
 
     fn update(&mut self) -> Result<()> {
+        self.sim.update_timer();
         self.state.update(&mut self.sim)?;
 
         let frame = match self.frames_in_flight.acquire_frame()? {

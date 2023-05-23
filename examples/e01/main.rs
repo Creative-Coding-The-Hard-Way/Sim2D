@@ -3,6 +3,7 @@ use {
     sim2d::{
         application::{Application, Sketch},
         graphics::vulkan_api::{TextureAtlas, TextureId},
+        math::Vec2,
         sim2d::Sim2D,
     },
 };
@@ -28,12 +29,10 @@ impl Sketch for HelloG2D {
 
     fn update(&mut self, sim: &mut Sim2D) -> Result<()> {
         sim.g.texture = self.gasp;
-        sim.g.rect_centered(
-            sim.w.mouse_pos().x,
-            sim.w.mouse_pos().y,
-            200.0,
-            200.0,
-        );
+
+        sim.g
+            .rect_centered(sim.w.mouse_pos(), Vec2::new(200.0, 200.0), 0.0);
+
         Ok(())
     }
 }
