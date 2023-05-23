@@ -153,6 +153,10 @@
 <a href="#153" id="153">153</a>
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::graphics::{
         vulkan_api::{raii, RenderDevice},
@@ -227,9 +231,7 @@
         data: <span class="kw-2">&amp;</span>[T],
     ) -&gt; <span class="prelude-ty">Result</span>&lt;WriteStatus, GraphicsError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>write_status = WriteStatus::Complete;
-        <span class="kw">if </span><span class="self">self</span>.buffer.allocation().size_in_bytes()
-            &lt; std::mem::size_of_val(data) <span class="kw">as </span>u64
-        {
+        <span class="kw">if </span><span class="self">self</span>.capacity_in_bytes() &lt; std::mem::size_of_val(data) <span class="kw">as </span>u64 {
             <span class="kw">let </span>(buffer, host_ptr) = <span class="self">Self</span>::allocate_mapped_buffer(
                 <span class="self">self</span>.render_device.clone(),
                 data.len(),
@@ -270,6 +272,12 @@
     <span class="doccomment">/// Get the current length of the buffer based on the element count.
     </span><span class="kw">pub fn </span>current_size_in_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="self">Self</span>::size_in_bytes(<span class="self">self</span>.element_count)
+    }
+
+    <span class="doccomment">/// Get the current maximum capacity for this buffer. This can change if
+    /// the buffer is reallocated in a call to write().
+    </span><span class="kw">pub fn </span>capacity_in_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        <span class="self">self</span>.buffer.allocation().size_in_bytes()
     }
 
     <span class="doccomment">/// Get the raw Vulkan buffer handle.

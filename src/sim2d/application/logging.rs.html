@@ -79,11 +79,16 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     anyhow::Result,
     flexi_logger::{
-        DeferredNow, Duplicate, FileSpec, Logger, LoggerHandle, Record,
-        WriteMode,
+        Criterion, DeferredNow, Duplicate, FileSpec, Logger, LoggerHandle,
+        Naming, Record, WriteMode,
     },
     regex::Regex,
     std::{fmt::Write <span class="kw">as </span>FmtWrite, sync::Once},
@@ -107,6 +112,11 @@
         <span class="kw">let </span>handle = Logger::try_with_env_or_str(<span class="string">&quot;trace&quot;</span>)
             .unwrap()
             .log_to_file(FileSpec::default().directory(<span class="string">&quot;logs&quot;</span>))
+            .rotate(
+                Criterion::AgeOrSize(flexi_logger::Age::Hour, <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">8</span>),
+                Naming::Timestamps,
+                flexi_logger::Cleanup::KeepLogFiles(<span class="number">3</span>),
+            )
             .format(multiline_format)
             .duplicate_to_stdout(Duplicate::Info)
             .write_mode(WriteMode::Direct)

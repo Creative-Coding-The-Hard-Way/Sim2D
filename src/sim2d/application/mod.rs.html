@@ -252,6 +252,11 @@
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
 <a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Provides structures for running a stateful single-window GLFW application.
 
 </span><span class="kw">mod </span>glfw_window;
@@ -263,7 +268,7 @@
         graphics::{
             g2d::G2D,
             vulkan_api::{
-                BindlessTriangles, ColorPass, FrameStatus, FramesInFlight,
+                BindlessSprites, ColorPass, FrameStatus, FramesInFlight,
                 RenderDevice, TextureAtlas,
             },
         },
@@ -288,7 +293,7 @@
     sim: Sim2D,
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
-    bindless_triangles: BindlessTriangles,
+    bindless_sprites: BindlessSprites,
     render_device: Arc&lt;RenderDevice&gt;,
 
     paused: bool,
@@ -377,8 +382,8 @@
 
         <span class="kw">let </span>textures = atlas.load_all_textures(render_device.clone())<span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>bindless_triangles = <span class="kw">unsafe </span>{
-            BindlessTriangles::new(
+        <span class="kw">let </span><span class="kw-2">mut </span>bindless_sprites = <span class="kw">unsafe </span>{
+            BindlessSprites::new(
                 render_device.clone(),
                 color_pass.render_pass(),
                 <span class="kw-2">&amp;</span>frames_in_flight,
@@ -386,7 +391,7 @@
             )<span class="question-mark">?
         </span>};
 
-        bindless_triangles.set_projection(<span class="kw-2">&amp;</span><span class="self">Self</span>::ortho_projection(
+        bindless_sprites.set_projection(<span class="kw-2">&amp;</span><span class="self">Self</span>::ortho_projection(
             sim.w.width(),
             sim.w.height(),
         ));
@@ -397,7 +402,7 @@
             sim,
             frames_in_flight,
             color_pass,
-            bindless_triangles,
+            bindless_sprites,
             render_device,
 
             paused: <span class="bool-val">false</span>,
@@ -416,7 +421,6 @@
             <span class="self">self</span>.sim.w.update_window_to_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>.window)<span class="question-mark">?</span>;
 
             <span class="kw">if </span>!<span class="self">self</span>.paused {
-                <span class="self">self</span>.sim.update_timer();
                 <span class="self">self</span>.update()<span class="question-mark">?
             </span>}
         }
@@ -436,9 +440,17 @@
                 <span class="self">self</span>.state.mouse_moved(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim)<span class="question-mark">?</span>;
             }
             WindowEvent::FramebufferSize(width, height) =&gt; {
+                <span class="kw">let </span>was_paused = <span class="self">self</span>.paused;
                 <span class="self">self</span>.paused = width == <span class="number">0 </span>|| height == <span class="number">0</span>;
+
+                <span class="kw">if </span>was_paused &amp;&amp; !<span class="self">self</span>.paused {
+                    <span class="comment">// reset the tick when unpaused
+                    </span><span class="self">self</span>.sim.reset_timer();
+                    <span class="macro">log::warn!</span>(<span class="string">&quot;Unpaused&quot;</span>);
+                }
+
                 <span class="kw">if </span>!<span class="self">self</span>.paused {
-                    <span class="self">self</span>.bindless_triangles.set_projection(
+                    <span class="self">self</span>.bindless_sprites.set_projection(
                         <span class="kw-2">&amp;</span><span class="self">Self</span>::ortho_projection(
                             <span class="self">self</span>.sim.w.width(),
                             <span class="self">self</span>.sim.w.height(),
@@ -453,6 +465,7 @@
     }
 
     <span class="kw">fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.sim.update_timer();
         <span class="self">self</span>.state.update(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>frame = <span class="kw">match </span><span class="self">self</span>.frames_in_flight.acquire_frame()<span class="question-mark">? </span>{
@@ -466,14 +479,11 @@
             <span class="self">self</span>.color_pass
                 .begin_render_pass_inline(<span class="kw-2">&amp;</span>frame, <span class="self">self</span>.sim.g.clear_color);
 
-            <span class="self">self</span>.bindless_triangles.write_vertices_for_frame(
-                <span class="kw-2">&amp;</span>frame,
-                <span class="self">self</span>.sim.g.get_vertices(),
-                <span class="self">self</span>.sim.g.get_indices(),
-            )<span class="question-mark">?</span>;
+            <span class="self">self</span>.bindless_sprites
+                .write_sprites_for_frame(<span class="kw-2">&amp;</span>frame, <span class="self">self</span>.sim.g.get_sprites())<span class="question-mark">?</span>;
             <span class="self">self</span>.sim.g.reset();
 
-            <span class="self">self</span>.bindless_triangles.draw_vertices(
+            <span class="self">self</span>.bindless_sprites.draw_vertices(
                 <span class="kw-2">&amp;</span>frame,
                 <span class="self">self</span>.frames_in_flight.swapchain().extent(),
             )<span class="question-mark">?</span>;
