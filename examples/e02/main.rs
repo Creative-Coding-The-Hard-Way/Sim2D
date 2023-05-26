@@ -5,7 +5,7 @@ use {
         application::{Application, Sketch},
         graphics::vulkan_api::{TextureAtlas, TextureId},
         math::Vec2,
-        sim2d::Sim2D,
+        Sim2D,
     },
 };
 

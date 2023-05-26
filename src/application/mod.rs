@@ -31,7 +31,7 @@ pub use self::{glfw_window::GlfwWindow, sketch::Sketch};
 pub struct Application {
     sketch: Box<dyn Sketch>,
 
-    texture_atlas: TextureAtlas,
+    _texture_atlas: TextureAtlas,
     sim: Sim2D,
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
@@ -74,23 +74,7 @@ impl Application {
         window.set_cursor_pos_polling(true);
         window.set_close_polling(true);
 
-        let render_device = unsafe {
-            let mut device_features = PhysicalDeviceFeatures::default();
-
-            // enable synchronization2 for queue_submit2
-            device_features.vulkan_13_features_mut().synchronization2 =
-                vk::TRUE;
-
-            // enable descriptor indexing for bindless graphics
-            device_features
-                .descriptor_indexing_features_mut()
-                .shader_sampled_image_array_non_uniform_indexing = vk::TRUE;
-            device_features
-                .descriptor_indexing_features_mut()
-                .runtime_descriptor_array = vk::TRUE;
-
-            window.create_default_render_device(device_features)?
-        };
+        let render_device = unsafe { window.create_render_device()? };
 
         let frames_in_flight = unsafe {
             FramesInFlight::new(
@@ -140,7 +124,7 @@ impl Application {
         Ok(Self {
             sketch: Box::new(sketch),
 
-            texture_atlas,
+            _texture_atlas: texture_atlas,
             sim,
             frames_in_flight,
             color_pass,

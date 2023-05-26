@@ -57,47 +57,27 @@ impl GlfwWindow {
         })
     }
 
-    /// Create a render device with no additional instanc extensions or layers.
-    ///
-    /// # Params
-    ///
-    /// * `features` - The physical device features required by the application.
-    ///
-    /// # Safety
-    ///
-    /// The application is responsible for synchronizing access to all Vulkan
-    /// resources and destroying the render device at exit.
-    pub unsafe fn create_default_render_device(
-        &self,
-        physical_device_features: PhysicalDeviceFeatures,
-    ) -> Result<Arc<RenderDevice>> {
-        self.create_render_device(&[], &[], physical_device_features)
-    }
-
     /// Create a render device for the application.
     ///
-    /// # Params
-    ///
-    /// * `instance_extensions` - Any extensions to enable when creating the
-    ///   instance. Extensions for the swapchain on the current platform are
-    ///   added automatically and do not need to be provided.
-    /// * `instance_layers` - Any additional layers to provide. The khronos
-    ///   validation layer is added automatically when debug assertions are
-    ///   enabled.
-    /// * `features` - The physical device features required by the application.
-    ///
     /// # Safety
     ///
     /// The application is responsible for synchronizing access to all Vulkan
     /// resources and destroying the render device at exit.
-    pub unsafe fn create_render_device(
-        &self,
-        instance_extensions: &[String],
-        instance_layers: &[String],
-        features: PhysicalDeviceFeatures,
-    ) -> Result<Arc<RenderDevice>> {
-        let instance =
-            self.create_vulkan_instance(instance_extensions, instance_layers)?;
+    pub unsafe fn create_render_device(&self) -> Result<Arc<RenderDevice>> {
+        let mut device_features = PhysicalDeviceFeatures::default();
+
+        // enable synchronization2 for queue_submit2
+        device_features.vulkan_13_features_mut().synchronization2 = vk::TRUE;
+
+        // enable descriptor indexing for bindless graphics
+        device_features
+            .descriptor_indexing_features_mut()
+            .shader_sampled_image_array_non_uniform_indexing = vk::TRUE;
+        device_features
+            .descriptor_indexing_features_mut()
+            .runtime_descriptor_array = vk::TRUE;
+
+        let instance = self.create_vulkan_instance()?;
 
         let surface = {
             let mut surface_handle: u64 = 0;
@@ -113,7 +93,7 @@ impl GlfwWindow {
             vk::SurfaceKHR::from_raw(surface_handle)
         };
 
-        let device = RenderDevice::new(instance, features, surface)
+        let device = RenderDevice::new(instance, device_features, surface)
             .context("Unable to create the render device!")?;
 
         log::debug!("{}", device);
@@ -124,24 +104,14 @@ impl GlfwWindow {
     /// Create a Vulkan instance with extensions and layers configured to
     /// such that it can present swapchain frames to the window.
     ///
-    /// # Params
-    ///
-    /// * `instance_extensions` - Any extensions to enable when creating the
-    ///   instance. Extensions for the swapchain on the current platform are
-    ///   added automatically and do not need to be provided.
-    /// * `instance_layers` - Any additional layers to provide. The khronos
-    ///   validation layer is added automatically when debug assertions are
-    ///   enabled.
-    ///
     /// # Safety
     ///
     /// The application is responsible for synchronizing access to all Vulkan
     /// resources and destroying the Vulkan instance at exit.
-    pub unsafe fn create_vulkan_instance(
-        &self,
-        instance_extensions: &[String],
-        instance_layers: &[String],
-    ) -> Result<VulkanInstance> {
+    unsafe fn create_vulkan_instance(&self) -> Result<VulkanInstance> {
+        let instance_extensions: &[String] = &[];
+        let instance_layers: &[String] = &[];
+
         let mut all_instance_extensions =
             self.glfw.get_required_instance_extensions().context(
                 "Cannot get the required instance extensions for this platform",

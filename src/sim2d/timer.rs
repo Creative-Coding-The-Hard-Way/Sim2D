@@ -38,10 +38,6 @@ impl Timer {
         delta.as_secs_f32()
     }
 
-    pub fn accumulated_time(&self) -> f32 {
-        self.accumulated_time.as_secs_f32()
-    }
-
     pub fn report_average(&mut self) -> Option<Duration> {
         if Instant::now() >= self.next_report_time {
             self.next_report_time = Instant::now() + self.report_rate;

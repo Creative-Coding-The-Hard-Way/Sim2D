@@ -3,7 +3,7 @@ use {
     sim2d::{
         application::{Application, Sketch},
         math::Vec2,
-        sim2d::Sim2D,
+        Sim2D,
     },
 };
 
