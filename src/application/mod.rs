@@ -6,21 +6,11 @@ mod sketch;
 
 use {
     crate::{
-        graphics::{
-            g2d::G2D,
-            vulkan_api::{
-                BindlessSprites, ColorPass, FrameStatus, FramesInFlight,
-                RenderDevice, TextureAtlas,
-            },
-        },
-        math::{ortho_projection, Mat4},
+        graphics::{g2d::G2D, Renderer},
         sim2d::{Sim2D, WindowState},
     },
     anyhow::Result,
-    ash::vk,
-    ccthw_ash_instance::PhysicalDeviceFeatures,
     glfw::WindowEvent,
-    std::sync::Arc,
 };
 
 pub use self::{glfw_window::GlfwWindow, sketch::Sketch};
@@ -31,12 +21,8 @@ pub use self::{glfw_window::GlfwWindow, sketch::Sketch};
 pub struct Application {
     sketch: Box<dyn Sketch>,
 
-    _texture_atlas: TextureAtlas,
     sim: Sim2D,
-    frames_in_flight: FramesInFlight,
-    color_pass: ColorPass,
-    bindless_sprites: BindlessSprites,
-    render_device: Arc<RenderDevice>,
+    renderer: Renderer,
 
     paused: bool,
     window: GlfwWindow,
@@ -52,6 +38,7 @@ impl Application {
     where
         S: Sketch + 'static,
     {
+        self::logging::setup();
         let window_title = std::any::type_name::<S>();
         Self::new(window_title, sketch)?.main_loop()
     }
@@ -65,71 +52,26 @@ impl Application {
     where
         S: Sketch + 'static,
     {
-        self::logging::setup();
-
         let mut window = GlfwWindow::new(window_title)?;
-        window.set_framebuffer_size_polling(true);
-        window.set_key_polling(true);
-        window.set_mouse_button_polling(true);
-        window.set_cursor_pos_polling(true);
-        window.set_close_polling(true);
-
         let render_device = unsafe { window.create_render_device()? };
 
-        let frames_in_flight = unsafe {
-            FramesInFlight::new(
-                render_device.clone(),
-                window.get_framebuffer_size(),
-                3,
-            )?
-        };
-
-        let color_pass = unsafe {
-            ColorPass::new(render_device.clone(), frames_in_flight.swapchain())?
-        };
+        let mut renderer =
+            Renderer::new(render_device, window.get_framebuffer_size())?;
 
         let mut sim =
             Sim2D::new(G2D::new(), WindowState::from_glfw_window(&window));
 
+        sketch.preload(renderer.texture_atlas_mut());
+        renderer.reload_textures()?;
+
+        sketch.setup(&mut sim);
         sim.w.update_window_to_match(&mut window)?;
-
-        let mut texture_atlas =
-            unsafe { TextureAtlas::new(render_device.clone())? };
-        let _loading_id = {
-            let img = image::load_from_memory_with_format(
-                include_bytes!("./loading.png"),
-                image::ImageFormat::Png,
-            )?
-            .into_rgba8();
-            texture_atlas.load_image(img)
-        };
-
-        sketch.preload(&mut texture_atlas);
-        texture_atlas.load_all_textures()?;
-
-        let mut bindless_sprites = unsafe {
-            BindlessSprites::new(
-                render_device.clone(),
-                color_pass.render_pass(),
-                &frames_in_flight,
-                &texture_atlas.all_textures(),
-            )?
-        };
-
-        bindless_sprites.set_projection(&Self::ortho_projection(
-            sim.w.width(),
-            sim.w.height(),
-        ));
 
         Ok(Self {
             sketch: Box::new(sketch),
 
-            _texture_atlas: texture_atlas,
             sim,
-            frames_in_flight,
-            color_pass,
-            bindless_sprites,
-            render_device,
+            renderer,
 
             paused: false,
             window,
@@ -184,12 +126,7 @@ impl Application {
                 }
 
                 if !self.paused {
-                    self.bindless_sprites.set_projection(
-                        &Self::ortho_projection(
-                            self.sim.w.width(),
-                            self.sim.w.height(),
-                        ),
-                    );
+                    self.renderer.rebuild_swapchain((width, height))?
                 }
             }
             _ => (),
@@ -201,51 +138,9 @@ impl Application {
         self.sim.update_timer();
         self.sketch.update(&mut self.sim);
 
-        let frame = match self.frames_in_flight.acquire_frame()? {
-            FrameStatus::FrameAcquired(frame) => frame,
-            FrameStatus::SwapchainNeedsRebuild => {
-                return self.rebuild_swapchain();
-            }
-        };
-
-        unsafe {
-            self.color_pass
-                .begin_render_pass_inline(&frame, self.sim.g.clear_color);
-
-            self.bindless_sprites
-                .write_sprites_for_frame(&frame, self.sim.g.get_sprites())?;
-            self.sim.g.reset();
-
-            self.bindless_sprites.draw_vertices(
-                &frame,
-                self.frames_in_flight.swapchain().extent(),
-            )?;
-
-            self.render_device
-                .device()
-                .cmd_end_render_pass(frame.command_buffer());
-        }
-        self.frames_in_flight.present_frame(frame)?;
+        self.renderer
+            .render(self.window.get_framebuffer_size(), &mut self.sim.g)?;
 
         Ok(())
-    }
-
-    fn rebuild_swapchain(&mut self) -> Result<()> {
-        unsafe {
-            self.frames_in_flight.stall_and_rebuild_swapchain(
-                self.window.get_framebuffer_size(),
-            )?;
-            self.color_pass = ColorPass::new(
-                self.render_device.clone(),
-                self.frames_in_flight.swapchain(),
-            )?;
-        };
-        Ok(())
-    }
-
-    fn ortho_projection(width: f32, height: f32) -> Mat4 {
-        let half_w = width / 2.0;
-        let half_h = height / 2.0;
-        ortho_projection(-half_w, half_w, -half_h, half_h, 0.0, 1.0)
     }
 }

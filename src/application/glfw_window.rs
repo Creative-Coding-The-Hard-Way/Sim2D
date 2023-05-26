@@ -41,7 +41,7 @@ impl GlfwWindow {
         glfw.window_hint(WindowHint::ClientApi(ClientApiHint::NoApi));
         glfw.window_hint(WindowHint::ScaleToMonitor(true));
 
-        let (window_handle, event_receiver) = glfw
+        let (mut window_handle, event_receiver) = glfw
             .create_window(
                 1366,
                 768,
@@ -49,6 +49,12 @@ impl GlfwWindow {
                 WindowMode::Windowed,
             )
             .context("Creating the GLFW Window failed!")?;
+
+        window_handle.set_framebuffer_size_polling(true);
+        window_handle.set_key_polling(true);
+        window_handle.set_mouse_button_polling(true);
+        window_handle.set_cursor_pos_polling(true);
+        window_handle.set_close_polling(true);
 
         Ok(Self {
             event_receiver: Some(event_receiver),
