@@ -2,7 +2,8 @@ use {
     super::WindowState,
     crate::math::Vec2,
     anyhow::{Context, Result},
-    glfw::{MouseButton, WindowEvent, WindowMode},
+    glfw::{Action, MouseButton, WindowEvent, WindowMode},
+    std::collections::HashSet,
 };
 
 impl WindowState {
@@ -29,6 +30,9 @@ impl WindowState {
             left_button_pressed: false,
             middle_button_pressed: false,
             right_button_pressed: false,
+
+            keyboard_button_pressed: false,
+            pressed_keys: HashSet::with_capacity(26),
         }
     }
 
@@ -57,7 +61,7 @@ impl WindowState {
         window_event: &WindowEvent,
     ) -> Result<()> {
         match *window_event {
-            WindowEvent::MouseButton(button, glfw::Action::Press, _) => {
+            WindowEvent::MouseButton(button, Action::Press, _) => {
                 match button {
                     MouseButton::Button1 => self.left_button_pressed = true,
                     MouseButton::Button2 => self.right_button_pressed = true,
@@ -65,13 +69,21 @@ impl WindowState {
                     _ => (),
                 }
             }
-            WindowEvent::MouseButton(button, glfw::Action::Release, _) => {
+            WindowEvent::MouseButton(button, Action::Release, _) => {
                 match button {
                     MouseButton::Button1 => self.left_button_pressed = false,
                     MouseButton::Button2 => self.right_button_pressed = false,
                     MouseButton::Button3 => self.middle_button_pressed = false,
                     _ => (),
                 }
+            }
+            WindowEvent::Key(key, _, Action::Press, _) => {
+                self.keyboard_button_pressed = true;
+                self.pressed_keys.insert(key);
+            }
+            WindowEvent::Key(key, _, Action::Release, _) => {
+                self.keyboard_button_pressed = false;
+                self.pressed_keys.remove(&key);
             }
             WindowEvent::CursorPos(x, y) => {
                 self.mouse_pos.x = x as f32 - 0.5 * self.width;

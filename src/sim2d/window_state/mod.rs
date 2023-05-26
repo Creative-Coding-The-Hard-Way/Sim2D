@@ -1,12 +1,12 @@
 mod glfw_api;
 
-use crate::math::Vec2;
+use {crate::math::Vec2, std::collections::HashSet};
 
 /// Represents the Window's state.
 ///
 /// Sketches can modify the state to change properties about the window.
 /// Notably, the window size can be controlled with the WindowState.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct WindowState {
     // Window Size and fullscreen variables
     toggle_fullscreen: bool,
@@ -31,6 +31,9 @@ pub struct WindowState {
     left_button_pressed: bool,
     right_button_pressed: bool,
     middle_button_pressed: bool,
+
+    keyboard_button_pressed: bool,
+    pressed_keys: HashSet<glfw::Key>,
 }
 
 // Public API
@@ -73,5 +76,9 @@ impl WindowState {
 
     pub fn height(&self) -> f32 {
         self.height
+    }
+
+    pub fn is_key_pressed(&self, key: glfw::Key) -> bool {
+        self.pressed_keys.contains(&key)
     }
 }

@@ -2,7 +2,7 @@
 
 mod glfw_window;
 mod logging;
-mod state;
+mod sketch;
 
 use {
     crate::{
@@ -23,13 +23,13 @@ use {
     std::sync::Arc,
 };
 
-pub use self::{glfw_window::GlfwWindow, state::Sketch};
+pub use self::{glfw_window::GlfwWindow, sketch::Sketch};
 
 /// Every sketch is comprised of a State type and a GLFW window.
 /// Sketches automatically pause if they are minimized or the window is
 /// resized such that there is no drawing area.
-pub struct Application<S: Sketch> {
-    state: S,
+pub struct Application {
+    sketch: Box<dyn Sketch>,
 
     sim: Sim2D,
     frames_in_flight: FramesInFlight,
@@ -43,27 +43,27 @@ pub struct Application<S: Sketch> {
 
 // Public API
 
-impl<S> Application<S>
-where
-    S: Sized + Sketch,
-{
+impl Application {
     /// Create and run the Application until the window is closed.
     ///
     /// The window title is just the Application state struct's type name.
-    pub fn run() -> Result<()> {
+    pub fn run<S>(sketch: S) -> Result<()>
+    where
+        S: Sketch + 'static,
+    {
         let window_title = std::any::type_name::<S>();
-        Self::new(window_title)?.main_loop()
+        Self::new(window_title, sketch)?.main_loop()
     }
 }
 
 // Private API
 
-impl<S> Application<S>
-where
-    S: Sized + Sketch,
-{
+impl Application {
     /// Create a new running application.
-    fn new(window_title: impl AsRef<str>) -> Result<Self> {
+    fn new<S>(window_title: impl AsRef<str>, mut sketch: S) -> Result<Self>
+    where
+        S: Sketch + 'static,
+    {
         self::logging::setup();
 
         let mut window = GlfwWindow::new(window_title)?;
@@ -106,7 +106,6 @@ where
         let mut sim =
             Sim2D::new(G2D::new(), WindowState::from_glfw_window(&window));
 
-        let mut state = S::new(&mut sim)?;
         sim.w.update_window_to_match(&mut window)?;
 
         let mut atlas = TextureAtlas::default();
@@ -119,7 +118,7 @@ where
             atlas.load_image(img)
         };
 
-        state.preload(&mut atlas)?;
+        sketch.preload(&mut atlas);
 
         let textures = atlas.load_all_textures(render_device.clone())?;
 
@@ -138,7 +137,7 @@ where
         ));
 
         Ok(Self {
-            state,
+            sketch: Box::new(sketch),
 
             sim,
             frames_in_flight,
@@ -152,7 +151,9 @@ where
     }
 
     fn main_loop(mut self) -> Result<()> {
+        self.sketch.setup(&mut self.sim);
         self.sim.reset_timer();
+
         let event_receiver = self.window.event_receiver.take().unwrap();
         while !(self.window.should_close()) {
             self.window.glfw.poll_events();
@@ -172,13 +173,19 @@ where
         self.sim.w.handle_event(&window_event)?;
         match window_event {
             WindowEvent::MouseButton(_, glfw::Action::Press, _) => {
-                self.state.mouse_pressed(&mut self.sim)?;
+                self.sketch.mouse_pressed(&mut self.sim);
             }
             WindowEvent::MouseButton(_, glfw::Action::Release, _) => {
-                self.state.mouse_released(&mut self.sim)?;
+                self.sketch.mouse_released(&mut self.sim);
+            }
+            WindowEvent::Key(key, _scancode, glfw::Action::Press, _) => {
+                self.sketch.key_pressed(&mut self.sim, key);
+            }
+            WindowEvent::Key(key, _scancode, glfw::Action::Release, _) => {
+                self.sketch.key_released(&mut self.sim, key);
             }
             WindowEvent::CursorPos(_, _) => {
-                self.state.mouse_moved(&mut self.sim)?;
+                self.sketch.mouse_moved(&mut self.sim);
             }
             WindowEvent::FramebufferSize(width, height) => {
                 let was_paused = self.paused;
@@ -201,13 +208,12 @@ where
             }
             _ => (),
         }
-
         Ok(())
     }
 
     fn update(&mut self) -> Result<()> {
         self.sim.update_timer();
-        self.state.update(&mut self.sim)?;
+        self.sketch.update(&mut self.sim);
 
         let frame = match self.frames_in_flight.acquire_frame()? {
             FrameStatus::FrameAcquired(frame) => frame,

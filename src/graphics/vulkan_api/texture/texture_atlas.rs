@@ -9,7 +9,7 @@ use {
     },
 };
 
-#[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd)]
+#[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Debug)]
 pub struct TextureId {
     index: i32,
 }

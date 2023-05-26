@@ -2,7 +2,6 @@ use {
     anyhow::Result,
     sim2d::{
         application::{Application, Sketch},
-        graphics::vulkan_api::{TextureAtlas, TextureId},
         math::Vec2,
         sim2d::Sim2D,
     },
@@ -10,33 +9,44 @@ use {
 
 #[derive(Default)]
 struct HelloG2D {
-    gasp: TextureId,
+    t: f32,
 }
 
 impl Sketch for HelloG2D {
-    fn new(sim: &mut Sim2D) -> Result<Self> {
-        sim.g.clear_color = [0.0, 0.0, 0.0, 1.0];
-
-        Ok(Self {
-            ..Default::default()
-        })
+    fn setup(&mut self, sim: &mut Sim2D) {
+        sim.g.clear_color = [0.5, 0.5, 0.5, 1.0];
     }
 
-    fn preload(&mut self, texture_atlas: &mut TextureAtlas) -> Result<()> {
-        self.gasp = texture_atlas.load_file("examples/e01/Gasp.png");
-        Ok(())
-    }
+    fn update(&mut self, sim: &mut Sim2D) {
+        self.t += sim.dt();
 
-    fn update(&mut self, sim: &mut Sim2D) -> Result<()> {
-        sim.g.texture = self.gasp;
+        let angle = self.t * std::f32::consts::TAU / 10.0;
 
+        sim.g.fill_color = [0.0, 0.0, 0.0, 1.0];
+        sim.g.rect_centered(
+            Vec2::new(200.0, 200.0),
+            Vec2::new(50.0, 100.0),
+            angle,
+        );
+        sim.g.rect_centered(
+            Vec2::new(0.0, 0.0),
+            Vec2::new(1.0, sim.w.height()),
+            0.0,
+        );
+        sim.g.rect_centered(
+            Vec2::new(0.0, 0.0),
+            Vec2::new(sim.w.width(), 1.0),
+            0.0,
+        );
+
+        sim.g.line(Vec2::new(0.0, 0.0), sim.w.mouse_pos());
+
+        sim.g.fill_color = [1.0, 1.0, 1.0, 1.0];
         sim.g
-            .rect_centered(sim.w.mouse_pos(), Vec2::new(200.0, 200.0), 0.0);
-
-        Ok(())
+            .rect(Vec2::new(0.0, 0.0), Vec2::new(200.0, 200.0), angle);
     }
 }
 
 fn main() -> Result<()> {
-    Application::<HelloG2D>::run()
+    Application::run(HelloG2D::default())
 }

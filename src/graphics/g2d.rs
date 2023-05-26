@@ -3,12 +3,6 @@ use {
     crate::{graphics::vulkan_api::TextureId, math::Vec2},
 };
 
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-pub struct ShapeVertex {
-    pub pos: Vec2,
-    pub uv: Vec2,
-}
-
 pub struct G2D {
     sprites: Vec<SpriteData>,
 
@@ -44,6 +38,26 @@ impl G2D {
             angle,
             ..Default::default()
         });
+    }
+
+    pub fn rect(&mut self, top_left: Vec2, size: Vec2, angle: f32) {
+        self.sprites.push(SpriteData {
+            pos: [top_left.x, top_left.y],
+            size: [size.x, size.y],
+            rgba: self.fill_color,
+            tex: self.texture.get_index() as f32,
+            angle,
+            center_offset: [0.5, -0.5],
+        });
+    }
+
+    pub fn line(&mut self, start: Vec2, end: Vec2) {
+        let d = end - start;
+        let len = d.magnitude();
+        let midpoint = start + 0.5 * d;
+        let angle =
+            ((d.y / len) / (d.x / len)).atan() + std::f32::consts::FRAC_PI_2;
+        self.rect_centered(midpoint, Vec2::new(self.line_width, len), angle);
     }
 }
 

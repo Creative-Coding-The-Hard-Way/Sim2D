@@ -1,5 +1,4 @@
 mod bindless_quads;
-mod bindless_triangles;
 mod command_buffer;
 mod frames_in_flight;
 mod mapped_buffer;
@@ -11,7 +10,6 @@ mod texture;
 pub mod raii;
 pub use self::{
     bindless_quads::{BindlessSprites, SpriteData},
-    bindless_triangles::{BindlessTriangles, BindlessVertex},
     command_buffer::OneTimeSubmitCommandBuffer,
     frames_in_flight::{Frame, FrameStatus, FramesInFlight},
     mapped_buffer::{MappedBuffer, WriteStatus},

@@ -7,7 +7,6 @@ use {
         math::Vec2,
         sim2d::Sim2D,
     },
-    std::time::Duration,
 };
 
 struct Sprite {
@@ -50,17 +49,15 @@ struct BunnyMark {
 }
 
 impl Sketch for BunnyMark {
-    fn new(sim: &mut Sim2D) -> Result<Self> {
-        sim.g.clear_color = [0.0, 0.0, 0.0, 1.0];
-        Ok(Self::default())
-    }
-
-    fn preload(&mut self, texture_atlas: &mut TextureAtlas) -> Result<()> {
+    fn preload(&mut self, texture_atlas: &mut TextureAtlas) {
         self.bunny = texture_atlas.load_file("examples/e02/bunny.png");
-        Ok(())
     }
 
-    fn mouse_released(&mut self, sim: &mut Sim2D) -> Result<()> {
+    fn setup(&mut self, sim: &mut Sim2D) {
+        sim.g.clear_color = [0.5, 0.5, 0.5, 1.0];
+    }
+
+    fn mouse_released(&mut self, sim: &mut Sim2D) {
         let mut rng = rand::thread_rng();
 
         self.sprites.extend((0..20_000).map(|_| Sprite {
@@ -72,20 +69,24 @@ impl Sketch for BunnyMark {
             angle: rng.gen_range(0.0..std::f32::consts::TAU),
         }));
         log::info!("Total Sprites: {}", self.sprites.len());
-        Ok(())
     }
 
-    fn update(&mut self, sim: &mut Sim2D) -> Result<()> {
+    fn key_pressed(&mut self, _: &mut Sim2D, key: glfw::Key) {
+        if key == glfw::Key::Space {
+            self.sprites.clear();
+        }
+    }
+
+    fn update(&mut self, sim: &mut Sim2D) {
         sim.g.texture = self.bunny;
         for sprite in &mut self.sprites {
             sprite.update(sim.dt());
             sprite.constrain(sim);
             sprite.draw(sim);
         }
-        Ok(())
     }
 }
 
 fn main() -> Result<()> {
-    Application::<BunnyMark>::run()
+    Application::run(BunnyMark::default())
 }
