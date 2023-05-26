@@ -89,9 +89,12 @@
 <a href="#89" id="89">89</a>
 <a href="#90" id="90">90</a>
 <a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::graphics::{
-        vulkan_api::{RenderDevice, Texture2D, TextureLoader},
+        vulkan_api::{RenderDevice, Texture2D, TextureId, TextureLoader},
         GraphicsError,
     },
     std::{
@@ -100,43 +103,40 @@
     },
 };
 
-<span class="attr">#[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd)]
-</span><span class="kw">pub struct </span>TextureId {
-    index: i32,
-}
-
-<span class="kw">impl </span>Default <span class="kw">for </span>TextureId {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::no_texture()
-    }
-}
-
-<span class="kw">impl </span>TextureId {
-    <span class="kw">pub fn </span>no_texture() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ index: -<span class="number">1 </span>}
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_raw(index: i32) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ index }
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>get_index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
-        <span class="self">self</span>.index
-    }
-}
-
-<span class="kw">enum </span>Source {
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">enum </span>Source {
     FilePath(PathBuf),
     Image(image::RgbaImage),
 }
 
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">struct </span>Reservation {
+    source: Source,
+    texture: <span class="prelude-ty">Option</span>&lt;Arc&lt;Texture2D&gt;&gt;,
+}
+
 <span class="doccomment">/// A collection of all available textures for this application.
-</span><span class="attr">#[derive(Default)]
 </span><span class="kw">pub struct </span>TextureAtlas {
-    texture_reservations: Vec&lt;Source&gt;,
+    texture_reservations: Vec&lt;Reservation&gt;,
+    loader: TextureLoader,
 }
 
 <span class="kw">impl </span>TextureAtlas {
+    <span class="doccomment">/// Create a new texture atlas.
+    ///
+    /// # Safety
+    ///
+    /// Unsafe because:
+    ///   - The application must drop this resource before the render device.
+    </span><span class="kw">pub unsafe fn </span>new(
+        render_device: Arc&lt;RenderDevice&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, GraphicsError&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            texture_reservations: <span class="macro">vec!</span>[],
+            loader: TextureLoader::new(render_device)<span class="question-mark">?</span>,
+        })
+    }
+
     <span class="kw">pub fn </span>load_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>, file_path: <span class="kw">impl </span>AsRef&lt;Path&gt;) -&gt; TextureId {
         <span class="kw">let </span>source = Source::FilePath(file_path.as_ref().to_owned());
         <span class="self">self</span>.load_texture_2d_from_source(source)
@@ -151,33 +151,39 @@
 // -----------
 
 </span><span class="kw">impl </span>TextureAtlas {
-    <span class="kw">fn </span>load_texture_2d_from_source(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: Source) -&gt; TextureId {
-        <span class="kw">let </span>index = <span class="self">self</span>.texture_reservations.len();
-        <span class="self">self</span>.texture_reservations.push(source);
-        TextureId::from_raw(index <span class="kw">as </span>i32)
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>all_textures(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Arc&lt;Texture2D&gt;&gt; {
+        <span class="self">self</span>.texture_reservations
+            .iter()
+            .filter_map(|reservation| reservation.texture.clone())
+            .collect()
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>load_all_textures(
-        <span class="self">self</span>,
-        render_device: Arc&lt;RenderDevice&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Arc&lt;Texture2D&gt;&gt;, GraphicsError&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>loader = <span class="kw">unsafe </span>{ TextureLoader::new(render_device)<span class="question-mark">? </span>};
-
-        <span class="kw">let </span><span class="kw-2">mut </span>textures = Vec::with_capacity(<span class="self">self</span>.texture_reservations.len());
-
-        <span class="kw">for </span>source <span class="kw">in </span><span class="self">self</span>.texture_reservations.iter() {
-            <span class="kw">let </span>texture = <span class="kw">match </span>source {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>load_all_textures(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), GraphicsError&gt; {
+        <span class="kw">for </span>reservation <span class="kw">in </span><span class="self">self
+            </span>.texture_reservations
+            .iter_mut()
+            .filter(|reservation| reservation.texture.is_none())
+        {
+            <span class="kw">let </span>texture = <span class="kw">match </span><span class="kw-2">&amp;</span>reservation.source {
                 Source::FilePath(path) =&gt; <span class="kw">unsafe </span>{
-                    loader.load_texture_2d_from_file(path)<span class="question-mark">?
+                    <span class="self">self</span>.loader.load_texture_2d_from_file(path)<span class="question-mark">?
                 </span>},
                 Source::Image(<span class="kw-2">ref </span>img) =&gt; <span class="kw">unsafe </span>{
-                    loader.load_texture_2d_from_image(img)<span class="question-mark">?
+                    <span class="self">self</span>.loader.load_texture_2d_from_image(img)<span class="question-mark">?
                 </span>},
             };
-            textures.push(Arc::new(texture));
+            reservation.texture = <span class="prelude-val">Some</span>(Arc::new(texture));
         }
+        <span class="prelude-val">Ok</span>(())
+    }
 
-        <span class="prelude-val">Ok</span>(textures)
+    <span class="kw">fn </span>load_texture_2d_from_source(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: Source) -&gt; TextureId {
+        <span class="kw">let </span>index = <span class="self">self</span>.texture_reservations.len();
+        <span class="self">self</span>.texture_reservations.push(Reservation {
+            source,
+            texture: <span class="prelude-val">None</span>,
+        });
+        TextureId::from_raw(index <span class="kw">as </span>i32)
     }
 }
 </code></pre></div>

@@ -257,11 +257,19 @@
 <a href="#257" id="257">257</a>
 <a href="#258" id="258">258</a>
 <a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Provides structures for running a stateful single-window GLFW application.
 
 </span><span class="kw">mod </span>glfw_window;
 <span class="kw">mod </span>logging;
-<span class="kw">mod </span>state;
+<span class="kw">mod </span>sketch;
 
 <span class="kw">use </span>{
     <span class="kw">crate</span>::{
@@ -282,14 +290,15 @@
     std::sync::Arc,
 };
 
-<span class="kw">pub use </span><span class="self">self</span>::{glfw_window::GlfwWindow, state::Sketch};
+<span class="kw">pub use </span><span class="self">self</span>::{glfw_window::GlfwWindow, sketch::Sketch};
 
 <span class="doccomment">/// Every sketch is comprised of a State type and a GLFW window.
 /// Sketches automatically pause if they are minimized or the window is
 /// resized such that there is no drawing area.
-</span><span class="kw">pub struct </span>Application&lt;S: Sketch&gt; {
-    state: S,
+</span><span class="kw">pub struct </span>Application {
+    sketch: Box&lt;<span class="kw">dyn </span>Sketch&gt;,
 
+    texture_atlas: TextureAtlas,
     sim: Sim2D,
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
@@ -302,27 +311,27 @@
 
 <span class="comment">// Public API
 
-</span><span class="kw">impl</span>&lt;S&gt; Application&lt;S&gt;
-<span class="kw">where
-    </span>S: Sized + Sketch,
-{
+</span><span class="kw">impl </span>Application {
     <span class="doccomment">/// Create and run the Application until the window is closed.
     ///
     /// The window title is just the Application state struct&#39;s type name.
-    </span><span class="kw">pub fn </span>run() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">pub fn </span>run&lt;S&gt;(sketch: S) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="kw">where
+        </span>S: Sketch + <span class="lifetime">&#39;static</span>,
+    {
         <span class="kw">let </span>window_title = std::any::type_name::&lt;S&gt;();
-        <span class="self">Self</span>::new(window_title)<span class="question-mark">?</span>.main_loop()
+        <span class="self">Self</span>::new(window_title, sketch)<span class="question-mark">?</span>.main_loop()
     }
 }
 
 <span class="comment">// Private API
 
-</span><span class="kw">impl</span>&lt;S&gt; Application&lt;S&gt;
-<span class="kw">where
-    </span>S: Sized + Sketch,
-{
+</span><span class="kw">impl </span>Application {
     <span class="doccomment">/// Create a new running application.
-    </span><span class="kw">fn </span>new(window_title: <span class="kw">impl </span>AsRef&lt;str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>new&lt;S&gt;(window_title: <span class="kw">impl </span>AsRef&lt;str&gt;, <span class="kw-2">mut </span>sketch: S) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt;
+    <span class="kw">where
+        </span>S: Sketch + <span class="lifetime">&#39;static</span>,
+    {
         <span class="self">self</span>::logging::setup();
 
         <span class="kw">let </span><span class="kw-2">mut </span>window = GlfwWindow::new(window_title)<span class="question-mark">?</span>;
@@ -365,29 +374,28 @@
         <span class="kw">let </span><span class="kw-2">mut </span>sim =
             Sim2D::new(G2D::new(), WindowState::from_glfw_window(<span class="kw-2">&amp;</span>window));
 
-        <span class="kw">let </span><span class="kw-2">mut </span>state = S::new(<span class="kw-2">&amp;mut </span>sim)<span class="question-mark">?</span>;
         sim.w.update_window_to_match(<span class="kw-2">&amp;mut </span>window)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>atlas = TextureAtlas::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>texture_atlas =
+            <span class="kw">unsafe </span>{ TextureAtlas::new(render_device.clone())<span class="question-mark">? </span>};
         <span class="kw">let </span>_loading_id = {
             <span class="kw">let </span>img = image::load_from_memory_with_format(
                 <span class="macro">include_bytes!</span>(<span class="string">&quot;./loading.png&quot;</span>),
                 image::ImageFormat::Png,
             )<span class="question-mark">?
             </span>.into_rgba8();
-            atlas.load_image(img)
+            texture_atlas.load_image(img)
         };
 
-        state.preload(<span class="kw-2">&amp;mut </span>atlas)<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>textures = atlas.load_all_textures(render_device.clone())<span class="question-mark">?</span>;
+        sketch.preload(<span class="kw-2">&amp;mut </span>texture_atlas);
+        texture_atlas.load_all_textures()<span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>bindless_sprites = <span class="kw">unsafe </span>{
             BindlessSprites::new(
                 render_device.clone(),
                 color_pass.render_pass(),
                 <span class="kw-2">&amp;</span>frames_in_flight,
-                <span class="kw-2">&amp;</span>textures,
+                <span class="kw-2">&amp;</span>texture_atlas.all_textures(),
             )<span class="question-mark">?
         </span>};
 
@@ -397,8 +405,9 @@
         ));
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
-            state,
+            sketch: Box::new(sketch),
 
+            texture_atlas,
             sim,
             frames_in_flight,
             color_pass,
@@ -411,7 +420,9 @@
     }
 
     <span class="kw">fn </span>main_loop(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.sketch.setup(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim);
         <span class="self">self</span>.sim.reset_timer();
+
         <span class="kw">let </span>event_receiver = <span class="self">self</span>.window.event_receiver.take().unwrap();
         <span class="kw">while </span>!(<span class="self">self</span>.window.should_close()) {
             <span class="self">self</span>.window.glfw.poll_events();
@@ -431,13 +442,19 @@
         <span class="self">self</span>.sim.w.handle_event(<span class="kw-2">&amp;</span>window_event)<span class="question-mark">?</span>;
         <span class="kw">match </span>window_event {
             WindowEvent::MouseButton(<span class="kw">_</span>, glfw::Action::Press, <span class="kw">_</span>) =&gt; {
-                <span class="self">self</span>.state.mouse_pressed(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim)<span class="question-mark">?</span>;
+                <span class="self">self</span>.sketch.mouse_pressed(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim);
             }
             WindowEvent::MouseButton(<span class="kw">_</span>, glfw::Action::Release, <span class="kw">_</span>) =&gt; {
-                <span class="self">self</span>.state.mouse_released(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim)<span class="question-mark">?</span>;
+                <span class="self">self</span>.sketch.mouse_released(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim);
+            }
+            WindowEvent::Key(key, _scancode, glfw::Action::Press, <span class="kw">_</span>) =&gt; {
+                <span class="self">self</span>.sketch.key_pressed(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim, key);
+            }
+            WindowEvent::Key(key, _scancode, glfw::Action::Release, <span class="kw">_</span>) =&gt; {
+                <span class="self">self</span>.sketch.key_released(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim, key);
             }
             WindowEvent::CursorPos(<span class="kw">_</span>, <span class="kw">_</span>) =&gt; {
-                <span class="self">self</span>.state.mouse_moved(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim)<span class="question-mark">?</span>;
+                <span class="self">self</span>.sketch.mouse_moved(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim);
             }
             WindowEvent::FramebufferSize(width, height) =&gt; {
                 <span class="kw">let </span>was_paused = <span class="self">self</span>.paused;
@@ -460,13 +477,12 @@
             }
             <span class="kw">_ </span>=&gt; (),
         }
-
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.sim.update_timer();
-        <span class="self">self</span>.state.update(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim)<span class="question-mark">?</span>;
+        <span class="self">self</span>.sketch.update(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim);
 
         <span class="kw">let </span>frame = <span class="kw">match </span><span class="self">self</span>.frames_in_flight.acquire_frame()<span class="question-mark">? </span>{
             FrameStatus::FrameAcquired(frame) =&gt; frame,

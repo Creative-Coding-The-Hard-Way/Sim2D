@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["G2D","ShapeVertex"]};
+window.SIDEBAR_ITEMS = {"struct":["G2D"]};
