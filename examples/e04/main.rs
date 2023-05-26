@@ -180,6 +180,7 @@ impl ThreeBodySystem {
 
                 let dir = b.pos - a.pos;
                 let distance = dir.magnitude();
+
                 let norm_dir = dir / distance;
                 let force =
                     norm_dir * (a.mass * b.mass) / (distance * distance);

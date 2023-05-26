@@ -54,7 +54,6 @@ impl Application {
     {
         let mut window = GlfwWindow::new(window_title)?;
         let render_device = unsafe { window.create_render_device()? };
-
         let mut renderer =
             Renderer::new(render_device, window.get_framebuffer_size())?;
 
@@ -79,7 +78,6 @@ impl Application {
     }
 
     fn main_loop(mut self) -> Result<()> {
-        self.sketch.setup(&mut self.sim);
         self.sim.reset_timer();
 
         let event_receiver = self.window.event_receiver.take().unwrap();
@@ -123,10 +121,6 @@ impl Application {
                     // reset the tick when unpaused
                     self.sim.reset_timer();
                     log::warn!("Unpaused");
-                }
-
-                if !self.paused {
-                    self.renderer.rebuild_swapchain((width, height))?
                 }
             }
             _ => (),

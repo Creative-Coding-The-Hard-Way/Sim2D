@@ -199,7 +199,7 @@ impl PerFrame {
     ///
     /// Unsafe because:
     ///   - the descriptor set must not be in use by the GPU when it is written.
-    unsafe fn update_texture_bindings(
+    pub unsafe fn update_texture_bindings(
         &self,
         textures: &[Arc<Texture2D>],
         sampler: &raii::Sampler,

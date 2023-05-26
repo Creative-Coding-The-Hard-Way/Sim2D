@@ -16,6 +16,7 @@ use {
 
 /// The Sim2D Rendering backend.
 pub struct Renderer {
+    projection: Mat4,
     texture_atlas: TextureAtlas,
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
@@ -49,6 +50,8 @@ impl Renderer {
         };
         texture_atlas.load_all_textures()?;
 
+        let projection = Self::fullscreen_ortho_projection(framebuffer_size);
+
         let mut bindless_sprites = unsafe {
             BindlessSprites::new(
                 render_device.clone(),
@@ -57,11 +60,10 @@ impl Renderer {
                 &texture_atlas.all_textures(),
             )?
         };
-
-        bindless_sprites
-            .set_projection(&Self::ortho_projection(framebuffer_size));
+        bindless_sprites.set_projection(&projection);
 
         Ok(Self {
+            projection,
             frames_in_flight,
 
             bindless_sprites,
@@ -87,6 +89,7 @@ impl Renderer {
                 &self.texture_atlas.all_textures(),
             )?
         };
+        self.bindless_sprites.set_projection(&self.projection);
         Ok(())
     }
 
@@ -127,6 +130,8 @@ impl Renderer {
         &mut self,
         framebuffer_size: (i32, i32),
     ) -> Result<(), GraphicsError> {
+        self.projection = Self::fullscreen_ortho_projection(framebuffer_size);
+
         unsafe {
             self.frames_in_flight
                 .stall_and_rebuild_swapchain(framebuffer_size)?;
@@ -134,13 +139,18 @@ impl Renderer {
                 self.render_device.clone(),
                 self.frames_in_flight.swapchain(),
             )?;
-            self.bindless_sprites
-                .set_projection(&Self::ortho_projection(framebuffer_size));
+            self.bindless_sprites = BindlessSprites::new(
+                self.render_device.clone(),
+                self.color_pass.render_pass(),
+                &self.frames_in_flight,
+                &self.texture_atlas.all_textures(),
+            )?;
+            self.bindless_sprites.set_projection(&self.projection);
         };
         Ok(())
     }
 
-    fn ortho_projection(framebuffer_size: (i32, i32)) -> Mat4 {
+    fn fullscreen_ortho_projection(framebuffer_size: (i32, i32)) -> Mat4 {
         let half_w = framebuffer_size.0 as f32 / 2.0;
         let half_h = framebuffer_size.1 as f32 / 2.0;
         crate::math::ortho_projection(
