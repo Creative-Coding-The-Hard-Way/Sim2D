@@ -31,6 +31,7 @@ pub use self::{glfw_window::GlfwWindow, sketch::Sketch};
 pub struct Application {
     sketch: Box<dyn Sketch>,
 
+    texture_atlas: TextureAtlas,
     sim: Sim2D,
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
@@ -108,26 +109,26 @@ impl Application {
 
         sim.w.update_window_to_match(&mut window)?;
 
-        let mut atlas = TextureAtlas::default();
+        let mut texture_atlas =
+            unsafe { TextureAtlas::new(render_device.clone())? };
         let _loading_id = {
             let img = image::load_from_memory_with_format(
                 include_bytes!("./loading.png"),
                 image::ImageFormat::Png,
             )?
             .into_rgba8();
-            atlas.load_image(img)
+            texture_atlas.load_image(img)
         };
 
-        sketch.preload(&mut atlas);
-
-        let textures = atlas.load_all_textures(render_device.clone())?;
+        sketch.preload(&mut texture_atlas);
+        texture_atlas.load_all_textures()?;
 
         let mut bindless_sprites = unsafe {
             BindlessSprites::new(
                 render_device.clone(),
                 color_pass.render_pass(),
                 &frames_in_flight,
-                &textures,
+                &texture_atlas.all_textures(),
             )?
         };
 
@@ -139,6 +140,7 @@ impl Application {
         Ok(Self {
             sketch: Box::new(sketch),
 
+            texture_atlas,
             sim,
             frames_in_flight,
             color_pass,

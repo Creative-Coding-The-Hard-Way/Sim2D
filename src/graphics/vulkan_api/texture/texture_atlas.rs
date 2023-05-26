@@ -1,6 +1,6 @@
 use {
     crate::graphics::{
-        vulkan_api::{RenderDevice, Texture2D, TextureLoader},
+        vulkan_api::{RenderDevice, Texture2D, TextureId, TextureLoader},
         GraphicsError,
     },
     std::{
@@ -9,43 +9,40 @@ use {
     },
 };
 
-#[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Debug)]
-pub struct TextureId {
-    index: i32,
-}
-
-impl Default for TextureId {
-    fn default() -> Self {
-        Self::no_texture()
-    }
-}
-
-impl TextureId {
-    pub fn no_texture() -> Self {
-        Self { index: -1 }
-    }
-
-    pub(crate) fn from_raw(index: i32) -> Self {
-        Self { index }
-    }
-
-    pub(crate) fn get_index(&self) -> i32 {
-        self.index
-    }
-}
-
+#[derive(Debug, Clone)]
 enum Source {
     FilePath(PathBuf),
     Image(image::RgbaImage),
 }
 
+#[derive(Debug, Clone)]
+struct Reservation {
+    source: Source,
+    texture: Option<Arc<Texture2D>>,
+}
+
 /// A collection of all available textures for this application.
-#[derive(Default)]
 pub struct TextureAtlas {
-    texture_reservations: Vec<Source>,
+    texture_reservations: Vec<Reservation>,
+    loader: TextureLoader,
 }
 
 impl TextureAtlas {
+    /// Create a new texture atlas.
+    ///
+    /// # Safety
+    ///
+    /// Unsafe because:
+    ///   - The application must drop this resource before the render device.
+    pub unsafe fn new(
+        render_device: Arc<RenderDevice>,
+    ) -> Result<Self, GraphicsError> {
+        Ok(Self {
+            texture_reservations: vec![],
+            loader: TextureLoader::new(render_device)?,
+        })
+    }
+
     pub fn load_file(&mut self, file_path: impl AsRef<Path>) -> TextureId {
         let source = Source::FilePath(file_path.as_ref().to_owned());
         self.load_texture_2d_from_source(source)
@@ -60,32 +57,38 @@ impl TextureAtlas {
 // -----------
 
 impl TextureAtlas {
-    fn load_texture_2d_from_source(&mut self, source: Source) -> TextureId {
-        let index = self.texture_reservations.len();
-        self.texture_reservations.push(source);
-        TextureId::from_raw(index as i32)
+    pub(crate) fn all_textures(&self) -> Vec<Arc<Texture2D>> {
+        self.texture_reservations
+            .iter()
+            .filter_map(|reservation| reservation.texture.clone())
+            .collect()
     }
 
-    pub(crate) fn load_all_textures(
-        self,
-        render_device: Arc<RenderDevice>,
-    ) -> Result<Vec<Arc<Texture2D>>, GraphicsError> {
-        let mut loader = unsafe { TextureLoader::new(render_device)? };
-
-        let mut textures = Vec::with_capacity(self.texture_reservations.len());
-
-        for source in self.texture_reservations.iter() {
-            let texture = match source {
+    pub(crate) fn load_all_textures(&mut self) -> Result<(), GraphicsError> {
+        for reservation in self
+            .texture_reservations
+            .iter_mut()
+            .filter(|reservation| reservation.texture.is_none())
+        {
+            let texture = match &reservation.source {
                 Source::FilePath(path) => unsafe {
-                    loader.load_texture_2d_from_file(path)?
+                    self.loader.load_texture_2d_from_file(path)?
                 },
                 Source::Image(ref img) => unsafe {
-                    loader.load_texture_2d_from_image(img)?
+                    self.loader.load_texture_2d_from_image(img)?
                 },
             };
-            textures.push(Arc::new(texture));
+            reservation.texture = Some(Arc::new(texture));
         }
+        Ok(())
+    }
 
-        Ok(textures)
+    fn load_texture_2d_from_source(&mut self, source: Source) -> TextureId {
+        let index = self.texture_reservations.len();
+        self.texture_reservations.push(Reservation {
+            source,
+            texture: None,
+        });
+        TextureId::from_raw(index as i32)
     }
 }
