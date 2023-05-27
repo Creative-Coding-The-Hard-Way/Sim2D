@@ -49,8 +49,8 @@ pub struct BindlessSprites {
     pipeline_layout: raii::PipelineLayout,
     pipeline: raii::Pipeline,
 
-    textures: Vec<Arc<Texture2D>>,
-    sampler: raii::Sampler,
+    _textures: Vec<Arc<Texture2D>>,
+    _sampler: raii::Sampler,
     _descriptor_pool: raii::DescriptorPool,
     _descriptor_set_layout: raii::DescriptorSetLayout,
 }
@@ -131,27 +131,11 @@ impl BindlessSprites {
             pipeline_layout,
             pipeline,
 
-            textures: textures.to_owned(),
-            sampler,
+            _textures: textures.to_owned(),
+            _sampler: sampler,
             _descriptor_pool: descriptor_pool,
             _descriptor_set_layout: descriptor_set_layout,
         })
-    }
-
-    /// Replace the textures used by this bindless quad batch.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    ///   - It is an error to call this while any of the textures are in use by
-    ///     the gpu.
-    ///   - Make sure every frame has finished rendering before replacing
-    ///     textures.
-    pub unsafe fn replace_textures(&mut self, textures: &[Arc<Texture2D>]) {
-        self.textures = textures.to_owned();
-        for frame in &mut self.frame_resources {
-            frame.update_texture_bindings(&self.textures, &self.sampler);
-        }
     }
 
     pub fn write_sprites_for_frame(

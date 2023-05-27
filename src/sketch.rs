@@ -1,4 +1,4 @@
-use crate::{graphics::vulkan_api::TextureAtlas, sim2d::Sim2D};
+use crate::{graphics::TextureAtlas, sim2d::Sim2D};
 
 /// A sketch is the primary entrypoint for the application.
 pub trait Sketch {

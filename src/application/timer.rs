@@ -31,6 +31,10 @@ impl Timer {
         }
     }
 
+    pub fn reset_frame_time(&mut self) {
+        self.frame_time.tick();
+    }
+
     pub fn frame_tick_tock(&mut self) -> Duration {
         let duration = self.frame_time.tock();
         self.avg_frame_time.record(duration);

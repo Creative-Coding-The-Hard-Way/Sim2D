@@ -2,7 +2,7 @@ use {
     anyhow::Result,
     sim2d::{
         application::Application,
-        graphics::vulkan_api::{TextureAtlas, TextureId},
+        graphics::{TextureAtlas, TextureId},
         math::Vec2,
         Sim2D, Sketch,
     },

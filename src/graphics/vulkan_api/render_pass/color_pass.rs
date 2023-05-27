@@ -79,6 +79,7 @@ impl ColorPass {
     }
 
     /// The current format.
+    #[allow(dead_code)]
     pub fn format(&self) -> vk::Format {
         self.format
     }

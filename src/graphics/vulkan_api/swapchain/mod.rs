@@ -156,6 +156,7 @@ impl Swapchain {
     }
 
     /// The presentation mode used by this swapchain.
+    #[allow(dead_code)]
     pub fn present_mode(&self) -> vk::PresentModeKHR {
         self.present_mode
     }

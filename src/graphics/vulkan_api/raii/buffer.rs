@@ -37,6 +37,7 @@ impl Buffer {
     }
 
     /// Set the name which shows up in Vulkan debug logs for this resource.
+    #[allow(dead_code)]
     pub fn set_debug_name(&self, name: impl Into<String>) {
         self.render_device.set_debug_name(
             self.buffer,

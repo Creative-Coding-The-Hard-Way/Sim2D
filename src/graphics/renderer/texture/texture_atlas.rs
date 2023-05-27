@@ -1,6 +1,7 @@
 use {
     crate::graphics::{
-        vulkan_api::{RenderDevice, Texture2D, TextureId, TextureLoader},
+        renderer::texture::{TextureId, TextureLoader},
+        vulkan_api::{RenderDevice, Texture2D},
         GraphicsError,
     },
     std::{

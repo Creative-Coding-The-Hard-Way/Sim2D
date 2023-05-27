@@ -16,5 +16,5 @@ pub use self::{
     render_device::{Queue, RenderDevice},
     render_pass::ColorPass,
     swapchain::{Swapchain, SwapchainStatus},
-    texture::{Texture2D, TextureAtlas, TextureId, TextureLoader},
+    texture::Texture2D,
 };

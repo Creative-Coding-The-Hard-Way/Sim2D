@@ -147,6 +147,7 @@ impl FramesInFlight {
     ///
     /// This can be useful in cases where it's known that the swapchain will
     /// need to be rebuilt (like when the application window is resized).
+    #[allow(dead_code)]
     pub fn invalidate_swapchain(&mut self) {
         self.swapchain_needs_rebuild = true;
     }

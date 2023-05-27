@@ -57,6 +57,7 @@ impl Pipeline {
     }
 
     /// Set the debug name for how this resource appears in Vulkan logs.
+    #[allow(dead_code)]
     pub fn set_debug_name(&self, name: impl Into<String>) {
         self.render_device.set_debug_name(
             self.raw(),

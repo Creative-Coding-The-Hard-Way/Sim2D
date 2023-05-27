@@ -58,6 +58,7 @@ impl DescriptorPool {
     }
 
     /// Set the name which shows up in Vulkan debug logs for this resource.
+    #[allow(dead_code)]
     pub fn set_debug_name(&self, name: impl Into<String>) {
         self.render_device.set_debug_name(
             self.descriptor_pool,
@@ -105,6 +106,7 @@ impl DescriptorPool {
     }
 
     /// Get the raw Vulkan command pool handle.
+    #[allow(dead_code)]
     pub fn raw(&self) -> vk::DescriptorPool {
         self.descriptor_pool
     }

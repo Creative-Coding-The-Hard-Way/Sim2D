@@ -121,10 +121,7 @@ impl Application {
                 self.paused = width == 0 || height == 0;
 
                 if was_paused && !self.paused {
-                    // reset the tick when unpaused
-                    // TODO: replace
-                    //self.sim.reset_timer();
-                    log::warn!("Unpaused");
+                    self.timer.reset_frame_time();
                 }
             }
             _ => (),

@@ -1,9 +1,11 @@
+mod texture;
+
 use {
     crate::{
         graphics::{
             vulkan_api::{
                 BindlessSprites, ColorPass, FrameStatus, FramesInFlight,
-                RenderDevice, TextureAtlas,
+                RenderDevice,
             },
             GraphicsError, G2D,
         },
@@ -12,6 +14,8 @@ use {
     anyhow::Context,
     std::sync::Arc,
 };
+
+pub use self::texture::{TextureAtlas, TextureId};
 
 /// The Sim2D Rendering backend.
 pub struct Renderer {

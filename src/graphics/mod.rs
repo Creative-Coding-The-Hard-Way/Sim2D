@@ -1,14 +1,13 @@
 mod error;
 mod renderer;
+pub(crate) mod vulkan_api;
 
-pub mod vulkan_api;
+use {crate::math::Vec2, vulkan_api::SpriteData};
 
-use {
-    crate::{graphics::vulkan_api::TextureId, math::Vec2},
-    vulkan_api::SpriteData,
+pub use self::{
+    error::GraphicsError,
+    renderer::{Renderer, TextureAtlas, TextureId},
 };
-
-pub use self::{error::GraphicsError, renderer::Renderer};
 
 pub struct G2D {
     sprites: Vec<SpriteData>,

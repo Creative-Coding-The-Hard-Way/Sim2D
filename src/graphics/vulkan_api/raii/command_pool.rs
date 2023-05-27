@@ -59,6 +59,7 @@ impl CommandPool {
     /// Note: The command pool destroys all allocated buffers when it is
     /// dropped. The caller must ensure that no command buffers are kept around
     /// after the pool is dropped.
+    #[allow(dead_code)]
     pub fn secondary_command_buffer(&self, index: usize) -> vk::CommandBuffer {
         self.secondary_command_buffers[index]
     }
@@ -93,6 +94,7 @@ impl CommandPool {
     /// # Returns
     ///
     /// Returns the index of the first newly allocated command buffer.
+    #[allow(dead_code)]
     pub fn allocate_secondary_command_buffers(
         &mut self,
         count: u32,

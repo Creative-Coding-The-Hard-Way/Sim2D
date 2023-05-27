@@ -111,6 +111,7 @@ impl<T: Copy> MappedBuffer<T> {
     }
 
     /// Get the current length of the buffer based on the element count.
+    #[allow(dead_code)]
     pub fn current_size_in_bytes(&self) -> u64 {
         Self::size_in_bytes(self.element_count)
     }
