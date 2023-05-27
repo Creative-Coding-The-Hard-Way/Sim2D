@@ -1,6 +1,8 @@
-mod glfw_api;
+mod glfw_window;
 
 use {crate::math::Vec2, std::collections::HashSet};
+
+pub use self::glfw_window::GlfwWindow;
 
 /// Represents the Window's state.
 ///

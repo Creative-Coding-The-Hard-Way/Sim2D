@@ -1,10 +1,6 @@
 use {
     anyhow::Result,
-    sim2d::{
-        application::{Application, Sketch},
-        math::Vec2,
-        Sim2D,
-    },
+    sim2d::{application::Application, math::Vec2, Sim2D, Sketch},
 };
 
 #[derive(Default)]

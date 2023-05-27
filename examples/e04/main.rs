@@ -1,10 +1,10 @@
 use {
     anyhow::Result,
     sim2d::{
-        application::{Application, Sketch},
+        application::Application,
         graphics::vulkan_api::{TextureAtlas, TextureId},
         math::Vec2,
-        Sim2D,
+        Sim2D, Sketch,
     },
 };
 

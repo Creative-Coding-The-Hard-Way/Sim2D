@@ -1,3 +1,5 @@
+mod window_state;
+
 use {
     crate::graphics::vulkan_api::RenderDevice,
     anyhow::{bail, Context, Result},
@@ -15,11 +17,8 @@ use {
 pub struct GlfwWindow {
     window_handle: glfw::Window,
 
-    /// The receiver for the Window's events.
-    pub(super) event_receiver: Option<Receiver<(f64, WindowEvent)>>,
-
     /// The GLFW library instance.
-    pub(super) glfw: glfw::Glfw,
+    glfw: glfw::Glfw,
 }
 
 impl GlfwWindow {
@@ -31,7 +30,9 @@ impl GlfwWindow {
     /// # Params
     ///
     /// * `window_title` - The title shown on the window's top bar.
-    pub fn new(window_title: impl AsRef<str>) -> Result<Self> {
+    pub fn new(
+        window_title: impl AsRef<str>,
+    ) -> Result<(Self, Receiver<(f64, WindowEvent)>)> {
         let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS)?;
 
         if !glfw.vulkan_supported() {
@@ -56,11 +57,13 @@ impl GlfwWindow {
         window_handle.set_cursor_pos_polling(true);
         window_handle.set_close_polling(true);
 
-        Ok(Self {
-            event_receiver: Some(event_receiver),
-            window_handle,
-            glfw,
-        })
+        Ok((
+            Self {
+                window_handle,
+                glfw,
+            },
+            event_receiver,
+        ))
     }
 
     /// Create a render device for the application.

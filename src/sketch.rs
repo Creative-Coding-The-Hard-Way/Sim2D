@@ -1,11 +1,7 @@
 use crate::{graphics::vulkan_api::TextureAtlas, sim2d::Sim2D};
 
-/// Sketch is created after the GLFW window is created, but is allowed to
-/// configure the window for things like resizability and event polling.
+/// A sketch is the primary entrypoint for the application.
 pub trait Sketch {
-    /// Setup the sketch
-    fn setup(&mut self, _sim: &mut Sim2D) {}
-
     /// Load any textures needed by the sketch.
     ///
     /// # Params
@@ -13,6 +9,10 @@ pub trait Sketch {
     /// * `texture_atlas` - The texture atlas can be used to create / load
     ///   textures from disk and keep their texture ids.
     fn preload(&mut self, _texture_atlas: &mut TextureAtlas) {}
+
+    /// Setup the sketch. This method is called one time after the call to
+    /// preload.
+    fn setup(&mut self, _sim: &mut Sim2D) {}
 
     /// Called any time the mouse is moved on screen.
     ///

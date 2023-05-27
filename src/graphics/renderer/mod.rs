@@ -1,12 +1,11 @@
 use {
-    super::{g2d::G2D, vulkan_api::FrameStatus},
     crate::{
         graphics::{
             vulkan_api::{
-                BindlessSprites, ColorPass, FramesInFlight, RenderDevice,
-                TextureAtlas,
+                BindlessSprites, ColorPass, FrameStatus, FramesInFlight,
+                RenderDevice, TextureAtlas,
             },
-            GraphicsError,
+            GraphicsError, G2D,
         },
         math::Mat4,
     },
