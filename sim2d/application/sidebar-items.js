@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Application","GlfwWindow"],"trait":["Sketch"]};
+window.SIDEBAR_ITEMS = {"struct":["Application","GlfwWindow","WindowState"]};

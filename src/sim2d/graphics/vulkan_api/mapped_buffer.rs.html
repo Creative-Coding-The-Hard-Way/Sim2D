@@ -157,6 +157,7 @@
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::graphics::{
         vulkan_api::{raii, RenderDevice},
@@ -270,6 +271,7 @@
     }
 
     <span class="doccomment">/// Get the current length of the buffer based on the element count.
+    </span><span class="attr">#[allow(dead_code)]
     </span><span class="kw">pub fn </span>current_size_in_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="self">Self</span>::size_in_bytes(<span class="self">self</span>.element_count)
     }

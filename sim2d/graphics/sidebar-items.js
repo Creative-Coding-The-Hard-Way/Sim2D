@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["GraphicsError"],"mod":["g2d","vulkan_api"]};
+window.SIDEBAR_ITEMS = {"enum":["GraphicsError"],"struct":["G2D","Renderer","TextureAtlas","TextureId"]};

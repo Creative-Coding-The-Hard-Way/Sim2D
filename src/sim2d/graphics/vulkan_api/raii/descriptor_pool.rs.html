@@ -128,6 +128,8 @@
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::graphics::{
         vulkan_api::{raii, RenderDevice},
@@ -188,6 +190,7 @@
     }
 
     <span class="doccomment">/// Set the name which shows up in Vulkan debug logs for this resource.
+    </span><span class="attr">#[allow(dead_code)]
     </span><span class="kw">pub fn </span>set_debug_name(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) {
         <span class="self">self</span>.render_device.set_debug_name(
             <span class="self">self</span>.descriptor_pool,
@@ -235,6 +238,7 @@
     }
 
     <span class="doccomment">/// Get the raw Vulkan command pool handle.
+    </span><span class="attr">#[allow(dead_code)]
     </span><span class="kw">pub fn </span>raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; vk::DescriptorPool {
         <span class="self">self</span>.descriptor_pool
     }

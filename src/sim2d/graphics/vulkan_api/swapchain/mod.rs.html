@@ -203,6 +203,7 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::graphics::{vulkan_api::RenderDevice, GraphicsError},
     anyhow::Context,
@@ -361,6 +362,7 @@
     }
 
     <span class="doccomment">/// The presentation mode used by this swapchain.
+    </span><span class="attr">#[allow(dead_code)]
     </span><span class="kw">pub fn </span>present_mode(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; vk::PresentModeKHR {
         <span class="self">self</span>.present_mode
     }

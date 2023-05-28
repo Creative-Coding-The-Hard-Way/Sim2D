@@ -293,6 +293,7 @@
 <a href="#293" id="293">293</a>
 <a href="#294" id="294">294</a>
 <a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>frame;
 <span class="kw">mod </span>frame_sync;
 
@@ -442,6 +443,7 @@
     ///
     /// This can be useful in cases where it&#39;s known that the swapchain will
     /// need to be rebuilt (like when the application window is resized).
+    </span><span class="attr">#[allow(dead_code)]
     </span><span class="kw">pub fn </span>invalidate_swapchain(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.swapchain_needs_rebuild = <span class="bool-val">true</span>;
     }

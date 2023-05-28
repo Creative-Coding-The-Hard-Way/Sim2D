@@ -123,6 +123,7 @@
 <a href="#123" id="123">123</a>
 <a href="#124" id="124">124</a>
 <a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>buffer;
 <span class="kw">mod </span>command_pool;
 <span class="kw">mod </span>descriptor_pool;
@@ -178,6 +179,7 @@
             }
 
             <span class="doccomment">/// Set the debug name for how this resource appears in Vulkan logs.
+            </span><span class="attr">#[allow(dead_code)]
             </span><span class="kw">pub fn </span>set_debug_name(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw">impl </span>Into&lt;String&gt;) {
                 <span class="self">self</span>.render_device.set_debug_name(
                     <span class="self">self</span>.raw(),

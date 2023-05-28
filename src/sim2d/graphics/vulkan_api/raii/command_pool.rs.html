@@ -139,6 +139,8 @@
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::graphics::{vulkan_api::RenderDevice, GraphicsError},
     ash::vk,
@@ -200,6 +202,7 @@
     /// Note: The command pool destroys all allocated buffers when it is
     /// dropped. The caller must ensure that no command buffers are kept around
     /// after the pool is dropped.
+    </span><span class="attr">#[allow(dead_code)]
     </span><span class="kw">pub fn </span>secondary_command_buffer(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; vk::CommandBuffer {
         <span class="self">self</span>.secondary_command_buffers[index]
     }
@@ -234,6 +237,7 @@
     /// # Returns
     ///
     /// Returns the index of the first newly allocated command buffer.
+    </span><span class="attr">#[allow(dead_code)]
     </span><span class="kw">pub fn </span>allocate_secondary_command_buffers(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         count: u32,

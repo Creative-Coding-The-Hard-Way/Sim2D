@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["application","graphics","math","sim2d"]};
+window.SIDEBAR_ITEMS = {"mod":["application","graphics","math"],"struct":["Sim2D"],"trait":["Sketch"]};
