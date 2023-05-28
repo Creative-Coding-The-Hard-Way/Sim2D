@@ -1,4 +1,3 @@
 (function() {var implementors = {
-"ccthw_ash_instance":[],
-"sim2d":[["impl <a class=\"trait\" href=\"ccthw_ash_instance/trait.VulkanHandle.html\" title=\"trait ccthw_ash_instance::VulkanHandle\">VulkanHandle</a> for <a class=\"struct\" href=\"sim2d/graphics/vulkan_api/struct.Queue.html\" title=\"struct sim2d::graphics::vulkan_api::Queue\">Queue</a>"],["impl <a class=\"trait\" href=\"ccthw_ash_instance/trait.VulkanHandle.html\" title=\"trait ccthw_ash_instance::VulkanHandle\">VulkanHandle</a> for <a class=\"struct\" href=\"sim2d/graphics/vulkan_api/struct.Swapchain.html\" title=\"struct sim2d::graphics::vulkan_api::Swapchain\">Swapchain</a>"]]
+"ccthw_ash_instance":[]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

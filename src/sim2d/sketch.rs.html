@@ -38,7 +38,18 @@
 <a href="#38" id="38">38</a>
 <a href="#39" id="39">39</a>
 <a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
+<a href="#49" id="49">49</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{graphics::TextureAtlas, sim2d::Sim2D};
+
+<span class="kw">pub type </span>DynSketch = Box&lt;<span class="kw">dyn </span>Sketch + Send + <span class="lifetime">&#39;static</span>&gt;;
 
 <span class="doccomment">/// A sketch is the primary entrypoint for the application.
 </span><span class="kw">pub trait </span>Sketch {
@@ -74,6 +85,13 @@
 
     <span class="doccomment">/// Called when a key on the keyboard is released.
     </span><span class="kw">fn </span>key_released(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _sim: <span class="kw-2">&amp;mut </span>Sim2D, _key: glfw::Key) {}
+
+    <span class="doccomment">/// Implement to return a new boxed sketch to hand off to another sketch.
+    ///
+    /// This way sketches can be chained together.
+    </span><span class="kw">fn </span>load_sketch(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;DynSketch&gt; {
+        <span class="prelude-val">None
+    </span>}
 
     <span class="doccomment">/// Called once per frame.
     </span><span class="kw">fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _sim: <span class="kw-2">&amp;mut </span>Sim2D);

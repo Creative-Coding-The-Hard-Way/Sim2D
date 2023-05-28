@@ -161,6 +161,9 @@
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>texture;
 
 <span class="kw">use </span>{
@@ -240,12 +243,15 @@
         })
     }
 
-    <span class="kw">pub fn </span>texture_atlas_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>TextureAtlas {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.texture_atlas
+    <span class="kw">pub fn </span>texture_atlas(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TextureAtlas {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.texture_atlas
     }
 
-    <span class="kw">pub fn </span>reload_textures(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), GraphicsError&gt; {
-        <span class="self">self</span>.texture_atlas.load_all_textures()<span class="question-mark">?</span>;
+    <span class="kw">pub fn </span>reload_textures(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        texture_atlas: TextureAtlas,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), GraphicsError&gt; {
+        <span class="self">self</span>.texture_atlas = texture_atlas;
         <span class="self">self</span>.bindless_sprites = <span class="kw">unsafe </span>{
             <span class="self">self</span>.frames_in_flight.wait_for_all_frames_to_complete()<span class="question-mark">?</span>;
             BindlessSprites::new(
