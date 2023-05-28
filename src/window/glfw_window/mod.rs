@@ -51,11 +51,7 @@ impl GlfwWindow {
             )
             .context("Creating the GLFW Window failed!")?;
 
-        window_handle.set_framebuffer_size_polling(true);
-        window_handle.set_key_polling(true);
-        window_handle.set_mouse_button_polling(true);
-        window_handle.set_cursor_pos_polling(true);
-        window_handle.set_close_polling(true);
+        window_handle.set_all_polling(true);
 
         Ok((
             Self {

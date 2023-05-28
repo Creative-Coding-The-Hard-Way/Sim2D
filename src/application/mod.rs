@@ -116,6 +116,9 @@ impl Application {
             WindowEvent::CursorPos(_, _) => {
                 self.sketch.mouse_moved(&mut self.sim);
             }
+            WindowEvent::Pos(_, _) => {
+                self.timer.reset_frame_time();
+            }
             WindowEvent::FramebufferSize(width, height) => {
                 let was_paused = self.paused;
                 self.paused = width == 0 || height == 0;
