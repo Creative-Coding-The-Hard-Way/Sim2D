@@ -6,4 +6,7 @@ pub mod application;
 pub mod graphics;
 pub mod math;
 
-pub use self::{sim2d::Sim2D, sketch::Sketch};
+pub use self::{
+    sim2d::Sim2D,
+    sketch::{DynSketch, Sketch},
+};

@@ -77,12 +77,15 @@ impl Renderer {
         })
     }
 
-    pub fn texture_atlas_mut(&mut self) -> &mut TextureAtlas {
-        &mut self.texture_atlas
+    pub fn texture_atlas(&mut self) -> &TextureAtlas {
+        &self.texture_atlas
     }
 
-    pub fn reload_textures(&mut self) -> Result<(), GraphicsError> {
-        self.texture_atlas.load_all_textures()?;
+    pub fn reload_textures(
+        &mut self,
+        texture_atlas: TextureAtlas,
+    ) -> Result<(), GraphicsError> {
+        self.texture_atlas = texture_atlas;
         self.bindless_sprites = unsafe {
             self.frames_in_flight.wait_for_all_frames_to_complete()?;
             BindlessSprites::new(

@@ -128,7 +128,7 @@ checksum = "2fff2a6927b3bb87f9595d67196a70493f627687a71d87a0d692242c33f58c11"
 [[package]]
 name = "ccthw_ash_allocator"
 version = "0.1.0"
-source = "git+https://github.com/Creative-Coding-The-Hard-Way/ash_allocator.git#bd75b41073a93776c8f5685bb1c1b382af74f58b"
+source = "git+https://github.com/Creative-Coding-The-Hard-Way/ash_allocator.git#823ef0db8ca01c9444a7495fbfed38c5980b4780"
 dependencies = [
  "anyhow",
  "ash",
@@ -141,7 +141,7 @@ dependencies = [
 [[package]]
 name = "ccthw_ash_instance"
 version = "0.1.0"
-source = "git+https://github.com/Creative-Coding-The-Hard-Way/ash_instance.git#2b82ce4149235792cbbcc3d88c5d5b3175c5d402"
+source = "git+https://github.com/Creative-Coding-The-Hard-Way/ash_instance.git#8947911f8261a91d2ec7f33ed97821bb3b1a3ba1"
 dependencies = [
  "ash",
  "indoc",

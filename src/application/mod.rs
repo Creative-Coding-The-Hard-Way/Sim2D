@@ -1,19 +1,23 @@
 //! Provides structures for running a stateful single-window GLFW application.
 
+mod loading_sketch;
 mod logging;
 mod timer;
 
 use {
     self::timer::Timer,
     crate::{
-        graphics::{Renderer, G2D},
+        graphics::{Renderer, TextureAtlas, G2D},
         sim2d::Sim2D,
-        Sketch,
+        DynSketch, Sketch,
     },
     anyhow::Result,
     glfw::WindowEvent,
-    std::sync::mpsc::Receiver,
+    loading_sketch::LoadingSketch,
+    std::{sync::mpsc::Receiver, thread::JoinHandle},
 };
+
+type PreloadJoinHandle = JoinHandle<Result<(DynSketch, TextureAtlas)>>;
 
 pub use crate::window::{GlfwWindow, WindowState};
 
@@ -21,12 +25,14 @@ pub use crate::window::{GlfwWindow, WindowState};
 /// Sketches automatically pause if they are minimized or the window is
 /// resized such that there is no drawing area.
 pub struct Application {
+    loading_join_handle: Option<PreloadJoinHandle>,
+
     sim: Sim2D,
-    sketch: Box<dyn Sketch>,
+    loading_sketch: LoadingSketch,
+    sketch: DynSketch,
 
     paused: bool,
     timer: Timer,
-    event_receiver: Option<Receiver<(f64, WindowEvent)>>,
 
     renderer: Renderer,
     window: GlfwWindow,
@@ -40,11 +46,13 @@ impl Application {
     /// The window title is just the Application state struct's type name.
     pub fn run<S>(sketch: S) -> Result<()>
     where
-        S: Sketch + 'static,
+        S: Sketch + Send + 'static,
     {
         crate::application::logging::setup();
         let window_title = std::any::type_name::<S>();
-        Self::new(window_title, sketch)?.main_loop()
+        let (window, event_receiver) = GlfwWindow::new(window_title)?;
+
+        Self::new(window, sketch)?.main_loop(event_receiver)
     }
 }
 
@@ -52,39 +60,48 @@ impl Application {
 
 impl Application {
     /// Create a new running application.
-    fn new<S>(window_title: impl AsRef<str>, mut sketch: S) -> Result<Self>
+    fn new<S>(window: GlfwWindow, sketch: S) -> Result<Self>
     where
-        S: Sketch + 'static,
+        S: Sketch + Send + 'static,
     {
-        let (mut window, event_receiver) = GlfwWindow::new(window_title)?;
         let render_device = unsafe { window.create_render_device()? };
         let mut renderer =
             Renderer::new(render_device, window.get_framebuffer_size())?;
 
-        let mut sim = Sim2D::new(G2D::new(), window.new_window_state());
+        let mut texture_atlas = renderer.texture_atlas().clone();
+        let mut loading = LoadingSketch::default();
+        loading.preload(&mut texture_atlas);
+        texture_atlas.load_all_textures()?;
+        renderer.reload_textures(texture_atlas)?;
 
-        sketch.preload(renderer.texture_atlas_mut());
-        renderer.reload_textures()?;
+        let sim = Sim2D::new(G2D::new(), window.new_window_state());
 
-        sketch.setup(&mut sim);
-        window.update_window_to_match(&mut sim.w)?;
+        let mut app = Self {
+            loading_join_handle: None,
 
-        Ok(Self {
             sim,
-            sketch: Box::new(sketch),
+            loading_sketch: loading.clone(),
+            sketch: Box::new(loading),
 
             timer: Timer::new(),
             paused: false,
-            event_receiver: Some(event_receiver),
 
             renderer,
             window,
-        })
+        };
+
+        app.spawn_load_thread(Box::new(sketch))?;
+
+        Ok(app)
     }
 
-    fn main_loop(mut self) -> Result<()> {
-        let event_receiver = self.event_receiver.take().unwrap();
+    fn main_loop(
+        mut self,
+        event_receiver: Receiver<(f64, WindowEvent)>,
+    ) -> Result<()> {
         while !(self.window.should_close()) {
+            self.join_load_thread()?;
+
             self.window.glfw.poll_events();
             for (_, window_event) in glfw::flush_messages(&event_receiver) {
                 self.handle_event(window_event)?;
@@ -92,8 +109,56 @@ impl Application {
             self.window.update_window_to_match(&mut self.sim.w)?;
 
             if !self.paused {
-                self.update()?
+                self.update()?;
+
+                if !self.is_loading() {
+                    if let Some(next_sketch) = self.sketch.load_sketch() {
+                        self.spawn_load_thread(next_sketch)?;
+                    }
+                }
             }
+        }
+        Ok(())
+    }
+
+    fn is_loading(&self) -> bool {
+        self.loading_join_handle.is_some()
+    }
+
+    fn spawn_load_thread(&mut self, mut sketch: DynSketch) -> Result<()> {
+        self.sketch = Box::new(self.loading_sketch.clone());
+        self.sketch.setup(&mut self.sim);
+        self.window.update_window_to_match(&mut self.sim.w)?;
+
+        let mut texture_atlas = self.renderer.texture_atlas().clone();
+        let join_handle: PreloadJoinHandle =
+            std::thread::spawn(move || -> Result<(DynSketch, TextureAtlas)> {
+                sketch.preload(&mut texture_atlas);
+                texture_atlas.load_all_textures()?;
+                Ok((sketch, texture_atlas))
+            });
+
+        debug_assert!(self.loading_join_handle.is_none());
+        self.loading_join_handle = Some(join_handle);
+
+        Ok(())
+    }
+
+    fn join_load_thread(&mut self) -> Result<()> {
+        let is_finished = self
+            .loading_join_handle
+            .as_ref()
+            .map_or(false, |handle| handle.is_finished());
+
+        if is_finished {
+            let handle = self.loading_join_handle.take().unwrap();
+            let (sketch, atlas) = handle.join().unwrap()?;
+            self.sketch = sketch;
+            self.renderer.reload_textures(atlas)?;
+
+            self.sim.g = G2D::new();
+            self.sketch.setup(&mut self.sim);
+            self.window.update_window_to_match(&mut self.sim.w)?;
         }
         Ok(())
     }

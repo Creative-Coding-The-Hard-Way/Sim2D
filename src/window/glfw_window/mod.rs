@@ -44,8 +44,8 @@ impl GlfwWindow {
 
         let (mut window_handle, event_receiver) = glfw
             .create_window(
-                1366,
-                768,
+                800,
+                600,
                 window_title.as_ref(),
                 WindowMode::Windowed,
             )

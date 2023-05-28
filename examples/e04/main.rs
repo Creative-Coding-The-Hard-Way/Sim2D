@@ -75,7 +75,7 @@ impl Planet {
 }
 
 #[derive(Default)]
-struct ThreeBodySystem {
+struct NBodySystem {
     circle: TextureId,
     planets: Vec<Planet>,
     t: f32,
@@ -83,7 +83,7 @@ struct ThreeBodySystem {
     step: f32,
 }
 
-impl Sketch for ThreeBodySystem {
+impl Sketch for NBodySystem {
     fn preload(&mut self, texture_atlas: &mut TextureAtlas) {
         self.circle = texture_atlas.load_file("examples/e04/Circle.png");
     }
@@ -168,7 +168,7 @@ impl Sketch for ThreeBodySystem {
     }
 }
 
-impl ThreeBodySystem {
+impl NBodySystem {
     fn integrate(&mut self, sim: &Sim2D) {
         let count = self.planets.len();
         for i in 0..count {
@@ -217,5 +217,5 @@ impl ThreeBodySystem {
 }
 
 fn main() -> Result<()> {
-    Application::run(ThreeBodySystem::default())
+    Application::run(NBodySystem::default())
 }

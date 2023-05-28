@@ -1,5 +1,7 @@
 use crate::{graphics::TextureAtlas, sim2d::Sim2D};
 
+pub type DynSketch = Box<dyn Sketch + Send + 'static>;
+
 /// A sketch is the primary entrypoint for the application.
 pub trait Sketch {
     /// Load any textures needed by the sketch.
@@ -34,6 +36,13 @@ pub trait Sketch {
 
     /// Called when a key on the keyboard is released.
     fn key_released(&mut self, _sim: &mut Sim2D, _key: glfw::Key) {}
+
+    /// Implement to return a new boxed sketch to hand off to another sketch.
+    ///
+    /// This way sketches can be chained together.
+    fn load_sketch(&mut self) -> Option<DynSketch> {
+        None
+    }
 
     /// Called once per frame.
     fn update(&mut self, _sim: &mut Sim2D);

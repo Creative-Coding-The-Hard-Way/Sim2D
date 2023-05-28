@@ -23,9 +23,10 @@ struct Reservation {
 }
 
 /// A collection of all available textures for this application.
+#[derive(Clone)]
 pub struct TextureAtlas {
     texture_reservations: Vec<Reservation>,
-    loader: TextureLoader,
+    render_device: Arc<RenderDevice>,
 }
 
 impl TextureAtlas {
@@ -40,7 +41,7 @@ impl TextureAtlas {
     ) -> Result<Self, GraphicsError> {
         Ok(Self {
             texture_reservations: vec![],
-            loader: TextureLoader::new(render_device)?,
+            render_device,
         })
     }
 
@@ -66,6 +67,8 @@ impl TextureAtlas {
     }
 
     pub(crate) fn load_all_textures(&mut self) -> Result<(), GraphicsError> {
+        let mut loader =
+            unsafe { TextureLoader::new(self.render_device.clone())? };
         for reservation in self
             .texture_reservations
             .iter_mut()
@@ -73,10 +76,10 @@ impl TextureAtlas {
         {
             let texture = match &reservation.source {
                 Source::FilePath(path) => unsafe {
-                    self.loader.load_texture_2d_from_file(path)?
+                    loader.load_texture_2d_from_file(path)?
                 },
                 Source::Image(ref img) => unsafe {
-                    self.loader.load_texture_2d_from_image(img)?
+                    loader.load_texture_2d_from_image(img)?
                 },
             };
             reservation.texture = Some(Arc::new(texture));
