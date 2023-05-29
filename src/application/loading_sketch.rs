@@ -1,5 +1,5 @@
 use crate::{
-    graphics::{TextureAtlas, TextureId},
+    graphics::{AssetLoader, TextureId},
     math::Vec2,
     Sketch,
 };
@@ -18,8 +18,8 @@ impl Sketch for LoadingSketch {
         self.angle = 0.0
     }
 
-    fn preload(&mut self, texture_atlas: &mut TextureAtlas) {
-        self.loading = texture_atlas.load_image(
+    fn preload(&mut self, asset_loader: &mut AssetLoader) {
+        self.loading = asset_loader.load_image(
             image::load_from_memory_with_format(
                 include_bytes!("./loading.png"),
                 image::ImageFormat::Png,

@@ -1,4 +1,4 @@
-use crate::{graphics::TextureAtlas, sim2d::Sim2D};
+use crate::{graphics::AssetLoader, sim2d::Sim2D};
 
 pub type DynSketch = Box<dyn Sketch + Send + 'static>;
 
@@ -10,7 +10,7 @@ pub trait Sketch {
     ///
     /// * `texture_atlas` - The texture atlas can be used to create / load
     ///   textures from disk and keep their texture ids.
-    fn preload(&mut self, _texture_atlas: &mut TextureAtlas) {}
+    fn preload(&mut self, _asset_loader: &mut AssetLoader) {}
 
     /// Setup the sketch. This method is called one time after the call to
     /// preload.

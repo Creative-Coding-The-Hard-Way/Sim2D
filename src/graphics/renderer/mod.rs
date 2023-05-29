@@ -1,3 +1,4 @@
+mod assets;
 mod texture;
 
 use {
@@ -11,11 +12,12 @@ use {
         },
         math::Mat4,
     },
-    anyhow::Context,
+    image::Pixel,
     std::sync::Arc,
 };
 
-pub use self::texture::{TextureAtlas, TextureId};
+pub(crate) use self::texture::NewAssetsCommand;
+pub use self::texture::{AssetLoader, TextureAtlas, TextureId};
 
 /// The Sim2D Rendering backend.
 pub struct Renderer {
@@ -42,16 +44,18 @@ impl Renderer {
 
         let mut texture_atlas =
             unsafe { TextureAtlas::new(render_device.clone())? };
+        let mut loader = texture_atlas.new_asset_loader();
         let _loading_id = {
-            let img = image::load_from_memory_with_format(
-                include_bytes!("../../application/loading.png"),
-                image::ImageFormat::Png,
-            )
-            .context("Unable to load the loading.png image!")?
-            .into_rgba8();
-            texture_atlas.load_image(img)
+            let mut img = image::RgbaImage::new(1, 1);
+            img.put_pixel(
+                0,
+                0,
+                image::Rgba::<u8>::from_slice(&[255, 255, 255, 255]).to_owned(),
+            );
+            loader.load_image(img)
         };
-        texture_atlas.load_all_textures()?;
+        let new_assets_cmd = loader.build_new_assets_command()?;
+        texture_atlas.add_textures(&new_assets_cmd);
 
         let projection = Self::fullscreen_ortho_projection(framebuffer_size);
 
@@ -60,7 +64,7 @@ impl Renderer {
                 render_device.clone(),
                 color_pass.render_pass(),
                 &frames_in_flight,
-                &texture_atlas.all_textures(),
+                &texture_atlas.textures(),
             )?
         };
         bindless_sprites.set_projection(&projection);
@@ -77,22 +81,23 @@ impl Renderer {
         })
     }
 
-    pub fn texture_atlas(&mut self) -> &TextureAtlas {
-        &self.texture_atlas
+    pub fn new_asset_loader(&mut self) -> AssetLoader {
+        self.texture_atlas.new_asset_loader()
     }
 
-    pub fn reload_textures(
+    pub fn load_new_assets(
         &mut self,
-        texture_atlas: TextureAtlas,
+        new_assets_cmd: NewAssetsCommand,
     ) -> Result<(), GraphicsError> {
-        self.texture_atlas = texture_atlas;
+        self.texture_atlas.add_textures(&new_assets_cmd);
+
         self.bindless_sprites = unsafe {
             self.frames_in_flight.wait_for_all_frames_to_complete()?;
             BindlessSprites::new(
                 self.render_device.clone(),
                 self.color_pass.render_pass(),
                 &self.frames_in_flight,
-                &self.texture_atlas.all_textures(),
+                &self.texture_atlas.textures(),
             )?
         };
         self.bindless_sprites.set_projection(&self.projection);
@@ -149,7 +154,7 @@ impl Renderer {
                 self.render_device.clone(),
                 self.color_pass.render_pass(),
                 &self.frames_in_flight,
-                &self.texture_atlas.all_textures(),
+                &self.texture_atlas.textures(),
             )?;
             self.bindless_sprites.set_projection(&self.projection);
         };

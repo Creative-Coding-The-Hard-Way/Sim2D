@@ -7,7 +7,7 @@ mod timer;
 use {
     self::timer::Timer,
     crate::{
-        graphics::{Renderer, TextureAtlas, G2D},
+        graphics::{NewAssetsCommand, Renderer, G2D},
         sim2d::Sim2D,
         DynSketch, Sketch,
     },
@@ -17,7 +17,7 @@ use {
     std::{sync::mpsc::Receiver, thread::JoinHandle},
 };
 
-type PreloadJoinHandle = JoinHandle<Result<(DynSketch, TextureAtlas)>>;
+type PreloadJoinHandle = JoinHandle<Result<(DynSketch, NewAssetsCommand)>>;
 
 pub use crate::window::{GlfwWindow, WindowState};
 
@@ -68,11 +68,11 @@ impl Application {
         let mut renderer =
             Renderer::new(render_device, window.get_framebuffer_size())?;
 
-        let mut texture_atlas = renderer.texture_atlas().clone();
+        let mut asset_loader = renderer.new_asset_loader();
         let mut loading = LoadingSketch::default();
-        loading.preload(&mut texture_atlas);
-        texture_atlas.load_all_textures()?;
-        renderer.reload_textures(texture_atlas)?;
+        loading.preload(&mut asset_loader);
+
+        renderer.load_new_assets(asset_loader.build_new_assets_command()?)?;
 
         let sim = Sim2D::new(G2D::new(), window.new_window_state());
 
@@ -130,13 +130,13 @@ impl Application {
         self.sketch.setup(&mut self.sim);
         self.window.update_window_to_match(&mut self.sim.w)?;
 
-        let mut texture_atlas = self.renderer.texture_atlas().clone();
-        let join_handle: PreloadJoinHandle =
-            std::thread::spawn(move || -> Result<(DynSketch, TextureAtlas)> {
-                sketch.preload(&mut texture_atlas);
-                texture_atlas.load_all_textures()?;
-                Ok((sketch, texture_atlas))
-            });
+        let mut asset_loader = self.renderer.new_asset_loader();
+        let join_handle: PreloadJoinHandle = std::thread::spawn(
+            move || -> Result<(DynSketch, NewAssetsCommand)> {
+                sketch.preload(&mut asset_loader);
+                Ok((sketch, asset_loader.build_new_assets_command()?))
+            },
+        );
 
         debug_assert!(self.loading_join_handle.is_none());
         self.loading_join_handle = Some(join_handle);
@@ -152,9 +152,9 @@ impl Application {
 
         if is_finished {
             let handle = self.loading_join_handle.take().unwrap();
-            let (sketch, atlas) = handle.join().unwrap()?;
+            let (sketch, new_assets_cmd) = handle.join().unwrap()?;
             self.sketch = sketch;
-            self.renderer.reload_textures(atlas)?;
+            self.renderer.load_new_assets(new_assets_cmd)?;
 
             self.sim.g = G2D::new();
             self.sketch.setup(&mut self.sim);

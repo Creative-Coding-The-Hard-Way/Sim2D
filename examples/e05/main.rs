@@ -2,7 +2,7 @@ use {
     anyhow::Result,
     sim2d::{
         application::Application,
-        graphics::{TextureAtlas, TextureId},
+        graphics::{AssetLoader, TextureId},
         math::Vec2,
         DynSketch, Sim2D, Sketch,
     },
@@ -24,7 +24,7 @@ impl Sketch for SlowLoad {
         self.wants_reload = false;
     }
 
-    fn preload(&mut self, _texture_atlas: &mut TextureAtlas) {
+    fn preload(&mut self, _loader: &mut AssetLoader) {
         std::thread::sleep(Duration::from_secs(5));
     }
 

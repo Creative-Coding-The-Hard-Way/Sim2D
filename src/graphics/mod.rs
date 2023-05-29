@@ -4,9 +4,10 @@ pub(crate) mod vulkan_api;
 
 use {crate::math::Vec2, vulkan_api::SpriteData};
 
+pub(crate) use self::renderer::NewAssetsCommand;
 pub use self::{
     error::GraphicsError,
-    renderer::{Renderer, TextureAtlas, TextureId},
+    renderer::{AssetLoader, Renderer, TextureAtlas, TextureId},
 };
 
 pub struct G2D {

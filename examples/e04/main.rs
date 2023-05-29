@@ -2,7 +2,7 @@ use {
     anyhow::Result,
     sim2d::{
         application::Application,
-        graphics::{TextureAtlas, TextureId},
+        graphics::{AssetLoader, TextureId},
         math::Vec2,
         Sim2D, Sketch,
     },
@@ -84,8 +84,8 @@ struct NBodySystem {
 }
 
 impl Sketch for NBodySystem {
-    fn preload(&mut self, texture_atlas: &mut TextureAtlas) {
-        self.circle = texture_atlas.load_file("examples/e04/Circle.png");
+    fn preload(&mut self, asset_loader: &mut AssetLoader) {
+        self.circle = asset_loader.load_file("examples/e04/Circle.png");
     }
 
     fn setup(&mut self, sim: &mut Sim2D) {

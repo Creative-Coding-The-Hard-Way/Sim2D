@@ -3,7 +3,7 @@ use {
     rand::Rng,
     sim2d::{
         application::Application,
-        graphics::{TextureAtlas, TextureId},
+        graphics::{AssetLoader, TextureId},
         math::Vec2,
         Sim2D, Sketch,
     },
@@ -49,8 +49,8 @@ struct BunnyMark {
 }
 
 impl Sketch for BunnyMark {
-    fn preload(&mut self, texture_atlas: &mut TextureAtlas) {
-        self.bunny = texture_atlas.load_file("examples/e02/bunny.png");
+    fn preload(&mut self, asset_loader: &mut AssetLoader) {
+        self.bunny = asset_loader.load_file("examples/e02/bunny.png");
     }
 
     fn setup(&mut self, sim: &mut Sim2D) {
