@@ -204,6 +204,10 @@ impl PerFrame {
         textures: &[Arc<Texture2D>],
         sampler: &raii::Sampler,
     ) {
+        if textures.is_empty() {
+            return;
+        }
+
         let image_infos = textures
             .iter()
             .map(|texture| vk::DescriptorImageInfo {

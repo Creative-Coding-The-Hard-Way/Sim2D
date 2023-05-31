@@ -36,7 +36,7 @@ impl TextureLoader {
 
         let one_time_submit = OneTimeSubmitCommandBuffer::new(
             render_device.clone(),
-            render_device.graphics_queue().clone(),
+            render_device.transfer_queue().clone(),
         )?;
 
         Ok(Self {
@@ -56,7 +56,7 @@ impl TextureLoader {
     pub unsafe fn load_texture_2d_from_file(
         &mut self,
         texture_path: impl AsRef<Path>,
-    ) -> Result<Texture2D, GraphicsError> {
+    ) -> Result<(Texture2D, vk::ImageMemoryBarrier2), GraphicsError> {
         let img = image::io::Reader::open(&texture_path)
             .with_context(|| {
                 format!(
@@ -77,6 +77,11 @@ impl TextureLoader {
 
     /// Create a Vulkan Texture2D using the contents of the provided image.
     ///
+    /// # Returns
+    ///
+    /// A tuple of (Texture2D, vk::ImageMemoryBarrier2) where the barrier is for
+    /// acquiring the image on the graphics queue on the main thread.
+    ///
     /// # Safety
     ///
     /// Unsafe because:
@@ -85,7 +90,7 @@ impl TextureLoader {
     pub unsafe fn load_texture_2d_from_image(
         &mut self,
         img: &ImageBuffer<Rgba<u8>, Vec<u8>>,
-    ) -> Result<Texture2D, GraphicsError> {
+    ) -> Result<(Texture2D, vk::ImageMemoryBarrier2), GraphicsError> {
         self.resize_staging_buffer(
             self.render_device.clone(),
             (img.as_raw().len() * std::mem::size_of::<u8>()) as u64,
@@ -107,7 +112,7 @@ impl TextureLoader {
 
         let image = unsafe {
             let queue_family_index =
-                self.render_device.graphics_queue().family_index();
+                self.render_device.transfer_queue().family_index();
             let create_info = vk::ImageCreateInfo {
                 image_type: vk::ImageType::TYPE_2D,
                 format: vk::Format::R8G8B8A8_UNORM,
@@ -218,8 +223,8 @@ impl TextureLoader {
             let image_memory_barrier_after = vk::ImageMemoryBarrier2 {
                 src_stage_mask: vk::PipelineStageFlags2::TRANSFER,
                 src_access_mask: vk::AccessFlags2::TRANSFER_WRITE,
-                dst_stage_mask: vk::PipelineStageFlags2::FRAGMENT_SHADER,
-                dst_access_mask: vk::AccessFlags2::SHADER_SAMPLED_READ,
+                dst_stage_mask: vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
+                dst_access_mask: vk::AccessFlags2::NONE,
                 old_layout: vk::ImageLayout::TRANSFER_DST_OPTIMAL,
                 new_layout: vk::ImageLayout::SHADER_READ_ONLY_OPTIMAL,
                 image: image.raw(),
@@ -230,6 +235,14 @@ impl TextureLoader {
                     base_array_layer: 0,
                     layer_count: 1,
                 },
+                src_queue_family_index: self
+                    .render_device
+                    .transfer_queue()
+                    .family_index(),
+                dst_queue_family_index: self
+                    .render_device
+                    .graphics_queue()
+                    .family_index(),
                 ..Default::default()
             };
             let dependency_info_after = vk::DependencyInfo {
@@ -249,7 +262,33 @@ impl TextureLoader {
         // Queue Submission
         self.one_time_submit.sync_submit_and_reset()?;
 
-        Ok(Texture2D { image, image_view })
+        let grahpics_acquire_barrier = vk::ImageMemoryBarrier2 {
+            src_stage_mask: vk::PipelineStageFlags2::TOP_OF_PIPE,
+            src_access_mask: vk::AccessFlags2::NONE,
+            dst_stage_mask: vk::PipelineStageFlags2::FRAGMENT_SHADER,
+            dst_access_mask: vk::AccessFlags2::SHADER_READ,
+            old_layout: vk::ImageLayout::TRANSFER_DST_OPTIMAL,
+            new_layout: vk::ImageLayout::SHADER_READ_ONLY_OPTIMAL,
+            image: image.raw(),
+            subresource_range: vk::ImageSubresourceRange {
+                aspect_mask: vk::ImageAspectFlags::COLOR,
+                base_mip_level: 0,
+                level_count: 1,
+                base_array_layer: 0,
+                layer_count: 1,
+            },
+            src_queue_family_index: self
+                .render_device
+                .transfer_queue()
+                .family_index(),
+            dst_queue_family_index: self
+                .render_device
+                .graphics_queue()
+                .family_index(),
+            ..Default::default()
+        };
+
+        Ok((Texture2D { image, image_view }, grahpics_acquire_barrier))
     }
 }
 

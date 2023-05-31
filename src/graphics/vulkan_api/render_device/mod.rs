@@ -25,6 +25,7 @@ pub use self::queue::Queue;
 pub struct RenderDevice {
     graphics_queue: Queue,
     presentation_queue: Queue,
+    transfer_queue: Queue,
     window_surface: WindowSurface,
     logical_device: LogicalDevice,
     instance: VulkanInstance,
@@ -74,7 +75,7 @@ impl RenderDevice {
                 &queue_finder.queue_family_infos(),
             )?
         };
-        let (graphics_queue, presentation_queue) =
+        let (graphics_queue, presentation_queue, transfer_queue) =
             queue_finder.get_queues_from_device(&logical_device);
 
         let allocator = ccthw_ash_allocator::create_system_allocator(
@@ -86,6 +87,7 @@ impl RenderDevice {
         let render_device = Self {
             graphics_queue,
             presentation_queue,
+            transfer_queue,
             window_surface,
             logical_device,
             instance,
@@ -165,6 +167,11 @@ impl RenderDevice {
     /// The queue this application uses for graphics operations.
     pub fn graphics_queue(&self) -> &Queue {
         &self.graphics_queue
+    }
+
+    /// The queue this application uses for transfer operations.
+    pub fn transfer_queue(&self) -> &Queue {
+        &self.transfer_queue
     }
 
     /// The Ash entry used by this RenderDevice.

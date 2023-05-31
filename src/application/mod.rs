@@ -72,7 +72,7 @@ impl Application {
         let mut loading = LoadingSketch::default();
         loading.preload(&mut asset_loader);
 
-        renderer.load_new_assets(asset_loader.build_new_assets_command()?)?;
+        renderer.load_assets(asset_loader.build_new_assets_command()?)?;
 
         let sim = Sim2D::new(G2D::new(), window.new_window_state());
 
@@ -154,7 +154,7 @@ impl Application {
             let handle = self.loading_join_handle.take().unwrap();
             let (sketch, new_assets_cmd) = handle.join().unwrap()?;
             self.sketch = sketch;
-            self.renderer.load_new_assets(new_assets_cmd)?;
+            self.renderer.load_assets(new_assets_cmd)?;
 
             self.sim.g = G2D::new();
             self.sketch.setup(&mut self.sim);

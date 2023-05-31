@@ -11,6 +11,7 @@ use {
 pub(super) struct QueueFinder {
     graphics_queue_family_index: usize,
     presentation_queue_family_index: usize,
+    transfer_queue_family_index: usize,
     families: HashMap<usize, QueueFamilyInfo>,
 }
 
@@ -35,8 +36,10 @@ impl QueueFinder {
         let has_present_queue =
             Self::find_presentation_queue_family_index(window_surface, device)
                 .is_some();
+        let has_transfer_queue =
+            Self::find_transfer_queue_family_index(device).is_some();
 
-        has_graphics_queue && has_present_queue
+        has_graphics_queue && has_present_queue && has_transfer_queue
     }
 
     /// Identify all of the queue family indices for queues required by the
@@ -68,9 +71,17 @@ impl QueueFinder {
                 .add_queue_priority(1.0)
         }
 
+        let transfer_queue_family_index =
+            Self::find_transfer_queue_family_index(device).unwrap();
+        families
+            .entry(transfer_queue_family_index)
+            .or_insert_with_key(|&index| QueueFamilyInfo::new(index as u32))
+            .add_queue_priority(1.0);
+
         Self {
             graphics_queue_family_index,
             presentation_queue_family_index,
+            transfer_queue_family_index,
             families,
         }
     }
@@ -83,11 +94,11 @@ impl QueueFinder {
     ///
     /// # Returns
     ///
-    /// A tuple of `(graphics_queue, presentation_queue)`.
+    /// A tuple of `(graphics_queue, presentation_queue, transfer_queue)`.
     pub fn get_queues_from_device(
         &self,
         logical_device: &LogicalDevice,
-    ) -> (Queue, Queue) {
+    ) -> (Queue, Queue, Queue) {
         let mut current_indices = HashMap::<usize, usize>::new();
         let mut next_index = |family_index| {
             let index_ref = current_indices.entry(family_index).or_insert(0);
@@ -117,7 +128,13 @@ impl QueueFinder {
             )
         };
 
-        (graphics_queue, presentation_queue)
+        let transfer_queue = Queue::new(
+            logical_device,
+            self.transfer_queue_family_index,
+            next_index(self.transfer_queue_family_index),
+        );
+
+        (graphics_queue, presentation_queue, transfer_queue)
     }
 
     /// Get the QueueFamilyInfos required for creating a logical device with all
@@ -150,6 +167,20 @@ impl QueueFinder {
             .enumerate()
             .find(|(_queue_family_index, props)| {
                 props.queue_flags.contains(vk::QueueFlags::GRAPHICS)
+            })
+            .map(|(queue_family_index, _)| queue_family_index)
+    }
+
+    fn find_transfer_queue_family_index(
+        device: &PhysicalDevice,
+    ) -> Option<usize> {
+        device
+            .queue_family_properties()
+            .iter()
+            .enumerate()
+            .find(|(_queue_family_index, props)| {
+                props.queue_flags.contains(vk::QueueFlags::TRANSFER)
+                    && !props.queue_flags.contains(vk::QueueFlags::GRAPHICS)
             })
             .map(|(queue_family_index, _)| queue_family_index)
     }

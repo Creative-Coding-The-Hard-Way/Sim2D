@@ -12,12 +12,15 @@ use {
         },
         math::Mat4,
     },
+    ash::vk,
     image::Pixel,
     std::sync::Arc,
 };
 
-pub(crate) use self::texture::NewAssetsCommand;
-pub use self::texture::{AssetLoader, TextureAtlas, TextureId};
+pub use self::{
+    assets::{AssetLoader, NewAssetsCommand},
+    texture::{TextureAtlas, TextureId},
+};
 
 /// The Sim2D Rendering backend.
 pub struct Renderer {
@@ -26,6 +29,7 @@ pub struct Renderer {
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
     bindless_sprites: BindlessSprites,
+    image_acquire_barriers: Vec<vk::ImageMemoryBarrier2>,
     render_device: Arc<RenderDevice>,
 }
 
@@ -55,7 +59,7 @@ impl Renderer {
             loader.load_image(img)
         };
         let new_assets_cmd = loader.build_new_assets_command()?;
-        texture_atlas.add_textures(&new_assets_cmd);
+        texture_atlas.load_assets(&new_assets_cmd);
 
         let projection = Self::fullscreen_ortho_projection(framebuffer_size);
 
@@ -64,7 +68,7 @@ impl Renderer {
                 render_device.clone(),
                 color_pass.render_pass(),
                 &frames_in_flight,
-                &texture_atlas.textures(),
+                texture_atlas.textures(),
             )?
         };
         bindless_sprites.set_projection(&projection);
@@ -77,6 +81,8 @@ impl Renderer {
             color_pass,
             texture_atlas,
 
+            image_acquire_barriers: new_assets_cmd.image_acquire_barriers,
+
             render_device,
         })
     }
@@ -85,11 +91,11 @@ impl Renderer {
         self.texture_atlas.new_asset_loader()
     }
 
-    pub fn load_new_assets(
+    pub fn load_assets(
         &mut self,
         new_assets_cmd: NewAssetsCommand,
     ) -> Result<(), GraphicsError> {
-        self.texture_atlas.add_textures(&new_assets_cmd);
+        self.texture_atlas.load_assets(&new_assets_cmd);
 
         self.bindless_sprites = unsafe {
             self.frames_in_flight.wait_for_all_frames_to_complete()?;
@@ -97,10 +103,13 @@ impl Renderer {
                 self.render_device.clone(),
                 self.color_pass.render_pass(),
                 &self.frames_in_flight,
-                &self.texture_atlas.textures(),
+                self.texture_atlas.textures(),
             )?
         };
         self.bindless_sprites.set_projection(&self.projection);
+
+        self.image_acquire_barriers
+            .extend_from_slice(&new_assets_cmd.image_acquire_barriers);
         Ok(())
     }
 
@@ -117,6 +126,25 @@ impl Renderer {
         };
 
         unsafe {
+            if !self.image_acquire_barriers.is_empty() {
+                let dependency_info = vk::DependencyInfo {
+                    dependency_flags: vk::DependencyFlags::empty(),
+                    image_memory_barrier_count: self
+                        .image_acquire_barriers
+                        .len()
+                        as u32,
+                    p_image_memory_barriers: self
+                        .image_acquire_barriers
+                        .as_ptr(),
+                    ..Default::default()
+                };
+                self.render_device.device().cmd_pipeline_barrier2(
+                    frame.command_buffer(),
+                    &dependency_info,
+                );
+                self.image_acquire_barriers.clear();
+            }
+
             self.color_pass
                 .begin_render_pass_inline(&frame, g2d.clear_color);
 
@@ -154,7 +182,7 @@ impl Renderer {
                 self.render_device.clone(),
                 self.color_pass.render_pass(),
                 &self.frames_in_flight,
-                &self.texture_atlas.textures(),
+                self.texture_atlas.textures(),
             )?;
             self.bindless_sprites.set_projection(&self.projection);
         };
