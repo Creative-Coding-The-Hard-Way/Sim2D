@@ -183,6 +183,7 @@ impl QueueFinder {
                     && !props.queue_flags.contains(vk::QueueFlags::GRAPHICS)
             })
             .map(|(queue_family_index, _)| queue_family_index)
+            .or(Self::find_graphics_queue_family_index(device))
     }
 
     /// Find a queue on on the physical device which supports presenting
