@@ -87,20 +87,23 @@ impl AssetLoader {
 
         let mut loader =
             unsafe { TextureLoader::new(self.render_device.clone())? };
+
         for source in self.texture_sources {
-            let (texture, image_acquire_barrier) = match &source {
+            match &source {
                 Source::FilePath(path) => unsafe {
                     loader.load_texture_2d_from_file(path)?
                 },
                 Source::Image(ref img) => unsafe {
-                    loader.load_texture_2d_from_image(img)?
+                    loader.load_texture_2d_from_image(img.clone())
                 },
             };
-            new_assets_cmd.textures.push(Arc::new(texture));
-            new_assets_cmd
-                .image_acquire_barriers
-                .push(image_acquire_barrier);
         }
+
+        let (textures, grahpics_acquire_barriers) =
+            unsafe { loader.load_textures()? };
+
+        new_assets_cmd.textures = textures;
+        new_assets_cmd.image_acquire_barriers = grahpics_acquire_barriers;
 
         Ok(new_assets_cmd)
     }

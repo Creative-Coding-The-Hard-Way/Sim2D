@@ -268,12 +268,15 @@ impl std::fmt::Display for RenderDevice {
 
                 Graphics {}
 
-                Presentation {}"
+                Presentation {}
+
+                Transfer {}"
             ),
             self.instance,
             self.logical_device,
             self.graphics_queue(),
-            self.presentation_queue()
+            self.presentation_queue(),
+            self.transfer_queue(),
         ))
     }
 }

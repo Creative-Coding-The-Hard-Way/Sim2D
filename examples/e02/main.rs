@@ -50,9 +50,7 @@ struct BunnyMark {
 
 impl Sketch for BunnyMark {
     fn preload(&mut self, asset_loader: &mut AssetLoader) {
-        for _ in 0..500 {
-            self.bunny = asset_loader.load_file("examples/e02/bunny.png");
-        }
+        self.bunny = asset_loader.load_file("examples/e02/bunny.png");
     }
 
     fn setup(&mut self, sim: &mut Sim2D) {
