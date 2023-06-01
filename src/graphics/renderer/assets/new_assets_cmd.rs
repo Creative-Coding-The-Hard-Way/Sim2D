@@ -29,18 +29,15 @@ impl NewAssetsCommand {
     pub(crate) fn new(
         asset_loader: AssetLoader,
     ) -> Result<Self, GraphicsError> {
+        let render_device = asset_loader.render_device;
         let images = asset_loader
             .texture_sources
-            .iter()
-            .map(|source| source.img.clone())
+            .into_iter()
+            .map(|source| source.img)
             .collect::<Vec<image::RgbaImage>>();
 
-        let (textures, image_acquire_barriers) = unsafe {
-            Self::build_and_upload_textures(
-                asset_loader.render_device,
-                &images,
-            )?
-        };
+        let (textures, image_acquire_barriers) =
+            unsafe { Self::build_and_upload_textures(render_device, &images)? };
 
         Ok(NewAssetsCommand {
             base_index: asset_loader.base_index,
