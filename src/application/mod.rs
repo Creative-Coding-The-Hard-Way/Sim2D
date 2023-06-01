@@ -70,7 +70,7 @@ impl Application {
 
         let mut asset_loader = renderer.new_asset_loader();
         let mut loading = LoadingSketch::default();
-        loading.preload(&mut asset_loader);
+        loading.preload(&mut asset_loader)?;
 
         renderer.load_assets(NewAssetsCommand::new(asset_loader)?)?;
 
@@ -133,7 +133,7 @@ impl Application {
         let mut asset_loader = self.renderer.new_asset_loader();
         let join_handle: PreloadJoinHandle = std::thread::spawn(
             move || -> Result<(DynSketch, NewAssetsCommand)> {
-                sketch.preload(&mut asset_loader);
+                sketch.preload(&mut asset_loader)?;
                 Ok((sketch, NewAssetsCommand::new(asset_loader)?))
             },
         );

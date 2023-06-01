@@ -1,7 +1,10 @@
-use crate::{
-    graphics::{AssetLoader, TextureId},
-    math::Vec2,
-    Sketch,
+use {
+    crate::{
+        graphics::{AssetLoader, TextureId},
+        math::Vec2,
+        Sketch,
+    },
+    anyhow::Result,
 };
 
 #[derive(Default, Clone)]
@@ -18,7 +21,7 @@ impl Sketch for LoadingSketch {
         self.angle = 0.0
     }
 
-    fn preload(&mut self, asset_loader: &mut AssetLoader) {
+    fn preload(&mut self, asset_loader: &mut AssetLoader) -> Result<()> {
         self.loading = asset_loader.load_image(
             image::load_from_memory_with_format(
                 include_bytes!("./loading.png"),
@@ -27,6 +30,7 @@ impl Sketch for LoadingSketch {
             .unwrap()
             .into_rgba8(),
         );
+        Ok(())
     }
 
     fn update(&mut self, sim: &mut crate::Sim2D) {
