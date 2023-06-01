@@ -58,7 +58,7 @@ impl Renderer {
             );
             loader.load_image(img)
         };
-        let new_assets_cmd = loader.build_new_assets_command()?;
+        let new_assets_cmd = NewAssetsCommand::new(loader)?;
         texture_atlas.load_assets(&new_assets_cmd);
 
         let projection = Self::fullscreen_ortho_projection(framebuffer_size);

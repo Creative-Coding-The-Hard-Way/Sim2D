@@ -1,16 +1,14 @@
+mod new_assets_cmd;
+
 use {
-    super::texture::TextureLoader,
-    crate::graphics::{
-        renderer::texture::TextureId,
-        vulkan_api::{RenderDevice, Texture2D},
-        GraphicsError,
-    },
-    ash::vk,
+    crate::graphics::{renderer::texture::TextureId, vulkan_api::RenderDevice},
     std::{
         path::{Path, PathBuf},
         sync::Arc,
     },
 };
+
+pub use self::new_assets_cmd::NewAssetsCommand;
 
 #[derive(Debug, Clone)]
 enum Source {
@@ -50,61 +48,5 @@ impl AssetLoader {
         let source = Source::Image(img);
         self.texture_sources.push(source);
         TextureId::from_raw(index as i32)
-    }
-}
-
-/// Represents new assets to include in the atlas.
-pub struct NewAssetsCommand {
-    pub base_index: usize,
-    pub textures: Vec<Arc<Texture2D>>,
-    pub image_acquire_barriers: Vec<vk::ImageMemoryBarrier2>,
-}
-
-/// # Safety
-///
-/// It is safe to SEND NewAssetsCommands despite owning vk::ImageMemoryBarrier2
-/// because the next pointer is not used.
-unsafe impl Send for NewAssetsCommand {}
-
-impl NewAssetsCommand {
-    pub fn new(base_index: usize) -> Self {
-        Self {
-            base_index,
-            textures: Vec::default(),
-            image_acquire_barriers: Vec::default(),
-        }
-    }
-}
-
-// Private API
-// -----------
-
-impl AssetLoader {
-    pub(crate) fn build_new_assets_command(
-        self,
-    ) -> Result<NewAssetsCommand, GraphicsError> {
-        let mut new_assets_cmd = NewAssetsCommand::new(self.base_index);
-
-        let mut loader =
-            unsafe { TextureLoader::new(self.render_device.clone())? };
-
-        for source in self.texture_sources {
-            match &source {
-                Source::FilePath(path) => unsafe {
-                    loader.load_texture_2d_from_file(path)?
-                },
-                Source::Image(ref img) => unsafe {
-                    loader.load_texture_2d_from_image(img.clone())
-                },
-            };
-        }
-
-        let (textures, grahpics_acquire_barriers) =
-            unsafe { loader.load_textures()? };
-
-        new_assets_cmd.textures = textures;
-        new_assets_cmd.image_acquire_barriers = grahpics_acquire_barriers;
-
-        Ok(new_assets_cmd)
     }
 }

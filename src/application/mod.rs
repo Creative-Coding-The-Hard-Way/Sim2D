@@ -72,7 +72,7 @@ impl Application {
         let mut loading = LoadingSketch::default();
         loading.preload(&mut asset_loader);
 
-        renderer.load_assets(asset_loader.build_new_assets_command()?)?;
+        renderer.load_assets(NewAssetsCommand::new(asset_loader)?)?;
 
         let sim = Sim2D::new(G2D::new(), window.new_window_state());
 
@@ -134,7 +134,7 @@ impl Application {
         let join_handle: PreloadJoinHandle = std::thread::spawn(
             move || -> Result<(DynSketch, NewAssetsCommand)> {
                 sketch.preload(&mut asset_loader);
-                Ok((sketch, asset_loader.build_new_assets_command()?))
+                Ok((sketch, NewAssetsCommand::new(asset_loader)?))
             },
         );
 
