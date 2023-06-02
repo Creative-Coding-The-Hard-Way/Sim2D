@@ -350,6 +350,16 @@
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
 <a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::graphics::GraphicsError,
     ash::vk,
@@ -377,6 +387,7 @@
 </span><span class="kw">pub struct </span>RenderDevice {
     graphics_queue: Queue,
     presentation_queue: Queue,
+    transfer_queue: Queue,
     window_surface: WindowSurface,
     logical_device: LogicalDevice,
     instance: VulkanInstance,
@@ -426,7 +437,7 @@
                 <span class="kw-2">&amp;</span>queue_finder.queue_family_infos(),
             )<span class="question-mark">?
         </span>};
-        <span class="kw">let </span>(graphics_queue, presentation_queue) =
+        <span class="kw">let </span>(graphics_queue, presentation_queue, transfer_queue) =
             queue_finder.get_queues_from_device(<span class="kw-2">&amp;</span>logical_device);
 
         <span class="kw">let </span>allocator = ccthw_ash_allocator::create_system_allocator(
@@ -438,6 +449,7 @@
         <span class="kw">let </span>render_device = <span class="self">Self </span>{
             graphics_queue,
             presentation_queue,
+            transfer_queue,
             window_surface,
             logical_device,
             instance,
@@ -517,6 +529,11 @@
     <span class="doccomment">/// The queue this application uses for graphics operations.
     </span><span class="kw">pub fn </span>graphics_queue(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Queue {
         <span class="kw-2">&amp;</span><span class="self">self</span>.graphics_queue
+    }
+
+    <span class="doccomment">/// The queue this application uses for transfer operations.
+    </span><span class="kw">pub fn </span>transfer_queue(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Queue {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.transfer_queue
     }
 
     <span class="doccomment">/// The Ash entry used by this RenderDevice.
@@ -613,12 +630,15 @@
 
                 Graphics {}
 
-                Presentation {}&quot;
+                Presentation {}
+
+                Transfer {}&quot;
             </span>),
             <span class="self">self</span>.instance,
             <span class="self">self</span>.logical_device,
             <span class="self">self</span>.graphics_queue(),
-            <span class="self">self</span>.presentation_queue()
+            <span class="self">self</span>.presentation_queue(),
+            <span class="self">self</span>.transfer_queue(),
         ))
     }
 }

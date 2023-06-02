@@ -79,15 +79,17 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>renderer;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>vulkan_api;
 
 <span class="kw">use </span>{<span class="kw">crate</span>::math::Vec2, vulkan_api::SpriteData};
 
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::renderer::NewAssetsCommand;
 <span class="kw">pub use </span><span class="self">self</span>::{
     error::GraphicsError,
-    renderer::{Renderer, TextureAtlas, TextureId},
+    renderer::{AssetLoader, Image, Renderer, TextureAtlas, TextureId},
 };
 
 <span class="kw">pub struct </span>G2D {
@@ -95,7 +97,7 @@
 
     <span class="kw">pub </span>clear_color: [f32; <span class="number">4</span>],
     <span class="kw">pub </span>fill_color: [f32; <span class="number">4</span>],
-    <span class="kw">pub </span>texture: TextureId,
+    <span class="kw">pub </span>image: Image,
     <span class="kw">pub </span>line_width: f32,
 }
 
@@ -105,7 +107,7 @@
             sprites: Vec::with_capacity(<span class="number">10_000</span>),
             clear_color: [<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>],
             fill_color: [<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>],
-            texture: TextureId::no_texture(),
+            image: Image::none(),
             line_width: <span class="number">1.0</span>,
         }
     }
@@ -121,7 +123,7 @@
             pos: [pos.x, pos.y],
             size: [size.x, size.y],
             rgba: <span class="self">self</span>.fill_color,
-            tex: <span class="self">self</span>.texture.get_index() <span class="kw">as </span>f32,
+            tex: <span class="self">self</span>.image.texture_id().get_index() <span class="kw">as </span>f32,
             angle,
             ..Default::default()
         });
@@ -132,7 +134,7 @@
             pos: [top_left.x, top_left.y],
             size: [size.x, size.y],
             rgba: <span class="self">self</span>.fill_color,
-            tex: <span class="self">self</span>.texture.get_index() <span class="kw">as </span>f32,
+            tex: <span class="self">self</span>.image.texture_id().get_index() <span class="kw">as </span>f32,
             angle,
             center_offset: [<span class="number">0.5</span>, -<span class="number">0.5</span>],
         });

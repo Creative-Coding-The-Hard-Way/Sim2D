@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["GraphicsError"],"struct":["G2D","Renderer","TextureAtlas","TextureId"]};
+window.SIDEBAR_ITEMS = {"enum":["GraphicsError"],"struct":["AssetLoader","G2D","Image","Renderer","TextureAtlas","TextureId"]};

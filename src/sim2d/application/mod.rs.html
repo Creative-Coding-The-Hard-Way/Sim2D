@@ -222,7 +222,7 @@
 <span class="kw">use </span>{
     <span class="self">self</span>::timer::Timer,
     <span class="kw">crate</span>::{
-        graphics::{Renderer, TextureAtlas, G2D},
+        graphics::{NewAssetsCommand, Renderer, G2D},
         sim2d::Sim2D,
         DynSketch, Sketch,
     },
@@ -232,7 +232,7 @@
     std::{sync::mpsc::Receiver, thread::JoinHandle},
 };
 
-<span class="kw">type </span>PreloadJoinHandle = JoinHandle&lt;<span class="prelude-ty">Result</span>&lt;(DynSketch, TextureAtlas)&gt;&gt;;
+<span class="kw">type </span>PreloadJoinHandle = JoinHandle&lt;<span class="prelude-ty">Result</span>&lt;(DynSketch, NewAssetsCommand)&gt;&gt;;
 
 <span class="kw">pub use </span><span class="kw">crate</span>::window::{GlfwWindow, WindowState};
 
@@ -283,11 +283,11 @@
         <span class="kw">let </span><span class="kw-2">mut </span>renderer =
             Renderer::new(render_device, window.get_framebuffer_size())<span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>texture_atlas = renderer.texture_atlas().clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>asset_loader = renderer.new_asset_loader();
         <span class="kw">let </span><span class="kw-2">mut </span>loading = LoadingSketch::default();
-        loading.preload(<span class="kw-2">&amp;mut </span>texture_atlas);
-        texture_atlas.load_all_textures()<span class="question-mark">?</span>;
-        renderer.reload_textures(texture_atlas)<span class="question-mark">?</span>;
+        loading.preload(<span class="kw-2">&amp;mut </span>asset_loader)<span class="question-mark">?</span>;
+
+        renderer.load_assets(NewAssetsCommand::new(asset_loader)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>sim = Sim2D::new(G2D::new(), window.new_window_state());
 
@@ -345,13 +345,13 @@
         <span class="self">self</span>.sketch.setup(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim);
         <span class="self">self</span>.window.update_window_to_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim.w)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>texture_atlas = <span class="self">self</span>.renderer.texture_atlas().clone();
-        <span class="kw">let </span>join_handle: PreloadJoinHandle =
-            std::thread::spawn(<span class="kw">move </span>|| -&gt; <span class="prelude-ty">Result</span>&lt;(DynSketch, TextureAtlas)&gt; {
-                sketch.preload(<span class="kw-2">&amp;mut </span>texture_atlas);
-                texture_atlas.load_all_textures()<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>((sketch, texture_atlas))
-            });
+        <span class="kw">let </span><span class="kw-2">mut </span>asset_loader = <span class="self">self</span>.renderer.new_asset_loader();
+        <span class="kw">let </span>join_handle: PreloadJoinHandle = std::thread::spawn(
+            <span class="kw">move </span>|| -&gt; <span class="prelude-ty">Result</span>&lt;(DynSketch, NewAssetsCommand)&gt; {
+                sketch.preload(<span class="kw-2">&amp;mut </span>asset_loader)<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>((sketch, NewAssetsCommand::new(asset_loader)<span class="question-mark">?</span>))
+            },
+        );
 
         <span class="macro">debug_assert!</span>(<span class="self">self</span>.loading_join_handle.is_none());
         <span class="self">self</span>.loading_join_handle = <span class="prelude-val">Some</span>(join_handle);
@@ -367,9 +367,9 @@
 
         <span class="kw">if </span>is_finished {
             <span class="kw">let </span>handle = <span class="self">self</span>.loading_join_handle.take().unwrap();
-            <span class="kw">let </span>(sketch, atlas) = handle.join().unwrap()<span class="question-mark">?</span>;
+            <span class="kw">let </span>(sketch, new_assets_cmd) = handle.join().unwrap()<span class="question-mark">?</span>;
             <span class="self">self</span>.sketch = sketch;
-            <span class="self">self</span>.renderer.reload_textures(atlas)<span class="question-mark">?</span>;
+            <span class="self">self</span>.renderer.load_assets(new_assets_cmd)<span class="question-mark">?</span>;
 
             <span class="self">self</span>.sim.g = G2D::new();
             <span class="self">self</span>.sketch.setup(<span class="kw-2">&amp;mut </span><span class="self">self</span>.sim);

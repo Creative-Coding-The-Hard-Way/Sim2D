@@ -177,6 +177,9 @@
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::{
         math::Vec2,
@@ -233,6 +236,9 @@
                 window_state.width <span class="kw">as </span>i32,
                 window_state.height <span class="kw">as </span>i32,
             );
+            <span class="kw">let </span>(mx, my) = <span class="self">self</span>.get_cursor_pos();
+            window_state.mouse_pos.x = mx <span class="kw">as </span>f32 - <span class="number">0.5 </span>* window_state.width;
+            window_state.mouse_pos.y = <span class="number">0.5 </span>* window_state.height - my <span class="kw">as </span>f32;
         }
 
         <span class="self">self</span>.set_should_close(window_state.should_close);

@@ -226,6 +226,10 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">super</span>::{SpriteData, UniformData},
     <span class="kw">crate</span>::graphics::{
@@ -432,6 +436,10 @@
         textures: <span class="kw-2">&amp;</span>[Arc&lt;Texture2D&gt;],
         sampler: <span class="kw-2">&amp;</span>raii::Sampler,
     ) {
+        <span class="kw">if </span>textures.is_empty() {
+            <span class="kw">return</span>;
+        }
+
         <span class="kw">let </span>image_infos = textures
             .iter()
             .map(|texture| vk::DescriptorImageInfo {
