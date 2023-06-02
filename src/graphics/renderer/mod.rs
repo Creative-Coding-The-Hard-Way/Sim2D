@@ -48,7 +48,7 @@ impl Renderer {
 
         let mut texture_atlas =
             unsafe { TextureAtlas::new(render_device.clone())? };
-        let mut loader = texture_atlas.new_asset_loader();
+        let mut loader = texture_atlas.take_asset_loader();
         let _loading_id = {
             let mut img = image::RgbaImage::new(1, 1);
             img.put_pixel(
@@ -88,7 +88,7 @@ impl Renderer {
     }
 
     pub fn new_asset_loader(&mut self) -> AssetLoader {
-        self.texture_atlas.new_asset_loader()
+        self.texture_atlas.take_asset_loader()
     }
 
     pub fn load_assets(
