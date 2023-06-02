@@ -24,8 +24,9 @@ impl Sketch for SlowLoad {
         self.wants_reload = false;
     }
 
-    fn preload(&mut self, _loader: &mut AssetLoader) {
+    fn preload(&mut self, _loader: &mut AssetLoader) -> Result<()> {
         std::thread::sleep(Duration::from_secs(5));
+        Ok(())
     }
 
     fn mouse_released(&mut self, _sim: &mut Sim2D) {

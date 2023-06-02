@@ -54,6 +54,9 @@ impl GlfwWindow {
                 window_state.width as i32,
                 window_state.height as i32,
             );
+            let (mx, my) = self.get_cursor_pos();
+            window_state.mouse_pos.x = mx as f32 - 0.5 * window_state.width;
+            window_state.mouse_pos.y = 0.5 * window_state.height - my as f32;
         }
 
         self.set_should_close(window_state.should_close);

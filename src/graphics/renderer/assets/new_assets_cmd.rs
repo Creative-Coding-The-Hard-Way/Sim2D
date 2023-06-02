@@ -57,6 +57,10 @@ impl NewAssetsCommand {
         (Vec<Arc<Texture2D>>, Vec<vk::ImageMemoryBarrier2>),
         GraphicsError,
     > {
+        if images.is_empty() {
+            return Ok((vec![], vec![]));
+        }
+
         // Create textures and barriers
         let mut textures = vec![];
         let mut transfer_acquire_barriers = vec![];
