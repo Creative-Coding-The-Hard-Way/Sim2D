@@ -31,6 +31,8 @@ struct SpriteData {
     float texture_id;
     float angle;
     vec2 center_offset;
+    vec2 uv_offset;
+    vec2 uv_scale;
 };
 
 layout(set = 0, binding = 0) readonly buffer SpriteBlock {
@@ -52,7 +54,8 @@ void main() {
 
     SpriteData sprite = sprites[sprite_index];
 
-    uv = uvs[vertex_index];
+    uv = sprite.uv_offset + (uvs[vertex_index] * sprite.uv_scale);
+
     rgba = sprite.rgba;
     texture_index = int(sprite.texture_id);
 

@@ -16,7 +16,7 @@ use {
 
 mod pipeline;
 
-#[derive(Debug, Copy, Clone, PartialEq, Default)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct SpriteData {
     pub pos: [f32; 2],
@@ -25,6 +25,23 @@ pub struct SpriteData {
     pub tex: f32,
     pub angle: f32,
     pub center_offset: [f32; 2],
+    pub uv_offset: [f32; 2],
+    pub uv_scale: [f32; 2],
+}
+
+impl Default for SpriteData {
+    fn default() -> Self {
+        Self {
+            pos: [0.0, 0.0],
+            size: [0.0, 0.0],
+            rgba: [1.0, 1.0, 1.0, 1.0],
+            tex: 0.0,
+            angle: 0.0,
+            center_offset: [0.0, 0.0],
+            uv_offset: [0.0, 0.0],
+            uv_scale: [1.0, 1.0],
+        }
+    }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]

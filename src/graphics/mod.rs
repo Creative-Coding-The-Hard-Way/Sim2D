@@ -55,6 +55,7 @@ impl G2D {
             tex: self.image.texture_id().get_index() as f32,
             angle,
             center_offset: [0.5, -0.5],
+            ..Default::default()
         });
     }
 
