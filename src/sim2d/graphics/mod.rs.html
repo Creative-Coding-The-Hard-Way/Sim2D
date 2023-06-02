@@ -80,6 +80,9 @@
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>renderer;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>vulkan_api;
@@ -125,6 +128,8 @@
             rgba: <span class="self">self</span>.fill_color,
             tex: <span class="self">self</span>.image.texture_id().get_index() <span class="kw">as </span>f32,
             angle,
+            uv_scale: [<span class="number">1.0</span>, <span class="number">1.0</span>],
+            uv_offset: [<span class="number">0.0</span>, <span class="number">0.0</span>],
             ..Default::default()
         });
     }
@@ -137,6 +142,7 @@
             tex: <span class="self">self</span>.image.texture_id().get_index() <span class="kw">as </span>f32,
             angle,
             center_offset: [<span class="number">0.5</span>, -<span class="number">0.5</span>],
+            ..Default::default()
         });
     }
 
