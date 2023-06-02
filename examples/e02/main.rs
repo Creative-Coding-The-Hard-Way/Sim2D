@@ -50,7 +50,7 @@ struct BunnyMark {
 
 impl Sketch for BunnyMark {
     fn preload(&mut self, asset_loader: &mut AssetLoader) -> Result<()> {
-        self.bunny = asset_loader.load_file("examples/e02/bunny.png")?;
+        self.bunny = asset_loader.load_file("examples/e02/bunny.png", true)?;
         Ok(())
     }
 

@@ -29,6 +29,7 @@ impl Sketch for LoadingSketch {
             )
             .unwrap()
             .into_rgba8(),
+            true,
         );
         Ok(())
     }

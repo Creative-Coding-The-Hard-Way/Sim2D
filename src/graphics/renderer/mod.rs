@@ -56,7 +56,7 @@ impl Renderer {
                 0,
                 image::Rgba::<u8>::from_slice(&[255, 255, 255, 255]).to_owned(),
             );
-            loader.load_image(img)
+            loader.load_image(img, false)
         };
         let new_assets_cmd = NewAssetsCommand::new(loader)?;
         texture_atlas.load_assets(&new_assets_cmd);

@@ -85,7 +85,8 @@ struct NBodySystem {
 
 impl Sketch for NBodySystem {
     fn preload(&mut self, asset_loader: &mut AssetLoader) -> Result<()> {
-        self.circle = asset_loader.load_file("examples/e04/Circle.png")?;
+        self.circle =
+            asset_loader.load_file("examples/e04/Circle.png", true)?;
         Ok(())
     }
 
