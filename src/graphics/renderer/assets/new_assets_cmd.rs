@@ -6,6 +6,8 @@ use {
         AssetLoader, GraphicsError,
     },
     ash::vk,
+    image::RgbaImage,
+    rayon::prelude::*,
     std::{os::raw::c_void, sync::Arc},
 };
 
@@ -32,9 +34,15 @@ impl NewAssetsCommand {
         let render_device = asset_loader.render_device;
         let images = asset_loader
             .texture_sources
-            .into_iter()
-            .map(|source| source.img)
-            .collect::<Vec<image::RgbaImage>>();
+            .into_par_iter()
+            .map(|source| {
+                if source.generate_mipmaps {
+                    Self::generate_mipmaps(source.img)
+                } else {
+                    vec![source.img]
+                }
+            })
+            .collect::<Vec<Vec<image::RgbaImage>>>();
 
         let (textures, image_acquire_barriers) =
             unsafe { Self::build_and_upload_textures(render_device, &images)? };
@@ -50,9 +58,38 @@ impl NewAssetsCommand {
 // Private Helper Functions
 
 impl NewAssetsCommand {
+    /// Generate mipmap images.
+    fn generate_mipmaps(img: RgbaImage) -> Vec<RgbaImage> {
+        let original_image = img.clone();
+        log::trace!(
+            "Original image dims: {}x{}",
+            original_image.width(),
+            original_image.height()
+        );
+        let mut w = img.width();
+        let mut h = img.height();
+        let mut mips = vec![img];
+
+        while w > 1 && h > 1 {
+            w = (w / 2).max(1);
+            h = (h / 2).max(1);
+
+            let mip = ::image::imageops::resize(
+                &original_image,
+                w,
+                h,
+                ::image::imageops::FilterType::Lanczos3,
+            );
+            log::trace!("Mip level {} dims: {}x{}", mips.len(), w, h);
+            mips.push(mip);
+        }
+
+        mips
+    }
+
     unsafe fn build_and_upload_textures(
         render_device: Arc<RenderDevice>,
-        images: &[image::RgbaImage],
+        images: &[Vec<image::RgbaImage>],
     ) -> Result<
         (Vec<Arc<Texture2D>>, Vec<vk::ImageMemoryBarrier2>),
         GraphicsError,
@@ -66,19 +103,24 @@ impl NewAssetsCommand {
         let mut transfer_acquire_barriers = vec![];
         let mut transfer_release_barriers = vec![];
         let mut grahpics_acquire_barriers = vec![];
-        for img in images {
+        for mips in images {
             let texture = Arc::new(Self::allocate_new_texture(
                 render_device.clone(),
-                img,
+                mips,
             )?);
             textures.push(texture.clone());
 
-            transfer_acquire_barriers
-                .push(Self::build_image_transfer_acquire_barrier(&texture));
+            transfer_acquire_barriers.push(
+                Self::build_image_transfer_acquire_barrier(
+                    &texture,
+                    mips.len() as u32,
+                ),
+            );
             transfer_release_barriers.push(
                 Self::build_image_transfer_release_barrier(
                     &render_device,
                     &texture,
+                    mips.len() as u32,
                 ),
             );
 
@@ -89,6 +131,7 @@ impl NewAssetsCommand {
                     Self::build_image_graphics_acquire_barrier(
                         &render_device,
                         &texture,
+                        mips.len() as u32,
                     ),
                 );
             }
@@ -115,8 +158,15 @@ impl NewAssetsCommand {
                 .cmd_pipeline_barrier2(command_buffer, &dependency_info);
         }
 
-        let total_size: u64 =
-            images.iter().map(|img| img.as_raw().len() as u64).sum();
+        let total_size: u64 = images
+            .iter()
+            .map(|mips| {
+                mips.iter()
+                    .map(|img| img.as_raw().len() as u64)
+                    .sum::<u64>()
+            })
+            .sum();
+
         let staging_buffer =
             Self::allocate_staging_buffer(render_device.clone(), total_size)?;
 
@@ -124,54 +174,60 @@ impl NewAssetsCommand {
             staging_buffer.allocation().map(render_device.device())?;
 
         let mut buffer_offset = 0;
-        for (i, img) in images.iter().enumerate() {
-            // Should always be true given the total_size calculation
-            debug_assert!(
-                buffer_offset + img.as_raw().len()
-                    <= staging_buffer.allocation().size_in_bytes() as usize
-            );
+        for (texture_index, mips) in images.iter().enumerate() {
+            let mut mip_regions =
+                Vec::<vk::BufferImageCopy2>::with_capacity(mips.len());
 
-            let staging_buffer_with_offset =
-                (staging_buffer_ptr as usize + buffer_offset) as *mut c_void;
+            for (mip_level, mip) in mips.iter().enumerate() {
+                // Should always be true given the total_size calculation
+                debug_assert!(
+                    buffer_offset + mip.as_raw().len()
+                        <= staging_buffer.allocation().size_in_bytes() as usize
+                );
 
-            // Memcpy the image into the staging buffer
-            std::ptr::copy_nonoverlapping(
-                img.as_raw().as_ptr(),
-                staging_buffer_with_offset as *mut u8,
-                img.as_raw().len(),
-            );
+                let staging_buffer_with_offset = (staging_buffer_ptr as usize
+                    + buffer_offset)
+                    as *mut c_void;
 
-            // Issue the copy command
-            let region = vk::BufferImageCopy2 {
-                buffer_offset: buffer_offset as u64,
-                image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
-                image_extent: vk::Extent3D {
-                    width: img.width(),
-                    height: img.height(),
-                    depth: 1,
-                },
-                image_subresource: vk::ImageSubresourceLayers {
-                    aspect_mask: vk::ImageAspectFlags::COLOR,
-                    mip_level: 0,
-                    base_array_layer: 0,
-                    layer_count: 1,
-                },
-                ..Default::default()
-            };
+                // Memcpy the image into the staging buffer
+                std::ptr::copy_nonoverlapping(
+                    mip.as_raw().as_ptr(),
+                    staging_buffer_with_offset as *mut u8,
+                    mip.as_raw().len(),
+                );
+
+                mip_regions.push(vk::BufferImageCopy2 {
+                    buffer_offset: buffer_offset as u64,
+                    image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
+                    image_extent: vk::Extent3D {
+                        width: mip.width(),
+                        height: mip.height(),
+                        depth: 1,
+                    },
+                    image_subresource: vk::ImageSubresourceLayers {
+                        aspect_mask: vk::ImageAspectFlags::COLOR,
+                        mip_level: mip_level as u32,
+                        base_array_layer: 0,
+                        layer_count: 1,
+                    },
+                    ..Default::default()
+                });
+
+                buffer_offset += mip.as_raw().len();
+            }
+
             let copy_buffer_to_image_info2 = vk::CopyBufferToImageInfo2 {
                 src_buffer: staging_buffer.raw(),
-                dst_image: textures[i].image.raw(),
+                dst_image: textures[texture_index].image.raw(),
                 dst_image_layout: vk::ImageLayout::TRANSFER_DST_OPTIMAL,
-                region_count: 1,
-                p_regions: &region,
+                region_count: mip_regions.len() as u32,
+                p_regions: mip_regions.as_ptr(),
                 ..Default::default()
             };
             render_device.device().cmd_copy_buffer_to_image2(
                 command_buffer,
                 &copy_buffer_to_image_info2,
             );
-
-            buffer_offset += img.as_raw().len();
         }
 
         // Release Images from the transfer queue
@@ -216,10 +272,10 @@ impl NewAssetsCommand {
         }
     }
 
-    /// Allocate a new 2d texture for the given RGBA image.
+    /// Allocate a new 2d texture for the given RGBA image mipmaps.
     unsafe fn allocate_new_texture(
         render_device: Arc<RenderDevice>,
-        img: &image::RgbaImage,
+        mips: &[image::RgbaImage],
     ) -> Result<Texture2D, GraphicsError> {
         let image = unsafe {
             let queue_family_index =
@@ -227,7 +283,7 @@ impl NewAssetsCommand {
             let create_info = vk::ImageCreateInfo {
                 image_type: vk::ImageType::TYPE_2D,
                 format: vk::Format::R8G8B8A8_UNORM,
-                mip_levels: 1,
+                mip_levels: mips.len() as u32,
                 array_layers: 1,
                 initial_layout: vk::ImageLayout::UNDEFINED,
                 samples: vk::SampleCountFlags::TYPE_1,
@@ -239,8 +295,8 @@ impl NewAssetsCommand {
                     | vk::ImageUsageFlags::SAMPLED,
                 flags: vk::ImageCreateFlags::empty(),
                 extent: vk::Extent3D {
-                    width: img.width(),
-                    height: img.height(),
+                    width: mips[0].width(),
+                    height: mips[0].height(),
                     depth: 1,
                 },
                 ..vk::ImageCreateInfo::default()
@@ -258,10 +314,10 @@ impl NewAssetsCommand {
                 format: vk::Format::R8G8B8A8_UNORM,
                 subresource_range: vk::ImageSubresourceRange {
                     aspect_mask: vk::ImageAspectFlags::COLOR,
-                    level_count: 1,
+                    base_mip_level: 0,
+                    level_count: mips.len() as u32,
                     layer_count: 1,
                     base_array_layer: 0,
-                    base_mip_level: 0,
                 },
                 ..Default::default()
             };
@@ -274,6 +330,7 @@ impl NewAssetsCommand {
     /// write target on the transfer queue.
     fn build_image_transfer_acquire_barrier(
         texture: &Texture2D,
+        mip_levels: u32,
     ) -> vk::ImageMemoryBarrier2 {
         vk::ImageMemoryBarrier2 {
             src_stage_mask: vk::PipelineStageFlags2::TOP_OF_PIPE,
@@ -286,7 +343,7 @@ impl NewAssetsCommand {
             subresource_range: vk::ImageSubresourceRange {
                 aspect_mask: vk::ImageAspectFlags::COLOR,
                 base_mip_level: 0,
-                level_count: 1,
+                level_count: mip_levels,
                 base_array_layer: 0,
                 layer_count: 1,
             },
@@ -299,6 +356,7 @@ impl NewAssetsCommand {
     fn build_image_transfer_release_barrier(
         render_device: &RenderDevice,
         texture: &Texture2D,
+        mip_levels: u32,
     ) -> vk::ImageMemoryBarrier2 {
         vk::ImageMemoryBarrier2 {
             src_stage_mask: vk::PipelineStageFlags2::TRANSFER,
@@ -315,7 +373,7 @@ impl NewAssetsCommand {
             subresource_range: vk::ImageSubresourceRange {
                 aspect_mask: vk::ImageAspectFlags::COLOR,
                 base_mip_level: 0,
-                level_count: 1,
+                level_count: mip_levels,
                 base_array_layer: 0,
                 layer_count: 1,
             },
@@ -335,6 +393,7 @@ impl NewAssetsCommand {
     fn build_image_graphics_acquire_barrier(
         render_device: &RenderDevice,
         texture: &Texture2D,
+        mip_levels: u32,
     ) -> vk::ImageMemoryBarrier2 {
         vk::ImageMemoryBarrier2 {
             src_stage_mask: vk::PipelineStageFlags2::TRANSFER,
@@ -351,7 +410,7 @@ impl NewAssetsCommand {
             subresource_range: vk::ImageSubresourceRange {
                 aspect_mask: vk::ImageAspectFlags::COLOR,
                 base_mip_level: 0,
-                level_count: 1,
+                level_count: mip_levels,
                 base_array_layer: 0,
                 layer_count: 1,
             },

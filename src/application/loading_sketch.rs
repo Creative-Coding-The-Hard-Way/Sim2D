@@ -15,7 +15,7 @@ pub struct LoadingSketch {
 
 impl Sketch for LoadingSketch {
     fn setup(&mut self, sim: &mut crate::Sim2D) {
-        sim.g.clear_color = [0.0, 0.0, 0.1, 1.0];
+        sim.g.clear_color = [0.5, 0.5, 0.8, 1.0];
         sim.w.resize(1200.0, 800.0);
 
         self.angle = 0.0

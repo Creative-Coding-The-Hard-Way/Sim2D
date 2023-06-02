@@ -935,6 +935,7 @@ dependencies = [
  "memoffset",
  "nalgebra",
  "rand",
+ "rayon",
  "regex",
  "scopeguard",
  "spin_sleep",

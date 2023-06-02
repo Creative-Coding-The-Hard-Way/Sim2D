@@ -29,6 +29,7 @@ ccthw_ash_allocator = { git = "https://github.com/Creative-Coding-The-Hard-Way/a
 scopeguard = "*"
 approx = "*"
 rand = "*"
+rayon = "*"
 
 [build-dependencies]
 anyhow = "*"
