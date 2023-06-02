@@ -43,6 +43,8 @@ impl G2D {
             rgba: self.fill_color,
             tex: self.image.texture_id().get_index() as f32,
             angle,
+            uv_scale: [1.0, 1.0],
+            uv_offset: [0.0, 0.0],
             ..Default::default()
         });
     }
