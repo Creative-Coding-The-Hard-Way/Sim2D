@@ -1,6 +1,6 @@
 use {
     crate::{
-        graphics::{AssetLoader, TextureId},
+        graphics::{AssetLoader, Image},
         math::Vec2,
         Sketch,
     },
@@ -9,7 +9,7 @@ use {
 
 #[derive(Default, Clone)]
 pub struct LoadingSketch {
-    loading: TextureId,
+    loading: Image,
     angle: f32,
 }
 
@@ -36,12 +36,15 @@ impl Sketch for LoadingSketch {
     fn update(&mut self, sim: &mut crate::Sim2D) {
         self.angle += sim.dt() * std::f32::consts::PI * 0.5;
 
-        sim.g.texture = self.loading;
-        sim.g
-            .rect_centered(Vec2::zeros(), Vec2::new(600.0, 200.0), 0.0);
+        sim.g.image = self.loading;
+        sim.g.rect_centered(
+            Vec2::zeros(),
+            Vec2::new(self.loading.width(), self.loading.height()),
+            0.0,
+        );
         sim.g.rect_centered(
             sim.w.mouse_pos(),
-            Vec2::new(300.0, 100.0),
+            Vec2::new(self.loading.width(), self.loading.height()),
             self.angle,
         );
     }

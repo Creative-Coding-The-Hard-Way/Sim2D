@@ -18,7 +18,7 @@ use {
 };
 
 pub use self::{
-    assets::{AssetLoader, NewAssetsCommand},
+    assets::{AssetLoader, Image, NewAssetsCommand},
     texture::{TextureAtlas, TextureId},
 };
 

@@ -7,7 +7,7 @@ use {crate::math::Vec2, vulkan_api::SpriteData};
 pub(crate) use self::renderer::NewAssetsCommand;
 pub use self::{
     error::GraphicsError,
-    renderer::{AssetLoader, Renderer, TextureAtlas, TextureId},
+    renderer::{AssetLoader, Image, Renderer, TextureAtlas, TextureId},
 };
 
 pub struct G2D {
@@ -15,7 +15,7 @@ pub struct G2D {
 
     pub clear_color: [f32; 4],
     pub fill_color: [f32; 4],
-    pub texture: TextureId,
+    pub image: Image,
     pub line_width: f32,
 }
 
@@ -25,7 +25,7 @@ impl Default for G2D {
             sprites: Vec::with_capacity(10_000),
             clear_color: [1.0, 1.0, 1.0, 1.0],
             fill_color: [1.0, 1.0, 1.0, 1.0],
-            texture: TextureId::no_texture(),
+            image: Image::none(),
             line_width: 1.0,
         }
     }
@@ -41,7 +41,7 @@ impl G2D {
             pos: [pos.x, pos.y],
             size: [size.x, size.y],
             rgba: self.fill_color,
-            tex: self.texture.get_index() as f32,
+            tex: self.image.texture_id().get_index() as f32,
             angle,
             ..Default::default()
         });
@@ -52,7 +52,7 @@ impl G2D {
             pos: [top_left.x, top_left.y],
             size: [size.x, size.y],
             rgba: self.fill_color,
-            tex: self.texture.get_index() as f32,
+            tex: self.image.texture_id().get_index() as f32,
             angle,
             center_offset: [0.5, -0.5],
         });

@@ -3,7 +3,7 @@ use {
     rand::Rng,
     sim2d::{
         application::Application,
-        graphics::{AssetLoader, TextureId},
+        graphics::{AssetLoader, Image},
         math::Vec2,
         Sim2D, Sketch,
     },
@@ -44,7 +44,7 @@ impl Sprite {
 
 #[derive(Default)]
 struct BunnyMark {
-    bunny: TextureId,
+    bunny: Image,
     sprites: Vec<Sprite>,
 }
 
@@ -56,16 +56,13 @@ impl Sketch for BunnyMark {
 
     fn setup(&mut self, sim: &mut Sim2D) {
         sim.g.clear_color = [0.5, 0.5, 0.5, 1.0];
-    }
 
-    fn mouse_released(&mut self, sim: &mut Sim2D) {
         let mut rng = rand::thread_rng();
-
-        self.sprites.extend((0..20_000).map(|_| Sprite {
-            pos: sim.w.mouse_pos(),
+        self.sprites.extend((0..1_000_000).map(|_| Sprite {
+            pos: Vec2::new(0.0, 0.0),
             vel: Vec2::new(
                 rng.gen_range(-100.0..100.0),
-                rng.gen_range(-400.0..50.0),
+                rng.gen_range(-100.0..100.0),
             ),
             angle: rng.gen_range(0.0..std::f32::consts::TAU),
         }));
@@ -79,7 +76,7 @@ impl Sketch for BunnyMark {
     }
 
     fn update(&mut self, sim: &mut Sim2D) {
-        sim.g.texture = self.bunny;
+        sim.g.image = self.bunny;
         for sprite in &mut self.sprites {
             sprite.update(sim.dt());
             sprite.constrain(sim);

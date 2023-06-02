@@ -1,10 +1,8 @@
 use {
     anyhow::Result,
     sim2d::{
-        application::Application,
-        graphics::{AssetLoader, TextureId},
-        math::Vec2,
-        DynSketch, Sim2D, Sketch,
+        application::Application, graphics::AssetLoader, math::Vec2, DynSketch,
+        Sim2D, Sketch,
     },
     std::time::Duration,
 };
@@ -42,7 +40,6 @@ impl Sketch for SlowLoad {
     }
 
     fn update(&mut self, sim: &mut Sim2D) {
-        sim.g.texture = TextureId::no_texture();
         sim.g
             .rect_centered(sim.w.mouse_pos(), Vec2::new(100.0, 100.0), 0.0)
     }

@@ -2,13 +2,13 @@ use {
     anyhow::Result,
     sim2d::{
         application::Application,
-        graphics::{AssetLoader, TextureId},
+        graphics::{AssetLoader, Image},
         math::Vec2,
         Sim2D, Sketch,
     },
 };
 
-#[derive(Clone, Debug, PartialEq, PartialOrd, Default)]
+#[derive(Clone, Debug, Default)]
 struct Planet {
     pos: Vec2,
     prev_pos: Vec2,
@@ -17,7 +17,7 @@ struct Planet {
     mass: f32,
     radius: f32,
     collision_count: f32,
-    circle_texture: TextureId,
+    circle_texture: Image,
 }
 
 impl Planet {
@@ -49,7 +49,7 @@ impl Planet {
     }
 
     fn draw(&self, sim: &mut Sim2D) {
-        sim.g.texture = self.circle_texture;
+        sim.g.image = self.circle_texture;
         let c = (self.collision_count / 10.0).clamp(0.0, 1.0);
         sim.g.fill_color = [c, 0.0, 1.0 - c, 1.0];
         sim.g.rect_centered(
@@ -63,7 +63,7 @@ impl Planet {
         if self.tail.is_empty() {
             return;
         }
-        sim.g.texture = TextureId::no_texture();
+        sim.g.image = Image::none();
         let c = (self.collision_count / 10.0).clamp(0.0, 1.0);
         sim.g.fill_color = [c, 0.0, 1.0 - c, 0.2];
         sim.g.line_width = 1.0;
@@ -76,7 +76,7 @@ impl Planet {
 
 #[derive(Default)]
 struct NBodySystem {
-    circle: TextureId,
+    circle: Image,
     planets: Vec<Planet>,
     t: f32,
     next_step: f32,
