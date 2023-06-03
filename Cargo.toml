@@ -30,6 +30,7 @@ scopeguard = "*"
 approx = "*"
 rand = "*"
 rayon = "*"
+ab_glyph = "*"
 
 [build-dependencies]
 anyhow = "*"
