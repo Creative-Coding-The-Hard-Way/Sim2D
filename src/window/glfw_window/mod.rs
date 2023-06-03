@@ -3,7 +3,7 @@ mod window_state;
 use {
     crate::graphics::vulkan_api::RenderDevice,
     anyhow::{bail, Context, Result},
-    ash::{vk, vk::Handle},
+    ash::vk,
     ccthw_ash_instance::{PhysicalDeviceFeatures, VulkanInstance},
     glfw::{ClientApiHint, WindowEvent, WindowHint, WindowMode},
     std::sync::{mpsc::Receiver, Arc},
@@ -85,17 +85,16 @@ impl GlfwWindow {
         let instance = self.create_vulkan_instance()?;
 
         let surface = {
-            let mut surface_handle: u64 = 0;
-            let result =
-                vk::Result::from_raw(self.window_handle.create_window_surface(
-                    instance.ash().handle().as_raw() as usize,
-                    std::ptr::null(),
-                    &mut surface_handle,
-                ) as i32);
+            let mut surface = vk::SurfaceKHR::null();
+            let result = self.window_handle.create_window_surface(
+                instance.ash().handle(),
+                std::ptr::null(),
+                &mut surface,
+            );
             if result != vk::Result::SUCCESS {
                 bail!("Unable to create a Vulkan SurfaceKHR with GLFW!");
             }
-            vk::SurfaceKHR::from_raw(surface_handle)
+            surface
         };
 
         let device = RenderDevice::new(instance, device_features, surface)

@@ -152,7 +152,7 @@ impl GlfwWindow {
             (window_state.window_x, window_state.window_y) = self.get_pos();
 
             let mut glfw = self.glfw.clone();
-            glfw.with_primary_monitor_mut(|_, monitor_opt| -> Result<()> {
+            glfw.with_primary_monitor(|_, monitor_opt| -> Result<()> {
                 let monitor = monitor_opt
                     .context("Unable to determine the primary monitor!")?;
                 let video_mode = monitor
