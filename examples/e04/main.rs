@@ -128,7 +128,7 @@ impl Sketch for NBodySystem {
                 self.add_planet(Planet {
                     pos: start,
                     prev_pos: start,
-                    radius: 10.0,
+                    radius: 7.0,
                     mass: 50_000.0,
                     net_force: Vec2::new(0.0, 0.0),
                     circle_texture: self.circle,
