@@ -61,6 +61,25 @@ impl G2D {
         });
     }
 
+    pub fn rect_uvs(
+        &mut self,
+        top_left: Vec2,
+        size: Vec2,
+        uv_top_left: Vec2,
+        uv_scale: Vec2,
+    ) {
+        self.sprites.push(SpriteData {
+            pos: [top_left.x, top_left.y],
+            size: [size.x, size.y],
+            rgba: self.fill_color,
+            tex: self.image.texture_id().get_index() as f32,
+            angle: 0.0,
+            center_offset: [0.5, -0.5],
+            uv_offset: uv_top_left.into(),
+            uv_scale: uv_scale.into(),
+        });
+    }
+
     pub fn line(&mut self, start: Vec2, end: Vec2) {
         let d = end - start;
         let len = d.magnitude();
