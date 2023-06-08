@@ -1,4 +1,5 @@
 mod assets;
+mod text;
 mod texture;
 
 use {
@@ -19,6 +20,7 @@ use {
 
 pub use self::{
     assets::{AssetLoader, Image, NewAssetsCommand},
+    text::CachedFont,
     texture::{TextureAtlas, TextureId},
 };
 

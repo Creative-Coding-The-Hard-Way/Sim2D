@@ -7,7 +7,9 @@ use {crate::math::Vec2, vulkan_api::SpriteData};
 pub(crate) use self::renderer::NewAssetsCommand;
 pub use self::{
     error::GraphicsError,
-    renderer::{AssetLoader, Image, Renderer, TextureAtlas, TextureId},
+    renderer::{
+        AssetLoader, CachedFont, Image, Renderer, TextureAtlas, TextureId,
+    },
 };
 
 pub struct G2D {
