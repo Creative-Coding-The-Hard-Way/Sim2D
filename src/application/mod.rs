@@ -7,7 +7,7 @@ mod timer;
 use {
     self::timer::Timer,
     crate::{
-        graphics::{NewAssetsCommand, Renderer, G2D},
+        graphics::{Assets, NewAssets, Renderer, G2D},
         sim2d::Sim2D,
         DynSketch, Sketch,
     },
@@ -17,7 +17,7 @@ use {
     std::{sync::mpsc::Receiver, thread::JoinHandle},
 };
 
-type PreloadJoinHandle = JoinHandle<Result<(DynSketch, NewAssetsCommand)>>;
+type PreloadJoinHandle = JoinHandle<Result<(DynSketch, NewAssets)>>;
 
 pub use crate::window::{GlfwWindow, WindowState};
 
@@ -34,6 +34,7 @@ pub struct Application {
     paused: bool,
     timer: Timer,
 
+    assets: Assets,
     renderer: Renderer,
     window: GlfwWindow,
 }
@@ -64,15 +65,25 @@ impl Application {
     where
         S: Sketch + Send + 'static,
     {
-        let render_device = unsafe { window.create_render_device()? };
-        let mut renderer =
-            Renderer::new(render_device, window.get_framebuffer_size())?;
-
-        let mut asset_loader = renderer.new_asset_loader();
         let mut loading = LoadingSketch::default();
-        loading.preload(&mut asset_loader)?;
 
-        renderer.load_assets(NewAssetsCommand::new(asset_loader)?)?;
+        let render_device = unsafe { window.create_render_device()? };
+        let mut assets = Assets::new(render_device.clone());
+        let barriers = {
+            let mut asset_loader = assets.take_asset_loader();
+
+            loading.preload(&mut asset_loader)?;
+
+            let new_assets = NewAssets::new(asset_loader)?;
+            assets.new_assets(new_assets)
+        };
+
+        let mut renderer = Renderer::new(
+            render_device,
+            window.get_framebuffer_size(),
+            assets.textures(),
+            &barriers,
+        )?;
 
         let sim = Sim2D::new(G2D::new(), window.new_window_state());
 
@@ -86,6 +97,7 @@ impl Application {
             timer: Timer::new(),
             paused: false,
 
+            assets,
             renderer,
             window,
         };
@@ -130,13 +142,12 @@ impl Application {
         self.sketch.setup(&mut self.sim);
         self.window.update_window_to_match(&mut self.sim.w)?;
 
-        let mut asset_loader = self.renderer.new_asset_loader();
-        let join_handle: PreloadJoinHandle = std::thread::spawn(
-            move || -> Result<(DynSketch, NewAssetsCommand)> {
+        let mut asset_loader = self.assets.take_asset_loader();
+        let join_handle: PreloadJoinHandle =
+            std::thread::spawn(move || -> Result<(DynSketch, NewAssets)> {
                 sketch.preload(&mut asset_loader)?;
-                Ok((sketch, NewAssetsCommand::new(asset_loader)?))
-            },
-        );
+                Ok((sketch, NewAssets::new(asset_loader)?))
+            });
 
         debug_assert!(self.loading_join_handle.is_none());
         self.loading_join_handle = Some(join_handle);
@@ -152,9 +163,13 @@ impl Application {
 
         if is_finished {
             let handle = self.loading_join_handle.take().unwrap();
-            let (sketch, new_assets_cmd) = handle.join().unwrap()?;
+            let (sketch, new_assets) = handle.join().unwrap()?;
             self.sketch = sketch;
-            self.renderer.load_assets(new_assets_cmd)?;
+            let image_acquire_barriers = self.assets.new_assets(new_assets);
+            self.renderer.update_textures(
+                self.assets.textures(),
+                &image_acquire_barriers,
+            )?;
 
             self.sim.g = G2D::new();
             self.sketch.setup(&mut self.sim);

@@ -1,88 +1,95 @@
+mod asset_loader;
 mod image;
-mod new_assets_cmd;
 
 use {
-    crate::graphics::{
-        renderer::texture::TextureId, vulkan_api::RenderDevice, GraphicsError,
-    },
-    ::image::RgbaImage,
-    anyhow::Context,
-    std::{path::Path, sync::Arc},
+    crate::graphics::vulkan_api::{RenderDevice, Texture2D},
+    ash::vk,
+    std::{collections::HashMap, sync::Arc},
 };
 
-pub use self::{image::Image, new_assets_cmd::NewAssetsCommand};
+pub use self::{
+    asset_loader::{AssetLoader, NewAssets, TextureSource},
+    image::Image,
+};
 
-#[derive(Debug, Clone)]
-pub struct TextureSource {
-    img: RgbaImage,
-    generate_mipmaps: bool,
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct TextureId {
+    index: i32,
 }
 
-/// The public API for loading new images and textures for use in sketches.
-#[derive(Debug)]
-pub struct AssetLoader {
-    base_index: usize,
-    texture_sources: Vec<TextureSource>,
+impl TextureId {
+    pub const fn no_texture() -> Self {
+        Self { index: -1 }
+    }
+}
+
+impl TextureId {
+    fn from_raw(index: usize) -> Self {
+        Self {
+            index: index as i32,
+        }
+    }
+
+    pub(crate) fn raw(&self) -> i32 {
+        self.index
+    }
+}
+
+/// All assets available for use by the renderer.
+pub struct Assets {
+    textures: Vec<Arc<Texture2D>>,
+    cached_textures: HashMap<String, Image>,
+    loader: Option<AssetLoader>,
     render_device: Arc<RenderDevice>,
 }
 
-impl AssetLoader {
-    pub(crate) fn new(
-        render_device: Arc<RenderDevice>,
-        base_index: usize,
-    ) -> Self {
+impl Assets {
+    pub fn new(render_device: Arc<RenderDevice>) -> Self {
         Self {
-            base_index,
-            texture_sources: vec![],
+            textures: vec![],
+            cached_textures: HashMap::default(),
+            loader: Some(AssetLoader::new(
+                render_device.clone(),
+                0,
+                HashMap::default(),
+            )),
             render_device,
         }
     }
 
-    pub fn load_file(
-        &mut self,
-        file_path: impl AsRef<Path>,
-        generate_mipmaps: bool,
-    ) -> Result<Image, GraphicsError> {
-        let img = Self::load_image_from_file(file_path)?;
-        Ok(self.load_image(img, generate_mipmaps))
+    pub fn take_asset_loader(&mut self) -> AssetLoader {
+        self.loader.take().unwrap()
     }
 
-    pub fn load_image(
+    pub fn new_assets(
         &mut self,
-        img: RgbaImage,
-        generate_mipmaps: bool,
-    ) -> Image {
-        let index = self.base_index + self.texture_sources.len();
-        let width = img.width() as f32;
-        let height = img.height() as f32;
-        let source = TextureSource {
-            img,
-            generate_mipmaps,
-        };
-        self.texture_sources.push(source);
-        Image::new(TextureId::from_raw(index as i32), width, height)
-    }
-}
+        new_assets: NewAssets,
+    ) -> Vec<vk::ImageMemoryBarrier2> {
+        assert!(
+            self.textures.len() == new_assets.asset_loader.texture_base_index()
+        );
 
-impl AssetLoader {
-    fn load_image_from_file(
-        texture_path: impl AsRef<Path>,
-    ) -> Result<RgbaImage, GraphicsError> {
-        let img = ::image::io::Reader::open(&texture_path)
-            .with_context(|| {
-                format!(
-                    "Unable to read texture image from path {:?}",
-                    texture_path.as_ref()
-                )
-            })?
-            .decode()
-            .with_context(|| {
-                format!(
-                    "Unable to decode texture image at {:?}",
-                    texture_path.as_ref()
-                )
-            })?
-            .into_rgba8();
-        Ok(img)
+        self.textures.extend(new_assets.textures.into_iter());
+        self.cached_textures.extend(
+            new_assets
+                .asset_loader
+                .cached_textures()
+                .iter()
+                .map(|(k, v)| (k.clone(), *v)),
+        );
+
+        self.loader = Some(AssetLoader::new(
+            self.render_device.clone(),
+            self.textures.len(),
+            self.cached_textures.clone(),
+        ));
+
+        log::trace!("Loaded assets: {:#?}", self.cached_textures);
+
+        new_assets.image_acquire_barriers
+    }
+
+    pub fn textures(&self) -> &[Arc<Texture2D>] {
+        &self.textures
     }
 }

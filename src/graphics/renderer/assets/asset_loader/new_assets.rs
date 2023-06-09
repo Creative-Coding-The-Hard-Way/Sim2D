@@ -8,12 +8,12 @@ use {
     ash::vk,
     image::RgbaImage,
     rayon::prelude::*,
-    std::{os::raw::c_void, sync::Arc},
+    std::{os::raw::c_void, sync::Arc, time::Instant},
 };
 
 /// Represents new assets to include in the atlas.
-pub struct NewAssetsCommand {
-    pub base_index: usize,
+pub struct NewAssets {
+    pub asset_loader: AssetLoader,
     pub textures: Vec<Arc<Texture2D>>,
     pub image_acquire_barriers: Vec<vk::ImageMemoryBarrier2>,
 }
@@ -22,19 +22,20 @@ pub struct NewAssetsCommand {
 ///
 /// It is safe to SEND NewAssetsCommands despite owning vk::ImageMemoryBarrier2
 /// because the next pointer is not used.
-unsafe impl Send for NewAssetsCommand {}
+unsafe impl Send for NewAssets {}
 
 // Private API
 // -----------
 
-impl NewAssetsCommand {
+impl NewAssets {
     pub(crate) fn new(
-        asset_loader: AssetLoader,
+        mut asset_loader: AssetLoader,
     ) -> Result<Self, GraphicsError> {
-        let render_device = asset_loader.render_device;
+        let start_time = Instant::now();
+
         let images = asset_loader
             .texture_sources
-            .into_par_iter()
+            .par_drain(0..)
             .map(|source| {
                 if source.generate_mipmaps {
                     Self::generate_mipmaps(source.img)
@@ -44,11 +45,19 @@ impl NewAssetsCommand {
             })
             .collect::<Vec<Vec<image::RgbaImage>>>();
 
+        let render_device = asset_loader.render_device.clone();
         let (textures, image_acquire_barriers) =
             unsafe { Self::build_and_upload_textures(render_device, &images)? };
 
-        Ok(NewAssetsCommand {
-            base_index: asset_loader.base_index,
+        let time_to_build_textures = Instant::now() - start_time;
+        log::trace!(
+            "Loading textures complete! Took {}ms",
+            (time_to_build_textures.as_secs_f64() * 1000.0 * 100.0).ceil()
+                / 100.0
+        );
+
+        Ok(NewAssets {
+            asset_loader,
             textures,
             image_acquire_barriers,
         })
@@ -57,34 +66,30 @@ impl NewAssetsCommand {
 
 // Private Helper Functions
 
-impl NewAssetsCommand {
+impl NewAssets {
     /// Generate mipmap images.
     fn generate_mipmaps(img: RgbaImage) -> Vec<RgbaImage> {
-        let original_image = img.clone();
-        log::trace!(
-            "Original image dims: {}x{}",
-            original_image.width(),
-            original_image.height()
-        );
         let mut w = img.width();
         let mut h = img.height();
-        let mut mips = vec![img];
 
+        let mut sizes = vec![(w, h)];
         while w > 1 && h > 1 {
             w = (w / 2).max(1);
             h = (h / 2).max(1);
-
-            let mip = ::image::imageops::resize(
-                &original_image,
-                w,
-                h,
-                ::image::imageops::FilterType::Lanczos3,
-            );
-            log::trace!("Mip level {} dims: {}x{}", mips.len(), w, h);
-            mips.push(mip);
+            sizes.push((w, h));
         }
 
-        mips
+        sizes
+            .par_iter()
+            .map(|(w, h)| -> RgbaImage {
+                ::image::imageops::resize(
+                    &img,
+                    *w,
+                    *h,
+                    ::image::imageops::FilterType::Lanczos3,
+                )
+            })
+            .collect()
     }
 
     unsafe fn build_and_upload_textures(

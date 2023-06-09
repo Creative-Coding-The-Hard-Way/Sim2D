@@ -78,7 +78,7 @@ impl CachedFont {
             });
         }
 
-        let atlas = loader.load_image(img, true);
+        let atlas = loader.load_image(img, true, "font");
 
         Self {
             atlas,

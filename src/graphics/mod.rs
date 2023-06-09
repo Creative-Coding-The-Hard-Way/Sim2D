@@ -4,15 +4,14 @@ pub(crate) mod vulkan_api;
 
 use {crate::math::Vec2, vulkan_api::SpriteData};
 
-pub(crate) use self::renderer::NewAssetsCommand;
+pub(crate) use self::renderer::NewAssets;
 pub use self::{
     error::GraphicsError,
-    renderer::{
-        AssetLoader, CachedFont, Image, Renderer, TextureAtlas, TextureId,
-    },
+    renderer::{AssetLoader, Assets, CachedFont, Image, Renderer, TextureId},
 };
 
 pub struct G2D {
+    cached_fonts: Vec<CachedFont>,
     sprites: Vec<SpriteData>,
 
     pub clear_color: [f32; 4],
@@ -24,6 +23,7 @@ pub struct G2D {
 impl Default for G2D {
     fn default() -> Self {
         Self {
+            cached_fonts: Vec::default(),
             sprites: Vec::with_capacity(10_000),
             clear_color: [1.0, 1.0, 1.0, 1.0],
             fill_color: [1.0, 1.0, 1.0, 1.0],
@@ -43,7 +43,7 @@ impl G2D {
             pos: [pos.x, pos.y],
             size: [size.x, size.y],
             rgba: self.fill_color,
-            tex: self.image.texture_id().get_index() as f32,
+            tex: self.image.texture_id().raw() as f32,
             angle,
             uv_scale: [1.0, 1.0],
             uv_offset: [0.0, 0.0],
@@ -56,7 +56,7 @@ impl G2D {
             pos: [top_left.x, top_left.y],
             size: [size.x, size.y],
             rgba: self.fill_color,
-            tex: self.image.texture_id().get_index() as f32,
+            tex: self.image.texture_id().raw() as f32,
             angle,
             center_offset: [0.5, -0.5],
             ..Default::default()
@@ -74,7 +74,7 @@ impl G2D {
             pos: [top_left.x, top_left.y],
             size: [size.x, size.y],
             rgba: self.fill_color,
-            tex: self.image.texture_id().get_index() as f32,
+            tex: self.image.texture_id().raw() as f32,
             angle: 0.0,
             center_offset: [0.5, -0.5],
             uv_offset: uv_top_left.into(),

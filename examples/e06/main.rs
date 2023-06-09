@@ -27,7 +27,7 @@ impl Sketch for TextRendering {
             .context("Unable to read font!")?;
 
         let font = FontVec::try_from_vec(font_data)?;
-        let scaled_font = font.into_scaled(64.0);
+        let scaled_font = font.into_scaled(16.0);
 
         let cached_glyphs = "
             abcdefghijklmnopqrstuvwxyz

@@ -1,37 +1,34 @@
 mod assets;
 mod text;
-mod texture;
 
 use {
     crate::{
         graphics::{
             vulkan_api::{
                 BindlessSprites, ColorPass, FrameStatus, FramesInFlight,
-                RenderDevice,
+                RenderDevice, Texture2D,
             },
             GraphicsError, G2D,
         },
         math::Mat4,
     },
     ash::vk,
-    image::Pixel,
     std::sync::Arc,
 };
 
 pub use self::{
-    assets::{AssetLoader, Image, NewAssetsCommand},
+    assets::{AssetLoader, Assets, Image, NewAssets, TextureId},
     text::CachedFont,
-    texture::{TextureAtlas, TextureId},
 };
 
 /// The Sim2D Rendering backend.
 pub struct Renderer {
     projection: Mat4,
-    texture_atlas: TextureAtlas,
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
     bindless_sprites: BindlessSprites,
     image_acquire_barriers: Vec<vk::ImageMemoryBarrier2>,
+    textures: Vec<Arc<Texture2D>>,
     render_device: Arc<RenderDevice>,
 }
 
@@ -39,6 +36,8 @@ impl Renderer {
     pub fn new(
         render_device: Arc<RenderDevice>,
         framebuffer_size: (i32, i32),
+        textures: &[Arc<Texture2D>],
+        image_acquire_barriers: &[vk::ImageMemoryBarrier2],
     ) -> Result<Self, GraphicsError> {
         let frames_in_flight = unsafe {
             FramesInFlight::new(render_device.clone(), framebuffer_size, 3)?
@@ -48,21 +47,6 @@ impl Renderer {
             ColorPass::new(render_device.clone(), frames_in_flight.swapchain())?
         };
 
-        let mut texture_atlas =
-            unsafe { TextureAtlas::new(render_device.clone())? };
-        let mut loader = texture_atlas.take_asset_loader();
-        let _loading_id = {
-            let mut img = image::RgbaImage::new(1, 1);
-            img.put_pixel(
-                0,
-                0,
-                image::Rgba::<u8>::from_slice(&[255, 255, 255, 255]).to_owned(),
-            );
-            loader.load_image(img, false)
-        };
-        let new_assets_cmd = NewAssetsCommand::new(loader)?;
-        texture_atlas.load_assets(&new_assets_cmd);
-
         let projection = Self::fullscreen_ortho_projection(framebuffer_size);
 
         let mut bindless_sprites = unsafe {
@@ -70,7 +54,7 @@ impl Renderer {
                 render_device.clone(),
                 color_pass.render_pass(),
                 &frames_in_flight,
-                texture_atlas.textures(),
+                textures,
             )?
         };
         bindless_sprites.set_projection(&projection);
@@ -81,23 +65,20 @@ impl Renderer {
 
             bindless_sprites,
             color_pass,
-            texture_atlas,
 
-            image_acquire_barriers: new_assets_cmd.image_acquire_barriers,
+            image_acquire_barriers: image_acquire_barriers.to_owned(),
+            textures: textures.to_owned(),
 
             render_device,
         })
     }
 
-    pub fn new_asset_loader(&mut self) -> AssetLoader {
-        self.texture_atlas.take_asset_loader()
-    }
-
-    pub fn load_assets(
+    pub fn update_textures(
         &mut self,
-        new_assets_cmd: NewAssetsCommand,
+        textures: &[Arc<Texture2D>],
+        image_acquire_barriers: &[vk::ImageMemoryBarrier2],
     ) -> Result<(), GraphicsError> {
-        self.texture_atlas.load_assets(&new_assets_cmd);
+        self.textures = textures.to_owned();
 
         self.bindless_sprites = unsafe {
             self.frames_in_flight.wait_for_all_frames_to_complete()?;
@@ -105,13 +86,13 @@ impl Renderer {
                 self.render_device.clone(),
                 self.color_pass.render_pass(),
                 &self.frames_in_flight,
-                self.texture_atlas.textures(),
+                &self.textures,
             )?
         };
         self.bindless_sprites.set_projection(&self.projection);
 
         self.image_acquire_barriers
-            .extend_from_slice(&new_assets_cmd.image_acquire_barriers);
+            .extend_from_slice(image_acquire_barriers);
         Ok(())
     }
 
@@ -184,7 +165,7 @@ impl Renderer {
                 self.render_device.clone(),
                 self.color_pass.render_pass(),
                 &self.frames_in_flight,
-                self.texture_atlas.textures(),
+                &self.textures,
             )?;
             self.bindless_sprites.set_projection(&self.projection);
         };
