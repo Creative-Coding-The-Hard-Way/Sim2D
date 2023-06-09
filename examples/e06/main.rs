@@ -39,12 +39,12 @@ impl Sketch for TextRendering {
             format!(
                 indoc::indoc!(
                     "
-                    FPS: {}
                     Frame Time: {}ms
+                           FPS: {}
                     "
                 ),
-                1.0 / sim.dt(),
-                (sim.dt() * 1000.0 * 10.0).ceil() / 10.0,
+                (sim.dt() * 1000.0 * 10.0).round() / 10.0,
+                ((1.0 / sim.dt()) * 10.0).round() / 10.0,
             ),
         );
 
