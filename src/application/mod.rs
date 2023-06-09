@@ -222,8 +222,16 @@ impl Application {
     }
 
     fn update(&mut self) -> Result<()> {
+        if let Some(avg_times) = self.timer.report_avg_times() {
+            (
+                self.sim.avg_frame_time,
+                self.sim.avg_sim_time,
+                self.sim.avg_render_time,
+            ) = avg_times;
+        }
+
         let total_dt = self.timer.frame_tick_tock();
-        self.sim.set_delta_time(total_dt.as_secs_f32());
+        self.sim.delta_time = total_dt.as_secs_f32();
 
         self.timer.simulation_tick();
         self.sketch.update(&mut self.sim);

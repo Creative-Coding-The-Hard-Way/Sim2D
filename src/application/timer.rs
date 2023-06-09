@@ -39,27 +39,24 @@ impl Timer {
         let duration = self.frame_time.tock();
         self.avg_frame_time.record(duration);
 
+        self.frame_time.tick();
+        duration
+    }
+
+    pub fn report_avg_times(
+        &mut self,
+    ) -> Option<(Duration, Duration, Duration)> {
         if Instant::now() >= self.next_report_time {
             self.next_report_time = Instant::now() + self.report_rate;
 
-            let round_ms = |val: f32| (val * 1000.0 * 100.0).floor() / 100.0;
-
-            log::info!(
-                indoc::indoc!(
-                    "
-                    -  Frame Time: {}ms
-                    - Update Time: {}ms
-                    - Render Time: {}ms
-                    "
-                ),
-                round_ms(self.avg_frame_time.report().as_secs_f32()),
-                round_ms(self.avg_simulation_time.report().as_secs_f32()),
-                round_ms(self.avg_render_time.report().as_secs_f32()),
-            );
+            Some((
+                self.avg_frame_time.report(),
+                self.avg_simulation_time.report(),
+                self.avg_render_time.report(),
+            ))
+        } else {
+            None
         }
-
-        self.frame_time.tick();
-        duration
     }
 
     pub fn simulation_tick(&mut self) {

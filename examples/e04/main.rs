@@ -6,6 +6,7 @@ use {
         math::Vec2,
         Sim2D, Sketch,
     },
+    std::time::Duration,
 };
 
 #[derive(Clone, Debug, Default)]
@@ -167,6 +168,28 @@ impl Sketch for NBodySystem {
         for planet in &self.planets {
             planet.draw(sim);
         }
+
+        sim.g.fill_color = [1.0, 1.0, 1.0, 1.0];
+        let round_ms =
+            |d: &Duration| (d.as_secs_f32() * 1000.0 * 100.0).ceil() / 100.0;
+
+        sim.g.text(
+            Vec2::new(sim.w.width() * -0.5, sim.w.height() * 0.5),
+            format!(
+                indoc::indoc!(
+                    "
+                    |         FPS: {}
+                    |  Frame Time: {}ms
+                    |    Sim Time: {}ms
+                    | Render Time: {}ms
+                    "
+                ),
+                1000.0 / round_ms(sim.avg_frame_time()),
+                round_ms(sim.avg_frame_time()),
+                round_ms(sim.avg_sim_time()),
+                round_ms(sim.avg_render_time()),
+            ),
+        );
     }
 }
 

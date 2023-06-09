@@ -49,7 +49,7 @@ impl AssetLoader {
             abcdefghijklmnopqrstuvwxyz
             ABCDEFGHIJKLMNOPQRSTUVWXYZ
             1234567890{}()[]*&^%$#@!+=
-            -/\\\"'`;:<>.,_
+            -/\\\"'`;:<>.,_|
             ";
         let (atlas, glyph_uvs) =
             CachedFont::build_atlas(&font, cached_alphabet);

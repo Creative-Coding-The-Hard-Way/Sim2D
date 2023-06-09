@@ -1,4 +1,7 @@
-use crate::{application::WindowState, graphics::G2D};
+use {
+    crate::{application::WindowState, graphics::G2D},
+    std::time::Duration,
+};
 
 /// The API entrypoint.
 ///
@@ -8,7 +11,10 @@ pub struct Sim2D {
     pub g: G2D,
     pub w: WindowState,
 
-    delta_time: f32,
+    pub(crate) delta_time: f32,
+    pub(crate) avg_frame_time: Duration,
+    pub(crate) avg_sim_time: Duration,
+    pub(crate) avg_render_time: Duration,
 }
 
 // Public API
@@ -17,6 +23,18 @@ pub struct Sim2D {
 impl Sim2D {
     pub fn dt(&self) -> f32 {
         self.delta_time
+    }
+
+    pub fn avg_frame_time(&self) -> &Duration {
+        &self.avg_frame_time
+    }
+
+    pub fn avg_sim_time(&self) -> &Duration {
+        &self.avg_sim_time
+    }
+
+    pub fn avg_render_time(&self) -> &Duration {
+        &self.avg_render_time
     }
 }
 
@@ -30,10 +48,9 @@ impl Sim2D {
             g,
             w,
             delta_time: 0.0,
+            avg_frame_time: Duration::default(),
+            avg_sim_time: Duration::default(),
+            avg_render_time: Duration::default(),
         }
-    }
-
-    pub(crate) fn set_delta_time(&mut self, delta_time: f32) {
-        self.delta_time = delta_time;
     }
 }

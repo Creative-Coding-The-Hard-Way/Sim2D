@@ -6,6 +6,7 @@ use {
         math::Vec2,
         Sim2D, Sketch,
     },
+    std::time::Duration,
 };
 
 /// A slow-loading sketch to demo the loading screen.
@@ -34,17 +35,22 @@ impl Sketch for TextRendering {
         sim.g.font = FontId::default_font();
         sim.g.text(Vec2::new(0.0, 0.0), "hello world");
 
+        let round_ms =
+            |d: &Duration| (d.as_secs_f32() * 1000.0 * 100.0).ceil() / 100.0;
+
         sim.g.text(
             Vec2::new(sim.w.width() * -0.5, sim.w.height() * 0.5),
             format!(
                 indoc::indoc!(
                     "
-                    Frame Time: {}ms
-                           FPS: {}
+                    |  Frame Time: {}ms
+                    |    Sim Time: {}ms
+                    | Render Time: {}ms
                     "
                 ),
-                (sim.dt() * 1000.0 * 10.0).round() / 10.0,
-                ((1.0 / sim.dt()) * 10.0).round() / 10.0,
+                round_ms(sim.avg_frame_time()),
+                round_ms(sim.avg_sim_time()),
+                round_ms(sim.avg_render_time()),
             ),
         );
 
