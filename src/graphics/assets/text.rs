@@ -1,5 +1,5 @@
 use {
-    crate::{graphics::Image, math::Vec2, Sim2D},
+    crate::{graphics::Image, math::Vec2},
     ab_glyph::{
         Font, FontVec, Glyph, GlyphId, OutlinedGlyph, PxScaleFont, ScaleFont,
     },

@@ -1,15 +1,15 @@
+mod assets;
 mod error;
 mod renderer;
 pub(crate) mod vulkan_api;
 
 use {crate::math::Vec2, std::sync::Arc, vulkan_api::SpriteData};
 
-pub(crate) use self::renderer::NewAssets;
+pub(crate) use self::assets::NewAssets;
 pub use self::{
+    assets::{AssetLoader, Assets, CachedFont, FontId, Image, TextureId},
     error::GraphicsError,
-    renderer::{
-        AssetLoader, Assets, CachedFont, FontId, Image, Renderer, TextureId,
-    },
+    renderer::Renderer,
 };
 
 pub struct G2D {

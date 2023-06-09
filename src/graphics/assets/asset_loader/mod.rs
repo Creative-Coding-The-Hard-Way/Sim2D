@@ -3,7 +3,7 @@ mod new_assets;
 use {
     super::FontId,
     crate::graphics::{
-        renderer::{assets::CachedFont, Image, TextureId},
+        assets::{CachedFont, Image, TextureId},
         vulkan_api::RenderDevice,
         GraphicsError,
     },
