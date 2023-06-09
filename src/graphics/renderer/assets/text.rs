@@ -1,40 +1,47 @@
 use {
-    crate::{
-        graphics::{AssetLoader, Image},
-        math::Vec2,
-        Sim2D,
-    },
+    crate::{graphics::Image, math::Vec2, Sim2D},
     ab_glyph::{
         Font, FontVec, Glyph, GlyphId, OutlinedGlyph, PxScaleFont, ScaleFont,
     },
+    image::RgbaImage,
     std::collections::HashMap,
 };
 
-struct GlyphSprite {
+pub struct GlyphSprite {
     pub top_left: Vec2,
     pub size: Vec2,
     pub uv_top_left: Vec2,
     pub uv_size: Vec2,
 }
 
-struct GlyphUV {
+pub struct GlyphUV {
     pub top_left: Vec2,
     pub scale: Vec2,
 }
 
 pub struct CachedFont {
-    atlas: Image,
+    pub(crate) atlas: Image,
     font: PxScaleFont<FontVec>,
     glyph_uvs: HashMap<GlyphId, GlyphUV>,
 }
 
 impl CachedFont {
-    /// Build a new bitmap font.
     pub fn new(
-        loader: &mut AssetLoader,
+        atlas: Image,
         font: PxScaleFont<FontVec>,
-        alphabet: impl AsRef<str>,
+        glyph_uvs: HashMap<GlyphId, GlyphUV>,
     ) -> Self {
+        Self {
+            atlas,
+            font,
+            glyph_uvs,
+        }
+    }
+
+    pub fn build_atlas(
+        font: &PxScaleFont<FontVec>,
+        alphabet: impl AsRef<str>,
+    ) -> (RgbaImage, HashMap<GlyphId, GlyphUV>) {
         let glyphs = alphabet
             .as_ref()
             .chars()
@@ -78,42 +85,10 @@ impl CachedFont {
             });
         }
 
-        let atlas = loader.load_image(img, true, "font");
-
-        Self {
-            atlas,
-            font,
-            glyph_uvs,
-        }
+        (img, glyph_uvs)
     }
 
-    pub fn draw_text(
-        &self,
-        sim: &mut Sim2D,
-        top_left: Vec2,
-        text: impl AsRef<str>,
-    ) {
-        let (glyph_sprites, width, height) =
-            self.layout_paragraph_geometry(text);
-
-        let original_image = sim.g.image;
-        sim.g.image = self.atlas;
-
-        for sprite in &glyph_sprites {
-            sim.g.rect_uvs(
-                sprite.top_left
-                    + top_left
-                    + Vec2::new(-width / 2.0, height / 2.0),
-                sprite.size,
-                sprite.uv_top_left,
-                sprite.uv_size,
-            )
-        }
-
-        sim.g.image = original_image;
-    }
-
-    fn layout_paragraph_geometry(
+    pub fn layout_paragraph_geometry(
         &self,
         text: impl AsRef<str>,
     ) -> (Vec<GlyphSprite>, f32, f32) {

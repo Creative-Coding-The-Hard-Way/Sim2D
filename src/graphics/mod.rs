@@ -2,40 +2,38 @@ mod error;
 mod renderer;
 pub(crate) mod vulkan_api;
 
-use {crate::math::Vec2, vulkan_api::SpriteData};
+use {crate::math::Vec2, std::sync::Arc, vulkan_api::SpriteData};
 
 pub(crate) use self::renderer::NewAssets;
 pub use self::{
     error::GraphicsError,
-    renderer::{AssetLoader, Assets, CachedFont, Image, Renderer, TextureId},
+    renderer::{
+        AssetLoader, Assets, CachedFont, FontId, Image, Renderer, TextureId,
+    },
 };
 
 pub struct G2D {
-    cached_fonts: Vec<CachedFont>,
+    cached_fonts: Vec<Arc<CachedFont>>,
     sprites: Vec<SpriteData>,
 
+    pub font: FontId,
     pub clear_color: [f32; 4],
     pub fill_color: [f32; 4],
     pub image: Image,
     pub line_width: f32,
 }
 
-impl Default for G2D {
-    fn default() -> Self {
+impl G2D {
+    pub fn new(assets: &Assets) -> Self {
         Self {
-            cached_fonts: Vec::default(),
+            font: FontId::default_font(),
+            cached_fonts: assets.fonts().to_vec(),
             sprites: Vec::with_capacity(10_000),
             clear_color: [1.0, 1.0, 1.0, 1.0],
             fill_color: [1.0, 1.0, 1.0, 1.0],
             image: Image::none(),
             line_width: 1.0,
         }
-    }
-}
-
-impl G2D {
-    pub fn new() -> Self {
-        Default::default()
     }
 
     pub fn rect_centered(&mut self, pos: Vec2, size: Vec2, angle: f32) {
@@ -89,6 +87,26 @@ impl G2D {
         let angle =
             ((d.y / len) / (d.x / len)).atan() + std::f32::consts::FRAC_PI_2;
         self.rect_centered(midpoint, Vec2::new(self.line_width, len), angle);
+    }
+
+    pub fn text(&mut self, pos: Vec2, text: impl AsRef<str>) {
+        let font = &self.cached_fonts[self.font.raw()];
+
+        let (glyph_sprites, _, _) = font.layout_paragraph_geometry(text);
+
+        let original_image = self.image;
+        self.image = font.atlas;
+
+        for sprite in &glyph_sprites {
+            self.rect_uvs(
+                sprite.top_left + pos,
+                sprite.size,
+                sprite.uv_top_left,
+                sprite.uv_size,
+            )
+        }
+
+        self.image = original_image;
     }
 }
 

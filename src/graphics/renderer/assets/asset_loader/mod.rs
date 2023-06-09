@@ -1,12 +1,14 @@
 mod new_assets;
 
 use {
+    super::FontId,
     crate::graphics::{
-        renderer::{Image, TextureId},
+        renderer::{assets::CachedFont, Image, TextureId},
         vulkan_api::RenderDevice,
         GraphicsError,
     },
     ::image::RgbaImage,
+    ab_glyph::{Font, FontVec, PxScaleFont},
     anyhow::Context,
     std::{collections::HashMap, path::Path, sync::Arc},
 };
@@ -25,10 +27,64 @@ pub struct AssetLoader {
     texture_sources: Vec<TextureSource>,
     cached_textures: HashMap<String, Image>,
 
+    font_base_index: usize,
+    fonts: Vec<Arc<CachedFont>>,
+    cached_fonts: HashMap<String, FontId>,
+
     render_device: Arc<RenderDevice>,
 }
 
 impl AssetLoader {
+    pub fn load_font(
+        &mut self,
+        font: PxScaleFont<FontVec>,
+        name: impl AsRef<str>,
+    ) -> Result<FontId, GraphicsError> {
+        let cache_id = name.as_ref().to_owned();
+        if let Some(font_id) = self.cached_fonts.get(&cache_id) {
+            return Ok(*font_id);
+        }
+
+        let cached_alphabet = "
+            abcdefghijklmnopqrstuvwxyz
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ
+            1234567890{}()[]*&^%$#@!+=
+            -/\\\"'`;:<>.,_
+            ";
+        let (atlas, glyph_uvs) =
+            CachedFont::build_atlas(&font, cached_alphabet);
+
+        let atlas_image = self.load_image(atlas, true, &cache_id);
+
+        let font = Arc::new(CachedFont::new(atlas_image, font, glyph_uvs));
+        let font_id = FontId::from_raw(self.font_base_index + self.fonts.len());
+        self.fonts.push(font);
+
+        self.cached_fonts.insert(cache_id, font_id);
+
+        Ok(font_id)
+    }
+
+    pub fn load_font_file(
+        &mut self,
+        file_path: impl AsRef<Path>,
+        size: f32,
+    ) -> Result<FontId, GraphicsError> {
+        let cache_id: String =
+            format!("{}-{}", file_path.as_ref().to_str().unwrap(), size);
+        if let Some(font_id) = self.cached_fonts.get(&cache_id) {
+            return Ok(*font_id);
+        }
+
+        let font_data =
+            std::fs::read(file_path).context("Unable to read font!")?;
+        let scaled_font = FontVec::try_from_vec(font_data)
+            .context("unable to create a font!")?
+            .into_scaled(size);
+
+        self.load_font(scaled_font, cache_id)
+    }
+
     pub fn load_image_file(
         &mut self,
         file_path: impl AsRef<Path>,
@@ -74,11 +130,18 @@ impl AssetLoader {
         render_device: Arc<RenderDevice>,
         texture_base_index: usize,
         cached_textures: HashMap<String, Image>,
+        font_base_index: usize,
+        cached_fonts: HashMap<String, FontId>,
     ) -> Self {
         Self {
             texture_base_index,
             texture_sources: vec![],
             cached_textures,
+
+            font_base_index,
+            cached_fonts,
+            fonts: vec![],
+
             render_device,
         }
     }
@@ -87,8 +150,20 @@ impl AssetLoader {
         self.texture_base_index
     }
 
+    pub(crate) fn font_base_index(&self) -> usize {
+        self.font_base_index
+    }
+
     pub(crate) fn cached_textures(&self) -> &HashMap<String, Image> {
         &self.cached_textures
+    }
+
+    pub(crate) fn cached_fonts(&self) -> &HashMap<String, FontId> {
+        &self.cached_fonts
+    }
+
+    pub(crate) fn fonts(&self) -> &[Arc<CachedFont>] {
+        &self.fonts
     }
 
     fn load_image_from_file(

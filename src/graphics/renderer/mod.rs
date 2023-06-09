@@ -1,5 +1,4 @@
 mod assets;
-mod text;
 
 use {
     crate::{
@@ -16,9 +15,8 @@ use {
     std::sync::Arc,
 };
 
-pub use self::{
-    assets::{AssetLoader, Assets, Image, NewAssets, TextureId},
-    text::CachedFont,
+pub use self::assets::{
+    AssetLoader, Assets, CachedFont, FontId, Image, NewAssets, TextureId,
 };
 
 /// The Sim2D Rendering backend.

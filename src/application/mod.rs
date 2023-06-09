@@ -19,6 +19,8 @@ use {
 
 type PreloadJoinHandle = JoinHandle<Result<(DynSketch, NewAssets)>>;
 
+use {ab_glyph::Font, anyhow::Context};
+
 pub use crate::window::{GlfwWindow, WindowState};
 
 /// Every sketch is comprised of a State type and a GLFW window.
@@ -72,20 +74,27 @@ impl Application {
         let barriers = {
             let mut asset_loader = assets.take_asset_loader();
 
+            let font = ab_glyph::FontVec::try_from_vec(
+                include_bytes!("../../fonts/RobotoMono-Medium.ttf").to_vec(),
+            )
+            .context("unable to load default font!")?
+            .into_scaled(24.0);
+            asset_loader.load_font(font, "DefaultFont")?;
+
             loading.preload(&mut asset_loader)?;
 
             let new_assets = NewAssets::new(asset_loader)?;
             assets.new_assets(new_assets)
         };
 
-        let mut renderer = Renderer::new(
+        let renderer = Renderer::new(
             render_device,
             window.get_framebuffer_size(),
             assets.textures(),
             &barriers,
         )?;
 
-        let sim = Sim2D::new(G2D::new(), window.new_window_state());
+        let sim = Sim2D::new(G2D::new(&assets), window.new_window_state());
 
         let mut app = Self {
             loading_join_handle: None,
@@ -171,7 +180,7 @@ impl Application {
                 &image_acquire_barriers,
             )?;
 
-            self.sim.g = G2D::new();
+            self.sim.g = G2D::new(&self.assets);
             self.sketch.setup(&mut self.sim);
             self.window.update_window_to_match(&mut self.sim.w)?;
         }
