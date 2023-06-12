@@ -1,10 +1,10 @@
-# Example 01 - Hello G2D
+# Example 04 - N Body
 
-Show how to use the G2D graphics API.
+A quick Verlet-based N-Body simulation with brute-force collisions.
 
 ## Commands
 
-From the project root: `cargo run --example e01`
+From the project root: `cargo run --example e04`
 
 ## Screenshot
 

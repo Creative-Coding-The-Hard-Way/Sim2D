@@ -1,10 +1,10 @@
-# Example 01 - Hello G2D
+# Example 02 - Bunnymark
 
-Show how to use the G2D graphics API.
+Render 1 million bunny sprites on screen.
 
 ## Commands
 
-From the project root: `cargo run --example e01`
+From the project root: `cargo run --example e02`
 
 ## Screenshot
 

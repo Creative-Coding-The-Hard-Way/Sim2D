@@ -1,10 +1,10 @@
-# Example 01 - Hello G2D
+# Example 05 - Slow Load
 
-Show how to use the G2D graphics API.
+An example of a sketch which does something in preload which takes a long time.
 
 ## Commands
 
-From the project root: `cargo run --example e01`
+From the project root: `cargo run --example e05`
 
 ## Screenshot
 

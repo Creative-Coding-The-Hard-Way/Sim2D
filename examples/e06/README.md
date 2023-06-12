@@ -1,10 +1,10 @@
-# Example 01 - Hello G2D
+# Example 06 - Text
 
-Show how to use the G2D graphics API.
+Show how to load a custom font and render text.
 
 ## Commands
 
-From the project root: `cargo run --example e01`
+From the project root: `cargo run --example e06`
 
 ## Screenshot
 

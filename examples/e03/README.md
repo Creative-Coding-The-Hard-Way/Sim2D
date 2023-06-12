@@ -1,10 +1,10 @@
-# Example 01 - Hello G2D
+# Example 03 - Lissajous Diagram
 
-Show how to use the G2D graphics API.
+Render a Lissajous diagram using line sprites.
 
 ## Commands
 
-From the project root: `cargo run --example e01`
+From the project root: `cargo run --example e03`
 
 ## Screenshot
 
