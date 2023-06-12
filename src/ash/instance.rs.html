@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/ash-0.37.0+1.3.209/src/instance.rs`."><title>instance.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../ash/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/ash-0.37.3+1.3.251/src/instance.rs`."><title>instance.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../ash/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -499,7 +499,53 @@
 <a href="#499" id="499">499</a>
 <a href="#500" id="500">500</a>
 <a href="#501" id="501">501</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::device::Device;
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+</pre><pre class="rust"><code><span class="attr">#[cfg(doc)]
+</span><span class="kw">use </span><span class="kw">super</span>::Entry;
+<span class="kw">use </span><span class="kw">crate</span>::device::Device;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::vk;
 <span class="kw">use </span><span class="kw">crate</span>::RawPtr;
@@ -534,7 +580,8 @@
         }
     }
 
-    <span class="kw">pub fn </span>handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; vk::Instance {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; vk::Instance {
         <span class="self">self</span>.handle
     }
 }
@@ -542,11 +589,13 @@
 <span class="doccomment">/// Vulkan core 1.3
 </span><span class="attr">#[allow(non_camel_case_types)]
 </span><span class="kw">impl </span>Instance {
-    <span class="kw">pub fn </span>fp_v1_3(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::InstanceFnV1_3 {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>fp_v1_3(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::InstanceFnV1_3 {
         <span class="kw-2">&amp;</span><span class="self">self</span>.instance_fn_1_3
     }
 
     <span class="doccomment">/// Retrieve the number of elements to pass to [`get_physical_device_tool_properties()`][Self::get_physical_device_tool_properties()]
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_tool_properties_len(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -564,6 +613,7 @@
     ///
     /// Call [`get_physical_device_tool_properties_len()`][Self::get_physical_device_tool_properties_len()] to query the number of elements to pass to `out`.
     /// Be sure to [`Default::default()`]-initialize these elements and optionally set their `p_next` pointer.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_tool_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -584,7 +634,8 @@
 <span class="doccomment">/// Vulkan core 1.2
 </span><span class="attr">#[allow(non_camel_case_types)]
 </span><span class="kw">impl </span>Instance {
-    <span class="kw">pub fn </span>fp_v1_2(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::InstanceFnV1_2 {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>fp_v1_2(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::InstanceFnV1_2 {
         <span class="kw-2">&amp;</span><span class="self">self</span>.instance_fn_1_2
     }
 }
@@ -592,11 +643,13 @@
 <span class="doccomment">/// Vulkan core 1.1
 </span><span class="attr">#[allow(non_camel_case_types)]
 </span><span class="kw">impl </span>Instance {
-    <span class="kw">pub fn </span>fp_v1_1(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::InstanceFnV1_1 {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>fp_v1_1(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::InstanceFnV1_1 {
         <span class="kw-2">&amp;</span><span class="self">self</span>.instance_fn_1_1
     }
 
     <span class="doccomment">/// Retrieve the number of elements to pass to [`enumerate_physical_device_groups()`][Self::enumerate_physical_device_groups()]
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>enumerate_physical_device_groups_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; VkResult&lt;usize&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>group_count = <span class="number">0</span>;
         (<span class="self">self</span>.instance_fn_1_1.enumerate_physical_device_groups)(
@@ -611,6 +664,7 @@
     ///
     /// Call [`enumerate_physical_device_groups_len()`][Self::enumerate_physical_device_groups_len()] to query the number of elements to pass to `out`.
     /// Be sure to [`Default::default()`]-initialize these elements and optionally set their `p_next` pointer.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>enumerate_physical_device_groups(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         out: <span class="kw-2">&amp;mut </span>[vk::PhysicalDeviceGroupProperties],
@@ -627,6 +681,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceFeatures2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_features2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -636,6 +691,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceProperties2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_properties2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -645,6 +701,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceFormatProperties2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_format_properties2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -655,6 +712,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceImageFormatProperties2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_image_format_properties2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -672,6 +730,7 @@
     }
 
     <span class="doccomment">/// Retrieve the number of elements to pass to [`get_physical_device_queue_family_properties2()`][Self::get_physical_device_queue_family_properties2()]
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_queue_family_properties2_len(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -691,6 +750,7 @@
     ///
     /// Call [`get_physical_device_queue_family_properties2_len()`][Self::get_physical_device_queue_family_properties2_len()] to query the number of elements to pass to `out`.
     /// Be sure to [`Default::default()`]-initialize these elements and optionally set their `p_next` pointer.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_queue_family_properties2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -708,6 +768,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceMemoryProperties2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_memory_properties2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -717,6 +778,7 @@
     }
 
     <span class="doccomment">/// Retrieve the number of elements to pass to [`get_physical_device_sparse_image_format_properties2()`][Self::get_physical_device_sparse_image_format_properties2()]
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_sparse_image_format_properties2_len(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -738,6 +800,7 @@
     ///
     /// Call [`get_physical_device_sparse_image_format_properties2_len()`][Self::get_physical_device_sparse_image_format_properties2_len()] to query the number of elements to pass to `out`.
     /// Be sure to [`Default::default()`]-initialize these elements and optionally set their `p_next` pointer.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_sparse_image_format_properties2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -757,6 +820,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalBufferProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_external_buffer_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -773,6 +837,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalFenceProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_external_fence_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -789,6 +854,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalSemaphoreProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_external_semaphore_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -808,16 +874,26 @@
 <span class="doccomment">/// Vulkan core 1.0
 </span><span class="attr">#[allow(non_camel_case_types)]
 </span><span class="kw">impl </span>Instance {
-    <span class="kw">pub fn </span>fp_v1_0(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::InstanceFnV1_0 {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>fp_v1_0(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::InstanceFnV1_0 {
         <span class="kw-2">&amp;</span><span class="self">self</span>.instance_fn_1_0
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateDevice.html&gt;
     ///
     /// # Safety
-    /// In order for the created [`Device`] to be valid for the duration of its
-    /// usage, the [`Instance`] this was called on must be dropped later than the
-    /// resulting [`Device`].
+    ///
+    /// There is a [parent/child relation] between [`Instance`] and the resulting [`Device`].  The
+    /// application must not [destroy][Instance::destroy_instance()] the parent [`Instance`] object
+    /// before first [destroying][Device::destroy_device()] the returned [`Device`] child object.
+    /// [`Device`] does _not_ implement [drop][drop()] semantics and can only be destroyed via
+    /// [`destroy_device()`][Device::destroy_device()].
+    ///
+    /// See the [`Entry::create_instance()`] documentation for more destruction ordering rules on
+    /// [`Instance`].
+    ///
+    /// [parent/child relation]: https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#fundamentals-objectmodel-lifetime
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_device(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -836,6 +912,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceProcAddr.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_proc_addr(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         device: vk::Device,
@@ -845,11 +922,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyInstance.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_instance(<span class="kw-2">&amp;</span><span class="self">self</span>, allocation_callbacks: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>vk::AllocationCallbacks&gt;) {
         (<span class="self">self</span>.instance_fn_1_0.destroy_instance)(<span class="self">self</span>.handle(), allocation_callbacks.as_raw_ptr());
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceFormatProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_format_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -865,6 +944,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceImageFormatProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_image_format_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -890,6 +970,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceMemoryProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_memory_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -903,6 +984,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -913,6 +995,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_queue_family_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -930,6 +1013,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceFeatures.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_features(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,
@@ -940,6 +1024,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkEnumeratePhysicalDevices.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>enumerate_physical_devices(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; VkResult&lt;Vec&lt;vk::PhysicalDevice&gt;&gt; {
         read_into_uninitialized_vector(|count, data| {
             (<span class="self">self</span>.instance_fn_1_0.enumerate_physical_devices)(<span class="self">self</span>.handle(), count, data)
@@ -947,6 +1032,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkEnumerateDeviceExtensionProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>enumerate_device_extension_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         device: vk::PhysicalDevice,
@@ -962,6 +1048,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkEnumerateDeviceLayerProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>enumerate_device_layer_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         device: vk::PhysicalDevice,
@@ -972,6 +1059,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSparseImageFormatProperties.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_physical_device_sparse_image_format_properties(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         physical_device: vk::PhysicalDevice,

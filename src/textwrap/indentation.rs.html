@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/textwrap-0.13.4/src/indentation.rs`."><title>indentation.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../textwrap/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/textwrap-0.16.0/src/indentation.rs`."><title>indentation.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../textwrap/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -333,48 +333,63 @@
 <a href="#333" id="333">333</a>
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Functions related to adding and removing indentation from lines of
 //! text.
 //!
 //! The functions here can be used to uniformly indent or dedent
 //! (unindent) word wrapped lines of text.
 
-/// Add prefix to each non-empty line.
+/// Indent each line by the given prefix.
+///
+/// # Examples
 ///
 /// ```
 /// use textwrap::indent;
 ///
-/// assert_eq!(indent(&quot;
-/// Foo
-/// Bar
-/// &quot;, &quot;  &quot;), &quot;
-///   Foo
-///   Bar
-/// &quot;);
+/// assert_eq!(indent(&quot;First line.\nSecond line.\n&quot;, &quot;  &quot;),
+///            &quot;  First line.\n  Second line.\n&quot;);
 /// ```
 ///
-/// Lines consisting only of whitespace are kept unchanged:
+/// When indenting, trailing whitespace is stripped from the prefix.
+/// This means that empty lines remain empty afterwards:
 ///
 /// ```
 /// use textwrap::indent;
 ///
-/// assert_eq!(indent(&quot;
-/// Foo
-///
-/// Bar
-///   \t
-/// Baz
-/// &quot;, &quot;-&gt;&quot;), &quot;
-/// -&gt;Foo
-///
-/// -&gt;Bar
-///   \t
-/// -&gt;Baz
-/// &quot;);
+/// assert_eq!(indent(&quot;First line.\n\n\nSecond line.\n&quot;, &quot;  &quot;),
+///            &quot;  First line.\n\n\n  Second line.\n&quot;);
 /// ```
 ///
-/// Leading and trailing whitespace on non-empty lines is kept
-/// unchanged:
+/// Notice how `&quot;\n\n\n&quot;` remained as `&quot;\n\n\n&quot;`.
+///
+/// This feature is useful when you want to indent text and have a
+/// space between your prefix and the text. In this case, you _don&#39;t_
+/// want a trailing space on empty lines:
+///
+/// ```
+/// use textwrap::indent;
+///
+/// assert_eq!(indent(&quot;foo = 123\n\nprint(foo)\n&quot;, &quot;# &quot;),
+///            &quot;# foo = 123\n#\n# print(foo)\n&quot;);
+/// ```
+///
+/// Notice how `&quot;\n\n&quot;` became `&quot;\n#\n&quot;` instead of `&quot;\n# \n&quot;` which
+/// would have trailing whitespace.
+///
+/// Leading and trailing whitespace coming from the text itself is
+/// kept unchanged:
 ///
 /// ```
 /// use textwrap::indent;
@@ -382,18 +397,27 @@
 /// assert_eq!(indent(&quot; \t  Foo   &quot;, &quot;-&gt;&quot;), &quot;-&gt; \t  Foo   &quot;);
 /// ```
 </span><span class="kw">pub fn </span>indent(s: <span class="kw-2">&amp;</span>str, prefix: <span class="kw-2">&amp;</span>str) -&gt; String {
-    <span class="kw">let </span><span class="kw-2">mut </span>result = String::new();
-
-    <span class="kw">for </span>(idx, line) <span class="kw">in </span>s.split(<span class="string">&#39;\n&#39;</span>).enumerate() {
+    <span class="comment">// We know we&#39;ll need more than s.len() bytes for the output, but
+    // without counting &#39;\n&#39; characters (which is somewhat slow), we
+    // don&#39;t know exactly how much. However, we can preemptively do
+    // the first doubling of the output size.
+    </span><span class="kw">let </span><span class="kw-2">mut </span>result = String::with_capacity(<span class="number">2 </span>* s.len());
+    <span class="kw">let </span>trimmed_prefix = prefix.trim_end();
+    <span class="kw">for </span>(idx, line) <span class="kw">in </span>s.split_terminator(<span class="string">&#39;\n&#39;</span>).enumerate() {
         <span class="kw">if </span>idx &gt; <span class="number">0 </span>{
             result.push(<span class="string">&#39;\n&#39;</span>);
         }
-        <span class="kw">if </span>!line.trim().is_empty() {
+        <span class="kw">if </span>line.trim().is_empty() {
+            result.push_str(trimmed_prefix);
+        } <span class="kw">else </span>{
             result.push_str(prefix);
         }
         result.push_str(line);
     }
-
+    <span class="kw">if </span>s.ends_with(<span class="string">&#39;\n&#39;</span>) {
+        <span class="comment">// split_terminator will have eaten the final &#39;\n&#39;.
+        </span>result.push(<span class="string">&#39;\n&#39;</span>);
+    }
     result
 }
 
@@ -457,7 +481,7 @@
     <span class="comment">// We now go over the lines a second time to build the result.
     </span><span class="kw">let </span><span class="kw-2">mut </span>result = String::new();
     <span class="kw">for </span>line <span class="kw">in </span>s.lines() {
-        <span class="kw">if </span>line.starts_with(<span class="kw-2">&amp;</span>prefix) &amp;&amp; line.chars().any(|c| !c.is_whitespace()) {
+        <span class="kw">if </span>line.starts_with(prefix) &amp;&amp; line.chars().any(|c| !c.is_whitespace()) {
             <span class="kw">let </span>(<span class="kw">_</span>, tail) = line.split_at(prefix.len());
             result.push_str(tail);
         }
@@ -490,11 +514,11 @@
             <span class="string">&quot;  baz\n&quot;</span>,
         ].join(<span class="string">&quot;&quot;</span>);
         <span class="kw">let </span>expected = [
-            <span class="string">&quot;//  foo\n&quot;</span>,
-            <span class="string">&quot;//bar\n&quot;</span>,
-            <span class="string">&quot;//  baz\n&quot;</span>,
+            <span class="string">&quot;//   foo\n&quot;</span>,
+            <span class="string">&quot;// bar\n&quot;</span>,
+            <span class="string">&quot;//   baz\n&quot;</span>,
         ].join(<span class="string">&quot;&quot;</span>);
-        <span class="macro">assert_eq!</span>(indent(<span class="kw-2">&amp;</span>text, <span class="string">&quot;//&quot;</span>), expected);
+        <span class="macro">assert_eq!</span>(indent(<span class="kw-2">&amp;</span>text, <span class="string">&quot;// &quot;</span>), expected);
     }
 
     <span class="attr">#[test]
@@ -507,12 +531,12 @@
             <span class="string">&quot;  baz&quot;</span>,
         ].join(<span class="string">&quot;\n&quot;</span>);
         <span class="kw">let </span>expected = [
-            <span class="string">&quot;//  foo&quot;</span>,
-            <span class="string">&quot;//bar&quot;</span>,
-            <span class="string">&quot;&quot;</span>,
-            <span class="string">&quot;//  baz&quot;</span>,
+            <span class="string">&quot;//   foo&quot;</span>,
+            <span class="string">&quot;// bar&quot;</span>,
+            <span class="string">&quot;//&quot;</span>,
+            <span class="string">&quot;//   baz&quot;</span>,
         ].join(<span class="string">&quot;\n&quot;</span>);
-        <span class="macro">assert_eq!</span>(indent(<span class="kw-2">&amp;</span>text, <span class="string">&quot;//&quot;</span>), expected);
+        <span class="macro">assert_eq!</span>(indent(<span class="kw-2">&amp;</span>text, <span class="string">&quot;// &quot;</span>), expected);
     }
 
     <span class="attr">#[test]

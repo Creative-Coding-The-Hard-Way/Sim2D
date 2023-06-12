@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Here are some examples for the `flexi_logger` initialization."><title>flexi_logger::code_examples - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module code_examples</a></h2><div class="sidebar-elems"></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">flexi_logger</a>::<wbr><a class="mod" href="#">code_examples</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../src/flexi_logger/code_examples.rs.html#1-496">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Here are some examples for the <code>flexi_logger</code> initialization.</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Examples for the `flexi_logger` initialization."><title>flexi_logger::code_examples - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module code_examples</a></h2><div class="sidebar-elems"></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">flexi_logger</a>::<wbr><a class="mod" href="#">code_examples</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../src/flexi_logger/code_examples.rs.html#1-2">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Examples for the <code>flexi_logger</code> initialization.</p>
 <h3 id="contents"><a href="#contents">Contents</a></h3>
 <ul>
 <li><a href="#start-minimally-initialize-and-write-logs-to-stderr">Start minimally: Initialize, and write logs to stderr</a></li>
@@ -19,20 +19,17 @@
 and call <code>start()</code> immediately:</p>
 <ul>
 <li>
-<p>Use <a href="../struct.Logger.html#method.try_with_env" title="associated function flexi_logger::Logger::try_with_env"><code>Logger::try_with_env</code></a> to
-provide the log specification in the environment variable <code>RUST_LOG</code>:</p>
+<p>Provide the log specification in the environment variable <code>RUST_LOG</code>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code>Logger::try_with_env()<span class="question-mark">?</span>.start()<span class="question-mark">?</span>;</code></pre></div>
 </li>
 <li>
-<p>Use <a href="../struct.Logger.html#method.try_with_str" title="associated function flexi_logger::Logger::try_with_str"><code>Logger::try_with_str</code></a> to
-provide the log specification programmatically:</p>
+<p>Provide the log specification programmatically:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code>Logger::try_with_str(<span class="string">&quot;info&quot;</span>)<span class="question-mark">?</span>.start()<span class="question-mark">?</span>;</code></pre></div>
 </li>
 <li>
-<p>or use <a href="../struct.Logger.html#method.try_with_env_or_str" title="associated function flexi_logger::Logger::try_with_env_or_str"><code>Logger::try_with_env_or_str</code></a> to
-combine both options:</p>
+<p>Combine both options:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code>Logger::try_with_env_or_str(<span class="string">&quot;info&quot;</span>)<span class="question-mark">?</span>.start()<span class="question-mark">?</span>;</code></pre></div>
 </li>
@@ -41,13 +38,15 @@ combine both options:</p>
 log specification are then written to the default output channel (stderr).</p>
 <h3 id="choose-the-log-output-channel"><a href="#choose-the-log-output-channel">Choose the log output channel</a></h3>
 <p>By default, logs are written to <code>stderr</code>.
-With one of
-<a href="../struct.Logger.html#method.log_to_stdout" title="method flexi_logger::Logger::log_to_stdout"><code>Logger::log_to_stdout</code></a>,
-<a href="../struct.Logger.html#method.log_to_file" title="method flexi_logger::Logger::log_to_file"><code>Logger::log_to_file</code></a>,
-<a href="../struct.Logger.html#method.log_to_writer" title="method flexi_logger::Logger::log_to_writer"><code>Logger::log_to_writer</code></a>,
-<a href="../struct.Logger.html#method.log_to_file_and_writer" title="method flexi_logger::Logger::log_to_file_and_writer"><code>Logger::log_to_file_and_writer</code></a>,
-or <a href="../struct.Logger.html#method.do_not_log" title="method flexi_logger::Logger::do_not_log"><code>Logger::do_not_log</code></a>,
-you can send the logs to other destinations, or write them not at all.</p>
+With one of</p>
+<ul>
+<li><a href="../struct.Logger.html#method.log_to_stdout" title="method flexi_logger::Logger::log_to_stdout"><code>Logger::log_to_stdout</code></a>,</li>
+<li><a href="../struct.Logger.html#method.log_to_file" title="method flexi_logger::Logger::log_to_file"><code>Logger::log_to_file</code></a>,</li>
+<li><a href="../struct.Logger.html#method.log_to_writer" title="method flexi_logger::Logger::log_to_writer"><code>Logger::log_to_writer</code></a>,</li>
+<li><a href="../struct.Logger.html#method.log_to_file_and_writer" title="method flexi_logger::Logger::log_to_file_and_writer"><code>Logger::log_to_file_and_writer</code></a>,</li>
+<li>or <a href="../struct.Logger.html#method.do_not_log" title="method flexi_logger::Logger::do_not_log"><code>Logger::do_not_log</code></a>,</li>
+</ul>
+<p>you can send the logs to other destinations, or write them not at all.</p>
 <p>When writing to files or to a writer,
 you sometimes want to see some parts of the log additionally on the terminal;
 this can be achieved with
@@ -82,14 +81,15 @@ an extra thread is created that flushes the buffers regularly.</p>
     <span class="comment">// ... do all your work ...
     </span><span class="prelude-val">Ok</span>(())
 }</code></pre></div>
+<br>
 </li>
 <li>
 <p>with <a href="../enum.WriteMode.html#variant.Async" title="variant flexi_logger::WriteMode::Async"><code>WriteMode::Async</code></a>
 or <a href="../enum.WriteMode.html#variant.AsyncWith" title="variant flexi_logger::WriteMode::AsyncWith"><code>WriteMode::AsyncWith</code></a>,
 logs are sent from your application threads through an unbounded channel
 to an output thread, which does the output (and the rotation and the cleanup, if applicable).
-Additionally the output is buffered, and a bounded message pool is used to reduce allocations,
-and flushing is used to avoid long delays.
+Additionally, the output is buffered, and a bounded message pool is used
+to reduce allocations, and flushing is used to avoid long delays.
 If duplication is used, the messages to <code>stdout</code> or <code>stderr</code> are written synchronously.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
@@ -100,15 +100,21 @@ If duplication is used, the messages to <code>stdout</code> or <code>stderr</cod
     <span class="comment">// ... do all your work ...
     </span><span class="prelude-val">Ok</span>(())
 }</code></pre></div>
+<br>
+</li>
+<li>
+<p>with <a href="../enum.WriteMode.html#variant.SupportCapture" title="variant flexi_logger::WriteMode::SupportCapture"><code>WriteMode::SupportCapture</code></a> you allow
+<code>cargo test</code> to capture log output and print it only for failing tests.</p>
 </li>
 </ul>
-<p><strong>Note</strong> that with all write modes
-except <a href="../enum.WriteMode.html#variant.Direct" title="variant flexi_logger::WriteMode::Direct"><code>WriteMode::Direct</code></a> (which is the default)
-you should keep the <a href="../struct.LoggerHandle.html" title="struct flexi_logger::LoggerHandle"><code>LoggerHandle</code></a> alive
-up to the very end of your program, because it will, when its last instance is dropped
-(in case you use <code>LoggerHandle::clone()</code> you can have multiple instances), flush all writers
-to ensure that all buffered log lines are written before the program terminates,
-and then it calls their shutdown method.</p>
+<p>Note that, with all write modes
+except <a href="../enum.WriteMode.html#variant.Direct" title="variant flexi_logger::WriteMode::Direct"><code>WriteMode::Direct</code></a> (which is the default) and
+<a href="../enum.WriteMode.html#variant.SupportCapture" title="variant flexi_logger::WriteMode::SupportCapture"><code>WriteMode::SupportCapture</code></a>,
+you should <strong>keep the <a href="../struct.LoggerHandle.html" title="struct flexi_logger::LoggerHandle"><code>LoggerHandle</code></a> alive</strong>
+up to the very end of your program, because, when its last instance is dropped
+(in case you use <code>LoggerHandle::clone()</code> you can have multiple instances),
+it will flush all writers to ensure that all buffered log lines are written
+before the program terminates, and then it calls their shutdown method.</p>
 <h3 id="influence-the-location-and-name-of-the-log-file"><a href="#influence-the-location-and-name-of-the-log-file">Influence the location and name of the log file</a></h3>
 <p>By default, the log files are created in the current directory (where the program was started).
 With <a href="../struct.FileSpec.html#method.directory" title="method flexi_logger::FileSpec::directory"><code>FileSpec:directory</code></a>

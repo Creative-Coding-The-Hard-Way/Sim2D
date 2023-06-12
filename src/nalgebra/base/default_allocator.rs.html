@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.31.1/src/base/default_allocator.rs`."><title>default_allocator.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.32.2/src/base/default_allocator.rs`."><title>default_allocator.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -331,12 +331,6 @@
 <a href="#331" id="331">331</a>
 <a href="#332" id="332">332</a>
 <a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The default matrix data storage allocator.
 //!
 //! This will use stack-allocated buffers for matrices with dimensions known at compile-time, and
@@ -352,7 +346,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::base::allocator::{Allocator, Reallocator};
 <span class="kw">use </span><span class="kw">crate</span>::base::array_storage::ArrayStorage;
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;alloc&quot;</span>, feature = <span class="string">&quot;std&quot;</span>))]
-</span><span class="kw">use </span><span class="kw">crate</span>::base::dimension::Dynamic;
+</span><span class="kw">use </span><span class="kw">crate</span>::base::dimension::Dyn;
 <span class="kw">use </span><span class="kw">crate</span>::base::dimension::{Dim, DimName};
 <span class="kw">use </span><span class="kw">crate</span>::base::storage::{RawStorage, RawStorageMut};
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
@@ -365,7 +359,7 @@
  * Allocator.
  *
  */
-</span><span class="doccomment">/// An allocator based on `GenericArray` and `VecStorage` for statically-sized and dynamically-sized
+</span><span class="doccomment">/// An allocator based on [`ArrayStorage`] and [`VecStorage`] for statically-sized and dynamically-sized
 /// matrices respectively.
 </span><span class="attr">#[derive(Copy, Clone, Debug)]
 </span><span class="kw">pub struct </span>DefaultAllocator;
@@ -421,15 +415,15 @@
     }
 }
 
-<span class="comment">// Dynamic - Static
-// Dynamic - Dynamic
+<span class="comment">// Dyn - Static
+// Dyn - Dyn
 </span><span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;T: Scalar, C: Dim&gt; Allocator&lt;T, Dynamic, C&gt; <span class="kw">for </span>DefaultAllocator {
-    <span class="kw">type </span>Buffer = VecStorage&lt;T, Dynamic, C&gt;;
-    <span class="kw">type </span>BufferUninit = VecStorage&lt;MaybeUninit&lt;T&gt;, Dynamic, C&gt;;
+</span><span class="kw">impl</span>&lt;T: Scalar, C: Dim&gt; Allocator&lt;T, Dyn, C&gt; <span class="kw">for </span>DefaultAllocator {
+    <span class="kw">type </span>Buffer = VecStorage&lt;T, Dyn, C&gt;;
+    <span class="kw">type </span>BufferUninit = VecStorage&lt;MaybeUninit&lt;T&gt;, Dyn, C&gt;;
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>allocate_uninit(nrows: Dynamic, ncols: C) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, Dynamic, C&gt; {
+    </span><span class="kw">fn </span>allocate_uninit(nrows: Dyn, ncols: C) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, Dyn, C&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::new();
         <span class="kw">let </span>length = nrows.value() * ncols.value();
         data.reserve_exact(length);
@@ -438,9 +432,7 @@
     }
 
     <span class="attr">#[inline]
-    </span><span class="kw">unsafe fn </span>assume_init(
-        uninit: VecStorage&lt;MaybeUninit&lt;T&gt;, Dynamic, C&gt;,
-    ) -&gt; VecStorage&lt;T, Dynamic, C&gt; {
+    </span><span class="kw">unsafe fn </span>assume_init(uninit: VecStorage&lt;MaybeUninit&lt;T&gt;, Dyn, C&gt;) -&gt; VecStorage&lt;T, Dyn, C&gt; {
         <span class="comment">// Avoids a double-drop.
         </span><span class="kw">let </span>(nrows, ncols) = uninit.shape();
         <span class="kw">let </span>vec: Vec&lt;<span class="kw">_</span>&gt; = uninit.into();
@@ -456,7 +448,7 @@
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>allocate_from_iterator&lt;I: IntoIterator&lt;Item = T&gt;&gt;(
-        nrows: Dynamic,
+        nrows: Dyn,
         ncols: C,
         iter: I,
     ) -&gt; <span class="self">Self</span>::Buffer {
@@ -469,14 +461,14 @@
     }
 }
 
-<span class="comment">// Static - Dynamic
+<span class="comment">// Static - Dyn
 </span><span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;T: Scalar, R: DimName&gt; Allocator&lt;T, R, Dynamic&gt; <span class="kw">for </span>DefaultAllocator {
-    <span class="kw">type </span>Buffer = VecStorage&lt;T, R, Dynamic&gt;;
-    <span class="kw">type </span>BufferUninit = VecStorage&lt;MaybeUninit&lt;T&gt;, R, Dynamic&gt;;
+</span><span class="kw">impl</span>&lt;T: Scalar, R: DimName&gt; Allocator&lt;T, R, Dyn&gt; <span class="kw">for </span>DefaultAllocator {
+    <span class="kw">type </span>Buffer = VecStorage&lt;T, R, Dyn&gt;;
+    <span class="kw">type </span>BufferUninit = VecStorage&lt;MaybeUninit&lt;T&gt;, R, Dyn&gt;;
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>allocate_uninit(nrows: R, ncols: Dynamic) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, R, Dynamic&gt; {
+    </span><span class="kw">fn </span>allocate_uninit(nrows: R, ncols: Dyn) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, R, Dyn&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::new();
         <span class="kw">let </span>length = nrows.value() * ncols.value();
         data.reserve_exact(length);
@@ -486,9 +478,7 @@
     }
 
     <span class="attr">#[inline]
-    </span><span class="kw">unsafe fn </span>assume_init(
-        uninit: VecStorage&lt;MaybeUninit&lt;T&gt;, R, Dynamic&gt;,
-    ) -&gt; VecStorage&lt;T, R, Dynamic&gt; {
+    </span><span class="kw">unsafe fn </span>assume_init(uninit: VecStorage&lt;MaybeUninit&lt;T&gt;, R, Dyn&gt;) -&gt; VecStorage&lt;T, R, Dyn&gt; {
         <span class="comment">// Avoids a double-drop.
         </span><span class="kw">let </span>(nrows, ncols) = uninit.shape();
         <span class="kw">let </span>vec: Vec&lt;<span class="kw">_</span>&gt; = uninit.into();
@@ -505,7 +495,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>allocate_from_iterator&lt;I: IntoIterator&lt;Item = T&gt;&gt;(
         nrows: R,
-        ncols: Dynamic,
+        ncols: Dyn,
         iter: I,
     ) -&gt; <span class="self">Self</span>::Buffer {
         <span class="kw">let </span>it = iter.into_iter();
@@ -554,20 +544,20 @@
     }
 }
 
-<span class="comment">// Static × Static -&gt; Dynamic × Any
+<span class="comment">// Static × Static -&gt; Dyn × Any
 </span><span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
 </span><span class="kw">impl</span>&lt;T: Scalar, CTo, <span class="kw">const </span>RFROM: usize, <span class="kw">const </span>CFROM: usize&gt;
-    Reallocator&lt;T, Const&lt;RFROM&gt;, Const&lt;CFROM&gt;, Dynamic, CTo&gt; <span class="kw">for </span>DefaultAllocator
+    Reallocator&lt;T, Const&lt;RFROM&gt;, Const&lt;CFROM&gt;, Dyn, CTo&gt; <span class="kw">for </span>DefaultAllocator
 <span class="kw">where
     </span>CTo: Dim,
 {
     <span class="attr">#[inline]
     </span><span class="kw">unsafe fn </span>reallocate_copy(
-        rto: Dynamic,
+        rto: Dyn,
         cto: CTo,
         buf: ArrayStorage&lt;T, RFROM, CFROM&gt;,
-    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, Dynamic, CTo&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>res = &lt;<span class="self">Self </span><span class="kw">as </span>Allocator&lt;T, Dynamic, CTo&gt;&gt;::allocate_uninit(rto, cto);
+    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, Dyn, CTo&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = &lt;<span class="self">Self </span><span class="kw">as </span>Allocator&lt;T, Dyn, CTo&gt;&gt;::allocate_uninit(rto, cto);
 
         <span class="kw">let </span>(rfrom, cfrom) = buf.shape();
 
@@ -585,20 +575,20 @@
     }
 }
 
-<span class="comment">// Static × Static -&gt; Static × Dynamic
+<span class="comment">// Static × Static -&gt; Static × Dyn
 </span><span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
 </span><span class="kw">impl</span>&lt;T: Scalar, RTo, <span class="kw">const </span>RFROM: usize, <span class="kw">const </span>CFROM: usize&gt;
-    Reallocator&lt;T, Const&lt;RFROM&gt;, Const&lt;CFROM&gt;, RTo, Dynamic&gt; <span class="kw">for </span>DefaultAllocator
+    Reallocator&lt;T, Const&lt;RFROM&gt;, Const&lt;CFROM&gt;, RTo, Dyn&gt; <span class="kw">for </span>DefaultAllocator
 <span class="kw">where
     </span>RTo: DimName,
 {
     <span class="attr">#[inline]
     </span><span class="kw">unsafe fn </span>reallocate_copy(
         rto: RTo,
-        cto: Dynamic,
+        cto: Dyn,
         buf: ArrayStorage&lt;T, RFROM, CFROM&gt;,
-    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, RTo, Dynamic&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>res = &lt;<span class="self">Self </span><span class="kw">as </span>Allocator&lt;T, RTo, Dynamic&gt;&gt;::allocate_uninit(rto, cto);
+    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, RTo, Dyn&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = &lt;<span class="self">Self </span><span class="kw">as </span>Allocator&lt;T, RTo, Dyn&gt;&gt;::allocate_uninit(rto, cto);
 
         <span class="kw">let </span>(rfrom, cfrom) = buf.shape();
 
@@ -618,60 +608,58 @@
 
 <span class="comment">// All conversion from a dynamic buffer to a dynamic buffer.
 </span><span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;T: Scalar, CFrom: Dim, CTo: Dim&gt; Reallocator&lt;T, Dynamic, CFrom, Dynamic, CTo&gt;
-    <span class="kw">for </span>DefaultAllocator
-{
+</span><span class="kw">impl</span>&lt;T: Scalar, CFrom: Dim, CTo: Dim&gt; Reallocator&lt;T, Dyn, CFrom, Dyn, CTo&gt; <span class="kw">for </span>DefaultAllocator {
     <span class="attr">#[inline]
     </span><span class="kw">unsafe fn </span>reallocate_copy(
-        rto: Dynamic,
+        rto: Dyn,
         cto: CTo,
-        buf: VecStorage&lt;T, Dynamic, CFrom&gt;,
-    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, Dynamic, CTo&gt; {
+        buf: VecStorage&lt;T, Dyn, CFrom&gt;,
+    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, Dyn, CTo&gt; {
         <span class="kw">let </span>new_buf = buf.resize(rto.value() * cto.value());
         VecStorage::new(rto, cto, new_buf)
     }
 }
 
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;T: Scalar, CFrom: Dim, RTo: DimName&gt; Reallocator&lt;T, Dynamic, CFrom, RTo, Dynamic&gt;
+</span><span class="kw">impl</span>&lt;T: Scalar, CFrom: Dim, RTo: DimName&gt; Reallocator&lt;T, Dyn, CFrom, RTo, Dyn&gt;
     <span class="kw">for </span>DefaultAllocator
 {
     <span class="attr">#[inline]
     </span><span class="kw">unsafe fn </span>reallocate_copy(
         rto: RTo,
-        cto: Dynamic,
-        buf: VecStorage&lt;T, Dynamic, CFrom&gt;,
-    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, RTo, Dynamic&gt; {
+        cto: Dyn,
+        buf: VecStorage&lt;T, Dyn, CFrom&gt;,
+    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, RTo, Dyn&gt; {
         <span class="kw">let </span>new_buf = buf.resize(rto.value() * cto.value());
         VecStorage::new(rto, cto, new_buf)
     }
 }
 
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;T: Scalar, RFrom: DimName, CTo: Dim&gt; Reallocator&lt;T, RFrom, Dynamic, Dynamic, CTo&gt;
+</span><span class="kw">impl</span>&lt;T: Scalar, RFrom: DimName, CTo: Dim&gt; Reallocator&lt;T, RFrom, Dyn, Dyn, CTo&gt;
     <span class="kw">for </span>DefaultAllocator
 {
     <span class="attr">#[inline]
     </span><span class="kw">unsafe fn </span>reallocate_copy(
-        rto: Dynamic,
+        rto: Dyn,
         cto: CTo,
-        buf: VecStorage&lt;T, RFrom, Dynamic&gt;,
-    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, Dynamic, CTo&gt; {
+        buf: VecStorage&lt;T, RFrom, Dyn&gt;,
+    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, Dyn, CTo&gt; {
         <span class="kw">let </span>new_buf = buf.resize(rto.value() * cto.value());
         VecStorage::new(rto, cto, new_buf)
     }
 }
 
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;T: Scalar, RFrom: DimName, RTo: DimName&gt; Reallocator&lt;T, RFrom, Dynamic, RTo, Dynamic&gt;
+</span><span class="kw">impl</span>&lt;T: Scalar, RFrom: DimName, RTo: DimName&gt; Reallocator&lt;T, RFrom, Dyn, RTo, Dyn&gt;
     <span class="kw">for </span>DefaultAllocator
 {
     <span class="attr">#[inline]
     </span><span class="kw">unsafe fn </span>reallocate_copy(
         rto: RTo,
-        cto: Dynamic,
-        buf: VecStorage&lt;T, RFrom, Dynamic&gt;,
-    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, RTo, Dynamic&gt; {
+        cto: Dyn,
+        buf: VecStorage&lt;T, RFrom, Dyn&gt;,
+    ) -&gt; VecStorage&lt;MaybeUninit&lt;T&gt;, RTo, Dyn&gt; {
         <span class="kw">let </span>new_buf = buf.resize(rto.value() * cto.value());
         VecStorage::new(rto, cto, new_buf)
     }

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/glfw-0.41.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../glfw/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/glfw-0.51.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../glfw/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3262,6 +3262,10 @@
 <a href="#3262" id="3262">3262</a>
 <a href="#3263" id="3263">3263</a>
 <a href="#3264" id="3264">3264</a>
+<a href="#3265" id="3265">3265</a>
+<a href="#3266" id="3266">3266</a>
+<a href="#3267" id="3267">3267</a>
+<a href="#3268" id="3268">3268</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2013-2016 The GLFW-RS Developers. For a full listing of the authors,
 // refer to the AUTHORS file at the top-level directory of this distribution.
 //
@@ -3281,6 +3285,17 @@
 #![crate_type = <span class="string">&quot;rlib&quot;</span>]
 #![crate_type = <span class="string">&quot;dylib&quot;</span>]
 #![crate_name = <span class="string">&quot;glfw&quot;</span>]
+#![deny(
+    rust_2018_compatibility,
+    rust_2018_idioms,
+    nonstandard_style,
+    unused,
+    future_incompatible,
+    missing_copy_implementations,
+    missing_debug_implementations,
+    missing_abi,
+    clippy::doc_markdown
+)]
 #![allow(non_upper_case_globals)]
 
 </span><span class="doccomment">//! An idiomatic wrapper for the GLFW library.
@@ -3334,22 +3349,19 @@
 
 </span><span class="comment">// TODO: Document differences between GLFW and glfw-rs
 
-</span><span class="kw">extern crate </span>semver;
-<span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
-</span><span class="kw">extern crate </span>vk_sys;
-<span class="attr">#[macro_use]
+</span><span class="attr">#[cfg(feature = <span class="string">&quot;log&quot;</span>)]
+#[macro_use]
 </span><span class="kw">extern crate </span>log;
 <span class="attr">#[macro_use]
 </span><span class="kw">extern crate </span>bitflags;
 <span class="attr">#[cfg(feature = <span class="string">&quot;image&quot;</span>)]
 </span><span class="kw">extern crate </span>image;
-<span class="kw">extern crate </span>raw_window_handle;
 <span class="attr">#[cfg(all(target_os = <span class="string">&quot;macos&quot;</span>))]
 #[macro_use]
 </span><span class="kw">extern crate </span>objc;
 
-<span class="kw">use </span>raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
-<span class="kw">use </span>semver::Version;
+<span class="kw">use </span>raw_window_handle::{HasRawWindowHandle, RawWindowHandle, HasRawDisplayHandle, RawDisplayHandle};
+
 <span class="kw">use </span>std::error;
 <span class="kw">use </span>std::ffi::{CStr, CString};
 <span class="kw">use </span>std::fmt;
@@ -3358,7 +3370,9 @@
 <span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
 </span><span class="kw">use </span>std::os::raw::c_uint;
 <span class="kw">use </span>std::os::raw::{c_char, c_double, c_float, c_int};
-<span class="kw">use </span>std::os::raw::{c_uchar, c_ushort, c_void};
+<span class="kw">use </span>std::os::raw::{c_uchar, c_ushort};
+<span class="attr">#[cfg(not(target_os = <span class="string">&quot;emscripten&quot;</span>))]
+</span><span class="kw">use </span>std::os::raw::c_void;
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::ptr;
 <span class="kw">use </span>std::slice;
@@ -3366,10 +3380,7 @@
 <span class="kw">use </span>std::sync::mpsc::{channel, Receiver, Sender};
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
-</span><span class="kw">use </span>vk_sys::{
-    <span class="self">self </span><span class="kw">as </span>vk, AllocationCallbacks <span class="kw">as </span>VkAllocationCallbacks, Instance <span class="kw">as </span>VkInstance,
-    PhysicalDevice <span class="kw">as </span>VkPhysicalDevice, <span class="prelude-ty">Result </span><span class="kw">as </span>VkResult, SurfaceKHR <span class="kw">as </span>VkSurfaceKHR,
-};
+</span><span class="kw">use </span>ash::vk;
 
 <span class="doccomment">/// Alias to `MouseButton1`, supplied for improved clarity.
 </span><span class="kw">pub use </span><span class="self">self</span>::MouseButton::Button1 <span class="kw">as </span>MouseButtonLeft;
@@ -3383,6 +3394,13 @@
 
 <span class="doccomment">/// Unique identifier for a `Window`.
 </span><span class="kw">pub type </span>WindowId = usize;
+
+<span class="attr">#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+</span><span class="kw">pub struct </span>Version {
+    <span class="kw">pub </span>major: u64,
+    <span class="kw">pub </span>minor: u64,
+    <span class="kw">pub </span>patch: u64,
+}
 
 <span class="doccomment">/// Input actions.
 </span><span class="attr">#[repr(i32)]
@@ -3521,7 +3539,7 @@
     Unknown = ffi::KEY_UNKNOWN,
 }
 
-<span class="doccomment">/// Wrapper around &#39;glfwGetKeyName`
+<span class="doccomment">/// Wrapper around `glfwGetKeyName`
 </span><span class="kw">pub fn </span>get_key_name(key: <span class="prelude-ty">Option</span>&lt;Key&gt;, scancode: <span class="prelude-ty">Option</span>&lt;Scancode&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
     <span class="kw">unsafe </span>{
         string_from_nullable_c_str(ffi::glfwGetKeyName(
@@ -3534,7 +3552,7 @@
     }
 }
 
-<span class="doccomment">/// Wrapper around &#39;glfwGetKeyName`
+<span class="doccomment">/// Wrapper around `glfwGetKeyName`
 </span><span class="attr">#[deprecated(
     since = <span class="string">&quot;0.16.0&quot;</span>,
     note = <span class="string">&quot;&#39;key_name&#39; can cause a segfault, use &#39;get_key_name&#39; instead&quot;
@@ -3565,7 +3583,7 @@
 }
 
 <span class="kw">impl </span>Key {
-    <span class="doccomment">/// Wrapper around &#39;glfwGetKeyName` without scancode
+    <span class="doccomment">/// Wrapper around `glfwGetKeyName` without scancode
     </span><span class="attr">#[deprecated(
         since = <span class="string">&quot;0.16.0&quot;</span>,
         note = <span class="string">&quot;Key method &#39;name&#39; can cause a segfault, use &#39;get_name&#39; instead&quot;
@@ -3575,7 +3593,7 @@
         </span>key_name(<span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="self">self</span>), <span class="prelude-val">None</span>)
     }
 
-    <span class="doccomment">/// Wrapper around &#39;glfwGetKeyName` without scancode
+    <span class="doccomment">/// Wrapper around `glfwGetKeyName` without scancode
     </span><span class="kw">pub fn </span>get_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
         get_key_name(<span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="self">self</span>), <span class="prelude-val">None</span>)
     }
@@ -3607,7 +3625,7 @@
 <span class="kw">impl </span>MouseButton {
     <span class="doccomment">/// Converts from `i32`.
     </span><span class="kw">pub fn </span>from_i32(n: i32) -&gt; <span class="prelude-ty">Option</span>&lt;MouseButton&gt; {
-        <span class="kw">if </span>n &gt;= <span class="number">0 </span>&amp;&amp; n &lt;= ffi::MOUSE_BUTTON_LAST {
+        <span class="kw">if </span>(<span class="number">0</span>..=ffi::MOUSE_BUTTON_LAST).contains(<span class="kw-2">&amp;</span>n) {
             <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ mem::transmute(n) })
         } <span class="kw">else </span>{
             <span class="prelude-val">None
@@ -3626,7 +3644,7 @@
 </span><span class="kw">pub struct </span>DebugAliases&lt;T&gt;(<span class="kw">pub </span>T);
 
 <span class="kw">impl </span>fmt::Debug <span class="kw">for </span>DebugAliases&lt;MouseButton&gt; {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">let </span>DebugAliases(button) = <span class="kw-2">*</span><span class="self">self</span>;
         <span class="kw">match </span>button {
             MouseButtonLeft =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;MouseButtonLeft&quot;</span>),
@@ -3637,7 +3655,7 @@
     }
 }
 
-<span class="attr">#[derive(Copy, Clone)]
+<span class="attr">#[derive(Copy, Clone, Debug)]
 </span><span class="kw">pub struct </span>Callback&lt;Fn, UserData&gt; {
     <span class="kw">pub </span>f: Fn,
     <span class="kw">pub </span>data: UserData,
@@ -3661,7 +3679,7 @@
 }
 
 <span class="kw">impl </span>fmt::Display <span class="kw">for </span>Error {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">let </span>description = <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
             Error::NoError =&gt; <span class="string">&quot;NoError&quot;</span>,
             Error::NotInitialized =&gt; <span class="string">&quot;NotInitialized&quot;</span>,
@@ -3697,9 +3715,16 @@
     data: (),
 });
 
-<span class="doccomment">/// The function to be used with the `LOG_ERRORS` callback.
+<span class="attr">#[cfg(feature = <span class="string">&quot;log&quot;</span>)]
+</span><span class="doccomment">/// The function to be used with the `LOG_ERRORS` callback.
 </span><span class="kw">pub fn </span>log_errors(<span class="kw">_</span>: Error, description: String, <span class="kw">_</span>: <span class="kw-2">&amp;</span>()) {
     <span class="macro">error!</span>(<span class="string">&quot;GLFW Error: {}&quot;</span>, description);
+}
+
+<span class="attr">#[cfg(not(feature = <span class="string">&quot;log&quot;</span>))]
+</span><span class="doccomment">/// The function to be used with the `LOG_ERRORS` callback.
+</span><span class="kw">pub fn </span>log_errors(<span class="kw">_</span>: Error, description: String, <span class="kw">_</span>: <span class="kw-2">&amp;</span>()) {
+    <span class="macro">eprintln!</span>(<span class="string">&quot;GLFW Error: {}&quot;</span>, description);
 }
 
 <span class="doccomment">/// A callback that logs each error as it is encountered without triggering a
@@ -3711,6 +3736,7 @@
 
 <span class="doccomment">/// When not using the `image` library, or if you just want to,
 /// you can specify an image from its raw pixel data using this structure.
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>PixelImage {
     <span class="doccomment">/// Width of the image in pixels
     </span><span class="kw">pub </span>width: u32,
@@ -3841,6 +3867,7 @@
 }
 
 <span class="doccomment">/// Describes the gamma ramp of a monitor.
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>GammaRamp {
     <span class="kw">pub </span>red: Vec&lt;c_ushort&gt;,
     <span class="kw">pub </span>green: Vec&lt;c_ushort&gt;,
@@ -3901,7 +3928,9 @@
 /// statically.
 </span><span class="attr">#[non_exhaustive]
 #[derive(Debug)]
-</span><span class="kw">pub struct </span>Glfw;
+</span><span class="kw">pub struct </span>Glfw {
+    phantom: std::marker::PhantomData&lt;<span class="kw-2">*const </span>()&gt;,
+}
 
 <span class="doccomment">/// An error that might be returned when `glfw::init` is called.
 </span><span class="attr">#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -3913,7 +3942,7 @@
 }
 
 <span class="kw">impl </span>fmt::Display <span class="kw">for </span>InitError {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">let </span>description = <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
             InitError::AlreadyInitialized =&gt; <span class="string">&quot;Already Initialized&quot;</span>,
             InitError::Internal =&gt; <span class="string">&quot;Internal Initialization Error&quot;</span>,
@@ -3926,7 +3955,7 @@
 <span class="kw">impl </span>error::Error <span class="kw">for </span>InitError {}
 
 <span class="doccomment">/// Initialization hints that can be set using the `init_hint` function.
-</span><span class="attr">#[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+</span><span class="attr">#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 </span><span class="kw">pub enum </span>InitHint {
     <span class="doccomment">/// Specifies whether to also expose joystick hats as buttons, for compatibility with earlier
     /// versions of GLFW that did not have `glfwGetJoystickHats`.
@@ -4007,7 +4036,7 @@
     // https://www.glfw.org/docs/latest/group__init.html#ga317aac130a235ab08c6db0834907d85e
     </span><span class="kw">if unsafe </span>{ ffi::glfwInit() } == ffi::TRUE {
         REF_COUNT_FOR_GLFW.fetch_add(<span class="number">1</span>, Ordering::SeqCst);
-        <span class="prelude-val">Ok</span>(Glfw)
+        <span class="prelude-val">Ok</span>(Glfw {phantom: std::marker::PhantomData})
     } <span class="kw">else </span>{
         <span class="prelude-val">Err</span>(InitError::Internal)
     }
@@ -4091,39 +4120,11 @@
     /// ~~~
     </span><span class="kw">pub fn </span>with_primary_monitor&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; T
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Monitor&gt;) -&gt; T,
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Monitor&gt;) -&gt; T,
     {
         <span class="kw">match unsafe </span>{ ffi::glfwGetPrimaryMonitor() } {
             ptr <span class="kw">if </span>ptr.is_null() =&gt; f(<span class="self">self</span>, <span class="prelude-val">None</span>),
-            ptr =&gt; f(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>Monitor { ptr: ptr })),
-        }
-    }
-
-    <span class="doccomment">/// Supplies the primary monitor to the closure provided, if it exists.
-    /// This is usually the monitor where elements like the Windows task bar or
-    /// the OS X menu bar is located.
-    ///
-    /// Variant that can accept an `FnMut` closure.
-    ///
-    /// # Example
-    ///
-    /// ~~~ignore
-    /// glfw.with_primary_monitor(|_: &amp;mut _, m: Option&lt;&amp;glfw::Monitor&gt;| {
-    ///     let monitor = m.unwrap();
-    ///
-    ///     let mode: glfw::VidMode = monitor.get_video_mode().unwrap();
-    ///
-    ///     // Modifying `window` requires `FnMut`
-    ///     window.set_monitor(glfw::WindowMode::FullScreen(&amp;monitor), 0, 0, mode.width, mode.height, Some(mode.refresh_rate));
-    /// });
-    /// ~~~
-    </span><span class="kw">pub fn </span>with_primary_monitor_mut&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F) -&gt; T
-    <span class="kw">where
-        </span>F: FnMut(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Monitor&gt;) -&gt; T,
-    {
-        <span class="kw">match unsafe </span>{ ffi::glfwGetPrimaryMonitor() } {
-            ptr <span class="kw">if </span>ptr.is_null() =&gt; f(<span class="self">self</span>, <span class="prelude-val">None</span>),
-            ptr =&gt; f(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>Monitor { ptr: ptr })),
+            ptr =&gt; f(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>Monitor { ptr })),
         }
     }
 
@@ -4141,7 +4142,7 @@
     /// ~~~
     </span><span class="kw">pub fn </span>with_connected_monitors&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; T
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="kw-2">&amp;</span>[Monitor]) -&gt; T,
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="kw-2">&amp;</span>[Monitor]) -&gt; T,
     {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
@@ -4150,38 +4151,7 @@
                 <span class="self">self</span>,
                 <span class="kw-2">&amp;</span>slice::from_raw_parts(ptr <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>, count <span class="kw">as </span>usize)
                     .iter()
-                    .map(|<span class="kw-2">&amp;</span>ptr| Monitor { ptr: ptr })
-                    .collect::&lt;Vec&lt;Monitor&gt;&gt;(),
-            )
-        }
-    }
-
-    <span class="doccomment">/// Supplies a vector of the currently connected monitors to the closure
-    /// provided.
-    ///
-    /// Variant that can accept an `FnMut` closure.
-    ///
-    /// # Example
-    ///
-    /// ~~~ignore
-    /// glfw.with_connected_monitors(|_, monitors| {
-    ///     for monitor in monitors.iter() {
-    ///         println!(&quot;{}: {}&quot;, monitor.get_name(), monitor.get_video_mode());
-    ///     }
-    /// });
-    /// ~~~
-    </span><span class="kw">pub fn </span>with_connected_monitors_mut&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F) -&gt; T
-    <span class="kw">where
-        </span>F: FnMut(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="kw-2">&amp;</span>[Monitor]) -&gt; T,
-    {
-        <span class="kw">unsafe </span>{
-            <span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
-            <span class="kw">let </span>ptr = ffi::glfwGetMonitors(<span class="kw-2">&amp;mut </span>count);
-            f(
-                <span class="self">self</span>,
-                <span class="kw-2">&amp;</span>slice::from_raw_parts(ptr <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>, count <span class="kw">as </span>usize)
-                    .iter()
-                    .map(|<span class="kw-2">&amp;</span>ptr| Monitor { ptr: ptr })
+                    .map(|<span class="kw-2">&amp;</span>ptr| Monitor { ptr })
                     .collect::&lt;Vec&lt;Monitor&gt;&gt;(),
             )
         }
@@ -4368,12 +4338,17 @@
     ///
     /// Wrapper for `glfwCreateWindow`.
     </span><span class="kw">pub fn </span>create_window(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         width: u32,
         height: u32,
         title: <span class="kw-2">&amp;</span>str,
-        mode: WindowMode,
+        mode: WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;,
     ) -&gt; <span class="prelude-ty">Option</span>&lt;(Window, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
+        <span class="attr">#[cfg(feature = <span class="string">&quot;wayland&quot;</span>)]
+        </span>{
+            <span class="comment">// Has to be set otherwise wayland refuses to open window.
+            </span><span class="self">self</span>.window_hint(WindowHint::Focused(<span class="bool-val">false</span>));
+        }
         <span class="self">self</span>.create_window_intern(width, height, title, mode, <span class="prelude-val">None</span>)
     }
 
@@ -4383,7 +4358,7 @@
         width: u32,
         height: u32,
         title: <span class="kw-2">&amp;</span>str,
-        mode: WindowMode,
+        mode: WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;,
         share: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Window&gt;,
     ) -&gt; <span class="prelude-ty">Option</span>&lt;(Window, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
         <span class="kw">let </span>ptr = <span class="kw">unsafe </span>{
@@ -4410,11 +4385,11 @@
             }
             <span class="prelude-val">Some</span>((
                 Window {
-                    ptr: ptr,
+                    ptr,
                     glfw: <span class="self">self</span>.clone(),
                     is_shared: share.is_some(),
                     drop_sender: <span class="prelude-val">Some</span>(drop_sender),
-                    drop_receiver: drop_receiver,
+                    drop_receiver,
                     current_cursor: <span class="prelude-val">None</span>,
                 },
                 receiver,
@@ -4434,9 +4409,15 @@
     }
 
     <span class="doccomment">/// Wrapper for `glfwGetX11Display`
-    </span><span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+    </span><span class="attr">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, not(feature = <span class="string">&quot;wayland&quot;</span>)))]
     </span><span class="kw">pub fn </span>get_x11_display(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>c_void {
         <span class="kw">unsafe </span>{ ffi::glfwGetX11Display() }
+    }
+
+    <span class="doccomment">/// Wrapper for `glfwGetWaylandDisplay`
+    </span><span class="attr">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, feature = <span class="string">&quot;wayland&quot;</span>))]
+    </span><span class="kw">pub fn </span>get_wayland_display(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>c_void {
+        <span class="kw">unsafe </span>{ ffi::glfwGetWaylandDisplay() }
     }
 
     <span class="doccomment">/// Immediately process the received events.
@@ -4555,8 +4536,8 @@
     </span><span class="kw">pub fn </span>set_swap_interval(<span class="kw-2">&amp;mut </span><span class="self">self</span>, interval: SwapInterval) {
         <span class="kw">unsafe </span>{
             ffi::glfwSwapInterval(<span class="kw">match </span>interval {
-                SwapInterval::None =&gt; <span class="number">0 </span><span class="kw">as </span>c_int,
-                SwapInterval::Adaptive =&gt; -<span class="number">1 </span><span class="kw">as </span>c_int,
+                SwapInterval::None =&gt; <span class="number">0_i32</span>,
+                SwapInterval::Adaptive =&gt; -<span class="number">1_i32</span>,
                 SwapInterval::Sync(interval) =&gt; interval <span class="kw">as </span>c_int,
             })
         }
@@ -4627,7 +4608,7 @@
     ///
     /// Wrapper for `glfwGetInstanceProcAddress`
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
-    </span><span class="kw">pub fn </span>get_instance_proc_address_raw(<span class="kw-2">&amp;</span><span class="self">self</span>, instance: VkInstance, procname: <span class="kw-2">&amp;</span>str) -&gt; VkProc {
+    </span><span class="kw">pub fn </span>get_instance_proc_address_raw(<span class="kw-2">&amp;</span><span class="self">self</span>, instance: vk::Instance, procname: <span class="kw-2">&amp;</span>str) -&gt; VkProc {
         with_c_str(procname, |procname| <span class="kw">unsafe </span>{
             ffi::glfwGetInstanceProcAddress(instance, procname)
         })
@@ -4640,8 +4621,8 @@
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
     </span><span class="kw">pub fn </span>get_physical_device_presentation_support_raw(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        instance: VkInstance,
-        device: VkPhysicalDevice,
+        instance: vk::Instance,
+        device: vk::PhysicalDevice,
         queue_family: u32,
     ) -&gt; bool {
         vk::TRUE
@@ -4657,7 +4638,7 @@
     <span class="doccomment">/// Constructs a `Joystick` handle corresponding to the supplied `JoystickId`.
     </span><span class="kw">pub fn </span>get_joystick(<span class="kw-2">&amp;</span><span class="self">self</span>, id: JoystickId) -&gt; Joystick {
         Joystick {
-            id: id,
+            id,
             glfw: <span class="self">self</span>.clone(),
         }
     }
@@ -4689,7 +4670,7 @@
 <span class="kw">impl </span>Clone <span class="kw">for </span>Glfw {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         REF_COUNT_FOR_GLFW.fetch_add(<span class="number">1</span>, Ordering::SeqCst);
-        Glfw
+        Glfw {phantom: std::marker::PhantomData}
     }
 }
 
@@ -4715,8 +4696,6 @@
             major: major <span class="kw">as </span>u64,
             minor: minor <span class="kw">as </span>u64,
             patch: patch <span class="kw">as </span>u64,
-            pre: Vec::new(),
-            build: Vec::new(),
         }
     }
 }
@@ -4760,7 +4739,7 @@
 }
 
 <span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>Monitor {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(f, <span class="string">&quot;Monitor({:p})&quot;</span>, <span class="self">self</span>.ptr)
     }
 }
@@ -4830,15 +4809,15 @@
             GammaRamp {
                 red: slice::from_raw_parts(llramp.red <span class="kw">as </span><span class="kw-2">*const </span>c_ushort, llramp.size <span class="kw">as </span>usize)
                     .iter()
-                    .map(|<span class="kw-2">&amp;</span>x| x)
+                    .copied()
                     .collect(),
                 green: slice::from_raw_parts(llramp.green <span class="kw">as </span><span class="kw-2">*const </span>c_ushort, llramp.size <span class="kw">as </span>usize)
                     .iter()
-                    .map(|<span class="kw-2">&amp;</span>x| x)
+                    .copied()
                     .collect(),
                 blue: slice::from_raw_parts(llramp.blue <span class="kw">as </span><span class="kw-2">*const </span>c_ushort, llramp.size <span class="kw">as </span>usize)
                     .iter()
-                    .map(|<span class="kw-2">&amp;</span>x| x)
+                    .copied()
                     .collect(),
             }
         }
@@ -4913,7 +4892,7 @@
     /// ~~~ignore
     /// ~&quot;[width] x [height], [total_bits] ([red_bits] [green_bits] [blue_bits]) [refresh_rate] Hz&quot;
     /// ~~~
-    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
         <span class="macro">write!</span>(
             f,
             <span class="string">&quot;{} x {}, {} = {} + {} + {}, {} Hz&quot;</span>,
@@ -5139,7 +5118,7 @@
     /// it returns a null pointer (if it is in windowed mode).
     </span><span class="kw">fn </span>to_ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>ffi::GLFWmonitor {
         <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
-            WindowMode::FullScreen(<span class="kw-2">ref </span>monitor) =&gt; monitor.ptr,
+            WindowMode::FullScreen(monitor) =&gt; monitor.ptr,
             WindowMode::Windowed =&gt; ptr::null_mut(),
         }
     }
@@ -5148,12 +5127,12 @@
 <span class="macro">bitflags! </span>{
     <span class="attr">#[doc = <span class="string">&quot;Key modifiers (e.g., Shift, Control, Alt, Super)&quot;</span>]
     </span><span class="kw">pub struct </span>Modifiers: ::std::os::raw::c_int {
-        <span class="kw">const </span>Shift       = ::ffi::MOD_SHIFT;
-        <span class="kw">const </span>Control     = ::ffi::MOD_CONTROL;
-        <span class="kw">const </span>Alt         = ::ffi::MOD_ALT;
-        <span class="kw">const </span>Super       = ::ffi::MOD_SUPER;
-        <span class="kw">const </span>CapsLock    = ::ffi::MOD_CAPS_LOCK;
-        <span class="kw">const </span>NumLock     = ::ffi::MOD_NUM_LOCK;
+        <span class="kw">const </span>Shift       = <span class="kw">crate</span>::ffi::MOD_SHIFT;
+        <span class="kw">const </span>Control     = <span class="kw">crate</span>::ffi::MOD_CONTROL;
+        <span class="kw">const </span>Alt         = <span class="kw">crate</span>::ffi::MOD_ALT;
+        <span class="kw">const </span>Super       = <span class="kw">crate</span>::ffi::MOD_SUPER;
+        <span class="kw">const </span>CapsLock    = <span class="kw">crate</span>::ffi::MOD_CAPS_LOCK;
+        <span class="kw">const </span>NumLock     = <span class="kw">crate</span>::ffi::MOD_NUM_LOCK;
     }
 }
 
@@ -5193,15 +5172,14 @@
 ///     // handle event
 /// }
 /// ~~~
-</span><span class="kw">pub fn </span>flush_messages&lt;<span class="lifetime">&#39;a</span>, Message: Send&gt;(
-    receiver: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Receiver&lt;Message&gt;,
-) -&gt; FlushedMessages&lt;<span class="lifetime">&#39;a</span>, Message&gt; {
+</span><span class="kw">pub fn </span>flush_messages&lt;Message: Send&gt;(receiver: <span class="kw-2">&amp;</span>Receiver&lt;Message&gt;) -&gt; FlushedMessages&lt;<span class="lifetime">&#39;_</span>, Message&gt; {
     FlushedMessages(receiver)
 }
 
 <span class="doccomment">/// An iterator that yields until no more messages are contained in the
 /// `Receiver`&#39;s queue.
-</span><span class="kw">pub struct </span>FlushedMessages&lt;<span class="lifetime">&#39;a</span>, Message: <span class="lifetime">&#39;a </span>+ Send&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Receiver&lt;Message&gt;);
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>FlushedMessages&lt;<span class="lifetime">&#39;a</span>, Message: Send&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Receiver&lt;Message&gt;);
 
 <span class="kw">unsafe impl</span>&lt;<span class="lifetime">&#39;a</span>, Message: <span class="lifetime">&#39;a </span>+ Send&gt; Send <span class="kw">for </span>FlushedMessages&lt;<span class="lifetime">&#39;a</span>, Message&gt; {}
 
@@ -5227,6 +5205,7 @@
     <span class="doccomment">/// Once all  child`RenderContext`s have been dropped, calling `try_recv()`
     /// on the `drop_receiver` will result in an `Err(std::comm::Disconnected)`,
     /// indicating that it is safe to drop the `Window`.
+    </span><span class="attr">#[allow(unused)]
     </span>drop_receiver: Receiver&lt;()&gt;,
     <span class="doccomment">/// This is here to allow owning the current Cursor object instead
     /// of forcing the user to take care of its lifetime.
@@ -5275,7 +5254,7 @@
     ///
     /// Wrapper for `glfwGetInstanceProcAddress`
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
-    </span><span class="kw">pub fn </span>get_instance_proc_address(<span class="kw-2">&amp;mut </span><span class="self">self</span>, instance: VkInstance, procname: <span class="kw-2">&amp;</span>str) -&gt; VkProc {
+    </span><span class="kw">pub fn </span>get_instance_proc_address(<span class="kw-2">&amp;mut </span><span class="self">self</span>, instance: vk::Instance, procname: <span class="kw-2">&amp;</span>str) -&gt; VkProc {
         <span class="self">self</span>.glfw.get_instance_proc_address_raw(instance, procname)
     }
 
@@ -5286,8 +5265,8 @@
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
     </span><span class="kw">pub fn </span>get_physical_device_presentation_support(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        instance: VkInstance,
-        device: VkPhysicalDevice,
+        instance: vk::Instance,
+        device: vk::PhysicalDevice,
         queue_family: u32,
     ) -&gt; bool {
         <span class="self">self</span>.glfw
@@ -5298,10 +5277,10 @@
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
     </span><span class="kw">pub fn </span>create_window_surface(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        instance: VkInstance,
-        allocator: <span class="kw-2">*const </span>VkAllocationCallbacks,
-        surface: <span class="kw-2">*mut </span>VkSurfaceKHR,
-    ) -&gt; VkResult {
+        instance: vk::Instance,
+        allocator: <span class="kw-2">*const </span>vk::AllocationCallbacks,
+        surface: <span class="kw-2">*mut </span>vk::SurfaceKHR,
+    ) -&gt; vk::Result {
         <span class="kw">unsafe </span>{ ffi::glfwCreateWindowSurface(instance, <span class="self">self</span>.ptr, allocator, surface) }
     }
     <span class="doccomment">/// Wrapper for `glfwCreateWindow`.
@@ -5310,7 +5289,7 @@
         width: u32,
         height: u32,
         title: <span class="kw-2">&amp;</span>str,
-        mode: WindowMode,
+        mode: WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;,
     ) -&gt; <span class="prelude-ty">Option</span>&lt;(Window, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
         <span class="self">self</span>.glfw
             .create_window_intern(width, height, title, mode, <span class="prelude-val">Some</span>(<span class="self">self</span>))
@@ -5489,53 +5468,27 @@
     /// ~~~
     </span><span class="kw">pub fn </span>with_window_mode&lt;T, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, f: F) -&gt; T
     <span class="kw">where
-        </span>F: Fn(WindowMode) -&gt; T,
+        </span>F: FnOnce(WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; T,
     {
         <span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ ffi::glfwGetWindowMonitor(<span class="self">self</span>.ptr) };
         <span class="kw">if </span>ptr.is_null() {
             f(WindowMode::Windowed)
         } <span class="kw">else </span>{
-            f(WindowMode::FullScreen(<span class="kw-2">&amp;</span>Monitor { ptr: ptr }))
-        }
-    }
-
-    <span class="doccomment">/// Returns whether the window is fullscreen or windowed.
-    ///
-    /// Variant that can accept an `FnMut` closure.
-    ///
-    /// # Example
-    ///
-    /// ~~~ignore
-    /// window.with_window_mode(|mode| {
-    ///     match mode {
-    ///         glfw::Windowed =&gt; println!(&quot;Windowed&quot;),
-    ///         glfw::FullScreen(m) =&gt; println!(&quot;FullScreen({})&quot;, m.get_name()),
-    ///     }
-    /// });
-    /// ~~~
-    </span><span class="kw">pub fn </span>with_window_mode_mut&lt;T, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: F) -&gt; T
-    <span class="kw">where
-        </span>F: FnMut(WindowMode) -&gt; T,
-    {
-        <span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ ffi::glfwGetWindowMonitor(<span class="self">self</span>.ptr) };
-        <span class="kw">if </span>ptr.is_null() {
-            f(WindowMode::Windowed)
-        } <span class="kw">else </span>{
-            f(WindowMode::FullScreen(<span class="kw-2">&amp;</span>Monitor { ptr: ptr }))
+            f(WindowMode::FullScreen(<span class="kw-2">&amp;</span>Monitor { ptr }))
         }
     }
 
     <span class="doccomment">/// Wrapper for `glfwSetWindowMonitor`
     </span><span class="kw">pub fn </span>set_monitor(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        mode: WindowMode,
+        mode: WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;,
         xpos: i32,
         ypos: i32,
         width: u32,
         height: u32,
         refresh_rate: <span class="prelude-ty">Option</span>&lt;u32&gt;,
     ) {
-        <span class="kw">let </span>monitor_ptr = <span class="kw">if let </span>WindowMode::FullScreen(<span class="kw-2">ref </span>monitor) = mode {
+        <span class="kw">let </span>monitor_ptr = <span class="kw">if let </span>WindowMode::FullScreen(monitor) = mode {
             monitor.ptr
         } <span class="kw">else </span>{
             ptr::null_mut()
@@ -5594,8 +5547,6 @@
                 major: ffi::glfwGetWindowAttrib(<span class="self">self</span>.ptr, ffi::CONTEXT_VERSION_MAJOR) <span class="kw">as </span>u64,
                 minor: ffi::glfwGetWindowAttrib(<span class="self">self</span>.ptr, ffi::CONTEXT_VERSION_MINOR) <span class="kw">as </span>u64,
                 patch: ffi::glfwGetWindowAttrib(<span class="self">self</span>.ptr, ffi::CONTEXT_REVISION) <span class="kw">as </span>u64,
-                pre: Vec::new(),
-                build: Vec::new(),
             }
         }
     }
@@ -5865,7 +5816,7 @@
 
         <span class="kw">let </span>glfw_images: Vec&lt;ffi::GLFWimage&gt; = image_data
             .iter()
-            .map(|<span class="kw-2">ref </span>data| ffi::GLFWimage {
+            .map(|data| ffi::GLFWimage {
                 width: data.<span class="number">1 </span><span class="kw">as </span>c_int,
                 height: data.<span class="number">2 </span><span class="kw">as </span>c_int,
                 pixels: data.<span class="number">0</span>.as_ptr() <span class="kw">as </span><span class="kw-2">*const </span>c_uchar,
@@ -6042,12 +5993,12 @@
         <span class="kw">unsafe </span>{ string_from_nullable_c_str(ffi::glfwGetClipboardString(<span class="self">self</span>.ptr)) }
     }
 
-    <span class="doccomment">/// Wrapper for &#39;glfwGetWindowOpacity&#39;.
+    <span class="doccomment">/// Wrapper for `glfwGetWindowOpacity`.
     </span><span class="kw">pub fn </span>get_opacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f32 {
         <span class="kw">unsafe </span>{ ffi::glfwGetWindowOpacity(<span class="self">self</span>.ptr) }
     }
 
-    <span class="doccomment">/// Wrapper for &#39;glfwSetWindowOpacity&#39;.
+    <span class="doccomment">/// Wrapper for `glfwSetWindowOpacity`.
     </span><span class="kw">pub fn </span>set_opacity(<span class="kw-2">&amp;mut </span><span class="self">self</span>, opacity: f32) {
         <span class="kw">unsafe </span>{ ffi::glfwSetWindowOpacity(<span class="self">self</span>.ptr, opacity) }
     }
@@ -6092,9 +6043,15 @@
     }
 
     <span class="doccomment">/// Wrapper for `glfwGetX11Window`
-    </span><span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+    </span><span class="attr">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, not(feature = <span class="string">&quot;wayland&quot;</span>)))]
     </span><span class="kw">pub fn </span>get_x11_window(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>c_void {
         <span class="kw">unsafe </span>{ ffi::glfwGetX11Window(<span class="self">self</span>.ptr) }
+    }
+
+    <span class="doccomment">/// Wrapper for `glfwGetWaylandWindow`
+    </span><span class="attr">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, feature = <span class="string">&quot;wayland&quot;</span>))]
+    </span><span class="kw">pub fn </span>get_wayland_window(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>c_void {
+        <span class="kw">unsafe </span>{ ffi::glfwGetWaylandWindow(<span class="self">self</span>.ptr) }
     }
 
     <span class="doccomment">/// Wrapper for `glfwGetGLXContext`
@@ -6114,6 +6071,7 @@
         drop(<span class="self">self</span>.drop_sender.take());
 
         <span class="comment">// Check if all senders from the child `RenderContext`s have hung up.
+        </span><span class="attr">#[cfg(feature = <span class="string">&quot;log&quot;</span>)]
         </span><span class="kw">if </span><span class="self">self</span>.drop_receiver.try_recv() != <span class="prelude-val">Err</span>(std::sync::mpsc::TryRecvError::Disconnected) {
             <span class="macro">debug!</span>(<span class="string">&quot;Attempted to drop a Window before the `RenderContext` was dropped.&quot;</span>);
             <span class="macro">debug!</span>(<span class="string">&quot;Blocking until the `RenderContext` was dropped.&quot;</span>);
@@ -6136,6 +6094,7 @@
 }
 
 <span class="doccomment">/// A rendering context that can be shared between tasks.
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>RenderContext {
     ptr: <span class="kw-2">*mut </span>ffi::GLFWwindow,
     <span class="doccomment">/// As long as this sender is alive, it is not safe to drop the parent
@@ -6225,40 +6184,49 @@
     }
 }
 
+<span class="kw">unsafe impl </span>HasRawDisplayHandle <span class="kw">for </span>Window {
+    <span class="kw">fn </span>raw_display_handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawDisplayHandle {
+        raw_display_handle()
+    }
+}
+
+<span class="kw">unsafe impl </span>HasRawDisplayHandle <span class="kw">for </span>RenderContext {
+    <span class="kw">fn </span>raw_display_handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawDisplayHandle {
+        raw_display_handle()
+    }
+}
+
 <span class="kw">fn </span>raw_window_handle&lt;C: Context&gt;(context: <span class="kw-2">&amp;</span>C) -&gt; RawWindowHandle {
     <span class="attr">#[cfg(target_family = <span class="string">&quot;windows&quot;</span>)]
     </span>{
-        <span class="kw">use </span>raw_window_handle::windows::WindowsHandle;
+        <span class="kw">use </span>raw_window_handle::Win32WindowHandle;
         <span class="kw">let </span>(hwnd, hinstance) = <span class="kw">unsafe </span>{
             <span class="kw">let </span>hwnd = ffi::glfwGetWin32Window(context.window_ptr());
             <span class="kw">let </span>hinstance = winapi::um::libloaderapi::GetModuleHandleW(std::ptr::null());
             (hwnd, hinstance <span class="kw">as _</span>)
         };
-        RawWindowHandle::Windows(WindowsHandle {
-            hwnd,
-            hinstance,
-            ..WindowsHandle::empty()
-        })
+        <span class="kw">let </span><span class="kw-2">mut </span>handle = Win32WindowHandle::empty();
+        handle.hwnd = hwnd;
+        handle.hinstance = hinstance;
+        RawWindowHandle::Win32(handle)
     }
-
-    <span class="attr">#[cfg(any(target_os = <span class="string">&quot;linux&quot;</span>, target_os = <span class="string">&quot;freebsd&quot;</span>, target_os = <span class="string">&quot;dragonfly&quot;</span>))]
+    <span class="attr">#[cfg(all(any(target_os = <span class="string">&quot;linux&quot;</span>, target_os = <span class="string">&quot;freebsd&quot;</span>, target_os = <span class="string">&quot;dragonfly&quot;</span>), not(feature = <span class="string">&quot;wayland&quot;</span>)))]
     </span>{
-        <span class="kw">use </span>raw_window_handle::unix::XlibHandle;
-        <span class="kw">let </span>(window, display) = <span class="kw">unsafe </span>{
-            <span class="kw">let </span>window = ffi::glfwGetX11Window(context.window_ptr());
-            <span class="kw">let </span>display = ffi::glfwGetX11Display();
-            (window <span class="kw">as </span>std::os::raw::c_ulong, display)
-        };
-        RawWindowHandle::Xlib(XlibHandle {
-            window,
-            display,
-            ..XlibHandle::empty()
-        })
+        <span class="kw">use </span>raw_window_handle::XlibWindowHandle;
+        <span class="kw">let </span><span class="kw-2">mut </span>handle = XlibWindowHandle::empty();
+        handle.window = <span class="kw">unsafe </span>{ ffi::glfwGetX11Window(context.window_ptr()) <span class="kw">as </span>std::os::raw::c_ulong };
+        RawWindowHandle::Xlib(handle)
     }
-
+    <span class="attr">#[cfg(all(any(target_os = <span class="string">&quot;linux&quot;</span>, target_os = <span class="string">&quot;freebsd&quot;</span>, target_os = <span class="string">&quot;dragonfly&quot;</span>), feature = <span class="string">&quot;wayland&quot;</span>))]
+    </span>{
+        <span class="kw">use </span>raw_window_handle::WaylandWindowHandle;
+        <span class="kw">let </span><span class="kw-2">mut </span>handle = WaylandWindowHandle::empty();
+        handle.surface = <span class="kw">unsafe </span>{ ffi::glfwGetWaylandWindow(context.window_ptr()) };
+        RawWindowHandle::Wayland(handle)
+    }
     <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
     </span>{
-        <span class="kw">use </span>raw_window_handle::macos::MacOSHandle;
+        <span class="kw">use </span>raw_window_handle::AppKitWindowHandle;
         <span class="kw">let </span>(ns_window, ns_view) = <span class="kw">unsafe </span>{
             <span class="kw">let </span>ns_window: <span class="kw-2">*mut </span>objc::runtime::Object =
                 ffi::glfwGetCocoaWindow(context.window_ptr()) <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>;
@@ -6269,11 +6237,50 @@
                 ns_view <span class="kw">as </span><span class="kw-2">*mut </span>std::ffi::c_void,
             )
         };
-        RawWindowHandle::MacOS(MacOSHandle {
-            ns_window,
-            ns_view,
-            ..MacOSHandle::empty()
-        })
+        <span class="kw">let </span><span class="kw-2">mut </span>handle = AppKitWindowHandle::empty();
+        handle.ns_window = ns_window;
+        handle.ns_view = ns_view;
+        RawWindowHandle::AppKit(handle)
+    }
+    <span class="attr">#[cfg(target_os = <span class="string">&quot;emscripten&quot;</span>)]
+    </span>{
+        <span class="kw">let _ </span>= context; <span class="comment">// to avoid unused lint
+        </span><span class="kw">let </span><span class="kw-2">mut </span>wh = raw_window_handle::WebWindowHandle::empty();
+         <span class="comment">// glfw on emscripten only supports a single window. so, just hardcode it
+         // sdl2 crate does the same. users can just add `data-raw-handle=&quot;1&quot;` attribute to their canvas element
+        </span>wh.id = <span class="number">1</span>;
+        RawWindowHandle::Web(wh)
+    }
+}
+
+<span class="kw">fn </span>raw_display_handle() -&gt; RawDisplayHandle {
+    <span class="attr">#[cfg(target_family = <span class="string">&quot;windows&quot;</span>)]
+    </span>{
+        <span class="kw">use </span>raw_window_handle::WindowsDisplayHandle;
+        RawDisplayHandle::Windows(WindowsDisplayHandle::empty())
+    }
+    <span class="attr">#[cfg(all(any(target_os = <span class="string">&quot;linux&quot;</span>, target_os = <span class="string">&quot;freebsd&quot;</span>, target_os = <span class="string">&quot;dragonfly&quot;</span>), not(feature = <span class="string">&quot;wayland&quot;</span>)))]
+    </span>{
+        <span class="kw">use </span>raw_window_handle::XlibDisplayHandle;
+        <span class="kw">let </span><span class="kw-2">mut </span>handle = XlibDisplayHandle::empty();
+        handle.display = <span class="kw">unsafe </span>{ ffi::glfwGetX11Display() };
+        RawDisplayHandle::Xlib(handle)
+    }
+    <span class="attr">#[cfg(all(any(target_os = <span class="string">&quot;linux&quot;</span>, target_os = <span class="string">&quot;freebsd&quot;</span>, target_os = <span class="string">&quot;dragonfly&quot;</span>), feature = <span class="string">&quot;wayland&quot;</span>))]
+    </span>{
+        <span class="kw">use </span>raw_window_handle::WaylandDisplayHandle;
+        <span class="kw">let </span><span class="kw-2">mut </span>handle = WaylandDisplayHandle::empty();
+        handle.display = <span class="kw">unsafe </span>{ ffi::glfwGetWaylandDisplay() };
+        RawDisplayHandle::Wayland(handle)
+    }
+    <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+    </span>{
+        <span class="kw">use </span>raw_window_handle::AppKitDisplayHandle;
+        RawDisplayHandle::AppKit(AppKitDisplayHandle::empty())
+    }
+    <span class="attr">#[cfg(target_os = <span class="string">&quot;emscripten&quot;</span>)]
+    </span>{
+        RawDisplayHandle::Web(raw_window_handle::WebDisplayHandle::empty())
     }
 }
 
@@ -6310,7 +6317,7 @@
 <span class="kw">impl </span>JoystickId {
     <span class="doccomment">/// Converts from `i32`.
     </span><span class="kw">pub fn </span>from_i32(n: i32) -&gt; <span class="prelude-ty">Option</span>&lt;JoystickId&gt; {
-        <span class="kw">if </span>n &gt;= <span class="number">0 </span>&amp;&amp; n &lt;= ffi::JOYSTICK_LAST {
+        <span class="kw">if </span>(<span class="number">0</span>..=ffi::JOYSTICK_LAST).contains(<span class="kw-2">&amp;</span>n) {
             <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ mem::transmute(n) })
         } <span class="kw">else </span>{
             <span class="prelude-val">None
@@ -6342,7 +6349,7 @@
 <span class="kw">impl </span>GamepadButton {
     <span class="doccomment">/// Converts from `i32`.
     </span><span class="kw">pub fn </span>from_i32(n: i32) -&gt; <span class="prelude-ty">Option</span>&lt;GamepadButton&gt; {
-        <span class="kw">if </span>n &gt;= <span class="number">0 </span>&amp;&amp; n &lt;= ffi::GAMEPAD_BUTTON_LAST {
+        <span class="kw">if </span>(<span class="number">0</span>..=ffi::GAMEPAD_BUTTON_LAST).contains(<span class="kw-2">&amp;</span>n) {
             <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ mem::transmute(n) })
         } <span class="kw">else </span>{
             <span class="prelude-val">None
@@ -6365,7 +6372,7 @@
 <span class="kw">impl </span>GamepadAxis {
     <span class="doccomment">/// Converts from `i32`.
     </span><span class="kw">pub fn </span>from_i32(n: i32) -&gt; <span class="prelude-ty">Option</span>&lt;GamepadAxis&gt; {
-        <span class="kw">if </span>n &gt;= <span class="number">0 </span>&amp;&amp; n &lt;= ffi::GAMEPAD_AXIS_LAST {
+        <span class="kw">if </span>(<span class="number">0</span>..=ffi::GAMEPAD_AXIS_LAST).contains(<span class="kw-2">&amp;</span>n) {
             <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ mem::transmute(n) })
         } <span class="kw">else </span>{
             <span class="prelude-val">None
@@ -6376,22 +6383,23 @@
 <span class="macro">bitflags! </span>{
     <span class="attr">#[doc = <span class="string">&quot;Joystick hats.&quot;</span>]
     </span><span class="kw">pub struct </span>JoystickHats: ::std::os::raw::c_int {
-        <span class="kw">const </span>Centered = ::ffi::HAT_CENTERED;
-        <span class="kw">const </span>Up       = ::ffi::HAT_UP;
-        <span class="kw">const </span>Right    = ::ffi::HAT_RIGHT;
-        <span class="kw">const </span>Down     = ::ffi::HAT_DOWN;
-        <span class="kw">const </span>Left     = ::ffi::HAT_LEFT;
+        <span class="kw">const </span>Centered = <span class="kw">crate</span>::ffi::HAT_CENTERED;
+        <span class="kw">const </span>Up       = <span class="kw">crate</span>::ffi::HAT_UP;
+        <span class="kw">const </span>Right    = <span class="kw">crate</span>::ffi::HAT_RIGHT;
+        <span class="kw">const </span>Down     = <span class="kw">crate</span>::ffi::HAT_DOWN;
+        <span class="kw">const </span>Left     = <span class="kw">crate</span>::ffi::HAT_LEFT;
     }
 }
 
 <span class="doccomment">/// A joystick handle.
-</span><span class="attr">#[derive(Clone)]
+</span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>Joystick {
     <span class="kw">pub </span>id: JoystickId,
     <span class="kw">pub </span>glfw: Glfw,
 }
 
 <span class="doccomment">/// State of a gamepad.
+</span><span class="attr">#[derive(Copy, Clone, Debug)]
 </span><span class="kw">pub struct </span>GamepadState {
     buttons: [Action; (ffi::GAMEPAD_BUTTON_LAST + <span class="number">1</span>) <span class="kw">as </span>usize],
     axes: [f32; (ffi::GAMEPAD_AXIS_LAST + <span class="number">1</span>) <span class="kw">as </span>usize],

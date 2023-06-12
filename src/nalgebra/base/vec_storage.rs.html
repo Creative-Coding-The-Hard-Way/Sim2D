@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.31.1/src/base/vec_storage.rs`."><title>vec_storage.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.32.2/src/base/vec_storage.rs`."><title>vec_storage.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -468,7 +468,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::base::allocator::Allocator;
 <span class="kw">use </span><span class="kw">crate</span>::base::constraint::{SameNumberOfRows, ShapeConstraint};
 <span class="kw">use </span><span class="kw">crate</span>::base::default_allocator::DefaultAllocator;
-<span class="kw">use </span><span class="kw">crate</span>::base::dimension::{Dim, DimName, Dynamic, U1};
+<span class="kw">use </span><span class="kw">crate</span>::base::dimension::{Dim, DimName, Dyn, U1};
 <span class="kw">use </span><span class="kw">crate</span>::base::storage::{IsContiguous, Owned, RawStorage, RawStorageMut, ReshapableStorage};
 <span class="kw">use </span><span class="kw">crate</span>::base::{Scalar, Vector};
 
@@ -652,13 +652,13 @@
 
 <span class="comment">/*
  *
- * Dynamic − Static
- * Dynamic − Dynamic
+ * Dyn − Static
+ * Dyn − Dyn
  *
  */
-</span><span class="kw">unsafe impl</span>&lt;T, C: Dim&gt; RawStorage&lt;T, Dynamic, C&gt; <span class="kw">for </span>VecStorage&lt;T, Dynamic, C&gt; {
+</span><span class="kw">unsafe impl</span>&lt;T, C: Dim&gt; RawStorage&lt;T, Dyn, C&gt; <span class="kw">for </span>VecStorage&lt;T, Dyn, C&gt; {
     <span class="kw">type </span>RStride = U1;
-    <span class="kw">type </span>CStride = Dynamic;
+    <span class="kw">type </span>CStride = Dyn;
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const </span>T {
@@ -666,7 +666,7 @@
     }
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>shape(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Dynamic, C) {
+    </span><span class="kw">fn </span>shape(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Dyn, C) {
         (<span class="self">self</span>.nrows, <span class="self">self</span>.ncols)
     }
 
@@ -686,28 +686,28 @@
     }
 }
 
-<span class="kw">unsafe impl</span>&lt;T: Scalar, C: Dim&gt; Storage&lt;T, Dynamic, C&gt; <span class="kw">for </span>VecStorage&lt;T, Dynamic, C&gt;
+<span class="kw">unsafe impl</span>&lt;T: Scalar, C: Dim&gt; Storage&lt;T, Dyn, C&gt; <span class="kw">for </span>VecStorage&lt;T, Dyn, C&gt;
 <span class="kw">where
-    </span>DefaultAllocator: Allocator&lt;T, Dynamic, C, Buffer = <span class="self">Self</span>&gt;,
+    </span>DefaultAllocator: Allocator&lt;T, Dyn, C, Buffer = <span class="self">Self</span>&gt;,
 {
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>into_owned(<span class="self">self</span>) -&gt; Owned&lt;T, Dynamic, C&gt;
+    </span><span class="kw">fn </span>into_owned(<span class="self">self</span>) -&gt; Owned&lt;T, Dyn, C&gt;
     <span class="kw">where
-        </span>DefaultAllocator: Allocator&lt;T, Dynamic, C&gt;,
+        </span>DefaultAllocator: Allocator&lt;T, Dyn, C&gt;,
     {
         <span class="self">self
     </span>}
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>clone_owned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Owned&lt;T, Dynamic, C&gt;
+    </span><span class="kw">fn </span>clone_owned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Owned&lt;T, Dyn, C&gt;
     <span class="kw">where
-        </span>DefaultAllocator: Allocator&lt;T, Dynamic, C&gt;,
+        </span>DefaultAllocator: Allocator&lt;T, Dyn, C&gt;,
     {
         <span class="self">self</span>.clone()
     }
 }
 
-<span class="kw">unsafe impl</span>&lt;T, R: DimName&gt; RawStorage&lt;T, R, Dynamic&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dynamic&gt; {
+<span class="kw">unsafe impl</span>&lt;T, R: DimName&gt; RawStorage&lt;T, R, Dyn&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dyn&gt; {
     <span class="kw">type </span>RStride = U1;
     <span class="kw">type </span>CStride = R;
 
@@ -717,7 +717,7 @@
     }
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>shape(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (R, Dynamic) {
+    </span><span class="kw">fn </span>shape(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (R, Dyn) {
         (<span class="self">self</span>.nrows, <span class="self">self</span>.ncols)
     }
 
@@ -737,22 +737,22 @@
     }
 }
 
-<span class="kw">unsafe impl</span>&lt;T: Scalar, R: DimName&gt; Storage&lt;T, R, Dynamic&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dynamic&gt;
+<span class="kw">unsafe impl</span>&lt;T: Scalar, R: DimName&gt; Storage&lt;T, R, Dyn&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dyn&gt;
 <span class="kw">where
-    </span>DefaultAllocator: Allocator&lt;T, R, Dynamic, Buffer = <span class="self">Self</span>&gt;,
+    </span>DefaultAllocator: Allocator&lt;T, R, Dyn, Buffer = <span class="self">Self</span>&gt;,
 {
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>into_owned(<span class="self">self</span>) -&gt; Owned&lt;T, R, Dynamic&gt;
+    </span><span class="kw">fn </span>into_owned(<span class="self">self</span>) -&gt; Owned&lt;T, R, Dyn&gt;
     <span class="kw">where
-        </span>DefaultAllocator: Allocator&lt;T, R, Dynamic&gt;,
+        </span>DefaultAllocator: Allocator&lt;T, R, Dyn&gt;,
     {
         <span class="self">self
     </span>}
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>clone_owned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Owned&lt;T, R, Dynamic&gt;
+    </span><span class="kw">fn </span>clone_owned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Owned&lt;T, R, Dyn&gt;
     <span class="kw">where
-        </span>DefaultAllocator: Allocator&lt;T, R, Dynamic&gt;,
+        </span>DefaultAllocator: Allocator&lt;T, R, Dyn&gt;,
     {
         <span class="self">self</span>.clone()
     }
@@ -763,7 +763,7 @@
  * RawStorageMut, ContiguousStorage.
  *
  */
-</span><span class="kw">unsafe impl</span>&lt;T, C: Dim&gt; RawStorageMut&lt;T, Dynamic, C&gt; <span class="kw">for </span>VecStorage&lt;T, Dynamic, C&gt; {
+</span><span class="kw">unsafe impl</span>&lt;T, C: Dim&gt; RawStorageMut&lt;T, Dyn, C&gt; <span class="kw">for </span>VecStorage&lt;T, Dyn, C&gt; {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>ptr_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>T {
         <span class="self">self</span>.data.as_mut_ptr()
@@ -777,15 +777,15 @@
 
 <span class="kw">unsafe impl</span>&lt;T, R: Dim, C: Dim&gt; IsContiguous <span class="kw">for </span>VecStorage&lt;T, R, C&gt; {}
 
-<span class="kw">impl</span>&lt;T, C1, C2&gt; ReshapableStorage&lt;T, Dynamic, C1, Dynamic, C2&gt; <span class="kw">for </span>VecStorage&lt;T, Dynamic, C1&gt;
+<span class="kw">impl</span>&lt;T, C1, C2&gt; ReshapableStorage&lt;T, Dyn, C1, Dyn, C2&gt; <span class="kw">for </span>VecStorage&lt;T, Dyn, C1&gt;
 <span class="kw">where
     </span>T: Scalar,
     C1: Dim,
     C2: Dim,
 {
-    <span class="kw">type </span>Output = VecStorage&lt;T, Dynamic, C2&gt;;
+    <span class="kw">type </span>Output = VecStorage&lt;T, Dyn, C2&gt;;
 
-    <span class="kw">fn </span>reshape_generic(<span class="self">self</span>, nrows: Dynamic, ncols: C2) -&gt; <span class="self">Self</span>::Output {
+    <span class="kw">fn </span>reshape_generic(<span class="self">self</span>, nrows: Dyn, ncols: C2) -&gt; <span class="self">Self</span>::Output {
         <span class="macro">assert_eq!</span>(nrows.value() * ncols.value(), <span class="self">self</span>.data.len());
         VecStorage {
             data: <span class="self">self</span>.data,
@@ -795,15 +795,15 @@
     }
 }
 
-<span class="kw">impl</span>&lt;T, C1, R2&gt; ReshapableStorage&lt;T, Dynamic, C1, R2, Dynamic&gt; <span class="kw">for </span>VecStorage&lt;T, Dynamic, C1&gt;
+<span class="kw">impl</span>&lt;T, C1, R2&gt; ReshapableStorage&lt;T, Dyn, C1, R2, Dyn&gt; <span class="kw">for </span>VecStorage&lt;T, Dyn, C1&gt;
 <span class="kw">where
     </span>T: Scalar,
     C1: Dim,
     R2: DimName,
 {
-    <span class="kw">type </span>Output = VecStorage&lt;T, R2, Dynamic&gt;;
+    <span class="kw">type </span>Output = VecStorage&lt;T, R2, Dyn&gt;;
 
-    <span class="kw">fn </span>reshape_generic(<span class="self">self</span>, nrows: R2, ncols: Dynamic) -&gt; <span class="self">Self</span>::Output {
+    <span class="kw">fn </span>reshape_generic(<span class="self">self</span>, nrows: R2, ncols: Dyn) -&gt; <span class="self">Self</span>::Output {
         <span class="macro">assert_eq!</span>(nrows.value() * ncols.value(), <span class="self">self</span>.data.len());
         VecStorage {
             data: <span class="self">self</span>.data,
@@ -813,7 +813,7 @@
     }
 }
 
-<span class="kw">unsafe impl</span>&lt;T, R: DimName&gt; RawStorageMut&lt;T, R, Dynamic&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dynamic&gt; {
+<span class="kw">unsafe impl</span>&lt;T, R: DimName&gt; RawStorageMut&lt;T, R, Dyn&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dyn&gt; {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>ptr_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>T {
         <span class="self">self</span>.data.as_mut_ptr()
@@ -825,15 +825,15 @@
     }
 }
 
-<span class="kw">impl</span>&lt;T, R1, C2&gt; ReshapableStorage&lt;T, R1, Dynamic, Dynamic, C2&gt; <span class="kw">for </span>VecStorage&lt;T, R1, Dynamic&gt;
+<span class="kw">impl</span>&lt;T, R1, C2&gt; ReshapableStorage&lt;T, R1, Dyn, Dyn, C2&gt; <span class="kw">for </span>VecStorage&lt;T, R1, Dyn&gt;
 <span class="kw">where
     </span>T: Scalar,
     R1: DimName,
     C2: Dim,
 {
-    <span class="kw">type </span>Output = VecStorage&lt;T, Dynamic, C2&gt;;
+    <span class="kw">type </span>Output = VecStorage&lt;T, Dyn, C2&gt;;
 
-    <span class="kw">fn </span>reshape_generic(<span class="self">self</span>, nrows: Dynamic, ncols: C2) -&gt; <span class="self">Self</span>::Output {
+    <span class="kw">fn </span>reshape_generic(<span class="self">self</span>, nrows: Dyn, ncols: C2) -&gt; <span class="self">Self</span>::Output {
         <span class="macro">assert_eq!</span>(nrows.value() * ncols.value(), <span class="self">self</span>.data.len());
         VecStorage {
             data: <span class="self">self</span>.data,
@@ -843,15 +843,15 @@
     }
 }
 
-<span class="kw">impl</span>&lt;T, R1, R2&gt; ReshapableStorage&lt;T, R1, Dynamic, R2, Dynamic&gt; <span class="kw">for </span>VecStorage&lt;T, R1, Dynamic&gt;
+<span class="kw">impl</span>&lt;T, R1, R2&gt; ReshapableStorage&lt;T, R1, Dyn, R2, Dyn&gt; <span class="kw">for </span>VecStorage&lt;T, R1, Dyn&gt;
 <span class="kw">where
     </span>T: Scalar,
     R1: DimName,
     R2: DimName,
 {
-    <span class="kw">type </span>Output = VecStorage&lt;T, R2, Dynamic&gt;;
+    <span class="kw">type </span>Output = VecStorage&lt;T, R2, Dyn&gt;;
 
-    <span class="kw">fn </span>reshape_generic(<span class="self">self</span>, nrows: R2, ncols: Dynamic) -&gt; <span class="self">Self</span>::Output {
+    <span class="kw">fn </span>reshape_generic(<span class="self">self</span>, nrows: R2, ncols: Dyn) -&gt; <span class="self">Self</span>::Output {
         <span class="macro">assert_eq!</span>(nrows.value() * ncols.value(), <span class="self">self</span>.data.len());
         VecStorage {
             data: <span class="self">self</span>.data,
@@ -861,7 +861,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;T, R: Dim&gt; Extend&lt;T&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dynamic&gt; {
+<span class="kw">impl</span>&lt;T, R: Dim&gt; Extend&lt;T&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dyn&gt; {
     <span class="doccomment">/// Extends the number of columns of the `VecStorage` with elements
     /// from the given iterator.
     ///
@@ -871,13 +871,13 @@
     /// `VecStorage`.
     </span><span class="kw">fn </span>extend&lt;I: IntoIterator&lt;Item = T&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) {
         <span class="self">self</span>.data.extend(iter);
-        <span class="self">self</span>.ncols = Dynamic::new(<span class="self">self</span>.data.len() / <span class="self">self</span>.nrows.value());
+        <span class="self">self</span>.ncols = Dyn(<span class="self">self</span>.data.len() / <span class="self">self</span>.nrows.value());
         <span class="macro">assert!</span>(<span class="self">self</span>.data.len() % <span class="self">self</span>.nrows.value() == <span class="number">0</span>,
           <span class="string">&quot;The number of elements produced by the given iterator was not a multiple of the number of rows.&quot;</span>);
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a </span>+ Copy, R: Dim&gt; Extend&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dynamic&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a </span>+ Copy, R: Dim&gt; Extend&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dyn&gt; {
     <span class="doccomment">/// Extends the number of columns of the `VecStorage` with elements
     /// from the given iterator.
     ///
@@ -890,7 +890,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;T, R, RV, SV&gt; Extend&lt;Vector&lt;T, RV, SV&gt;&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dynamic&gt;
+<span class="kw">impl</span>&lt;T, R, RV, SV&gt; Extend&lt;Vector&lt;T, RV, SV&gt;&gt; <span class="kw">for </span>VecStorage&lt;T, R, Dyn&gt;
 <span class="kw">where
     </span>T: Scalar,
     R: Dim,
@@ -914,16 +914,16 @@
             <span class="macro">assert_eq!</span>(nrows, vector.shape().<span class="number">0</span>);
             <span class="self">self</span>.data.extend(vector.iter().cloned());
         }
-        <span class="self">self</span>.ncols = Dynamic::new(<span class="self">self</span>.data.len() / nrows);
+        <span class="self">self</span>.ncols = Dyn(<span class="self">self</span>.data.len() / nrows);
     }
 }
 
-<span class="kw">impl</span>&lt;T&gt; Extend&lt;T&gt; <span class="kw">for </span>VecStorage&lt;T, Dynamic, U1&gt; {
+<span class="kw">impl</span>&lt;T&gt; Extend&lt;T&gt; <span class="kw">for </span>VecStorage&lt;T, Dyn, U1&gt; {
     <span class="doccomment">/// Extends the number of rows of the `VecStorage` with elements
     /// from the given iterator.
     </span><span class="kw">fn </span>extend&lt;I: IntoIterator&lt;Item = T&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) {
         <span class="self">self</span>.data.extend(iter);
-        <span class="self">self</span>.nrows = Dynamic::new(<span class="self">self</span>.data.len());
+        <span class="self">self</span>.nrows = Dyn(<span class="self">self</span>.data.len());
     }
 }
 </code></pre></div>

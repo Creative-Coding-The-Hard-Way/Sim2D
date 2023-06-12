@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/wide-0.7.4/src/i32x8_.rs`."><title>i32x8_.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wide/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/wide-0.7.9/src/i32x8_.rs`."><title>i32x8_.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wide/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -527,125 +527,17 @@
 <a href="#527" id="527">527</a>
 <a href="#528" id="528">528</a>
 <a href="#529" id="529">529</a>
-<a href="#530" id="530">530</a>
-<a href="#531" id="531">531</a>
-<a href="#532" id="532">532</a>
-<a href="#533" id="533">533</a>
-<a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
-<a href="#538" id="538">538</a>
-<a href="#539" id="539">539</a>
-<a href="#540" id="540">540</a>
-<a href="#541" id="541">541</a>
-<a href="#542" id="542">542</a>
-<a href="#543" id="543">543</a>
-<a href="#544" id="544">544</a>
-<a href="#545" id="545">545</a>
-<a href="#546" id="546">546</a>
-<a href="#547" id="547">547</a>
-<a href="#548" id="548">548</a>
-<a href="#549" id="549">549</a>
-<a href="#550" id="550">550</a>
-<a href="#551" id="551">551</a>
-<a href="#552" id="552">552</a>
-<a href="#553" id="553">553</a>
-<a href="#554" id="554">554</a>
-<a href="#555" id="555">555</a>
-<a href="#556" id="556">556</a>
-<a href="#557" id="557">557</a>
-<a href="#558" id="558">558</a>
-<a href="#559" id="559">559</a>
-<a href="#560" id="560">560</a>
-<a href="#561" id="561">561</a>
-<a href="#562" id="562">562</a>
-<a href="#563" id="563">563</a>
-<a href="#564" id="564">564</a>
-<a href="#565" id="565">565</a>
-<a href="#566" id="566">566</a>
-<a href="#567" id="567">567</a>
-<a href="#568" id="568">568</a>
-<a href="#569" id="569">569</a>
-<a href="#570" id="570">570</a>
-<a href="#571" id="571">571</a>
-<a href="#572" id="572">572</a>
-<a href="#573" id="573">573</a>
-<a href="#574" id="574">574</a>
-<a href="#575" id="575">575</a>
-<a href="#576" id="576">576</a>
-<a href="#577" id="577">577</a>
-<a href="#578" id="578">578</a>
-<a href="#579" id="579">579</a>
-<a href="#580" id="580">580</a>
-<a href="#581" id="581">581</a>
-<a href="#582" id="582">582</a>
-<a href="#583" id="583">583</a>
-<a href="#584" id="584">584</a>
-<a href="#585" id="585">585</a>
-<a href="#586" id="586">586</a>
-<a href="#587" id="587">587</a>
-<a href="#588" id="588">588</a>
-<a href="#589" id="589">589</a>
-<a href="#590" id="590">590</a>
-<a href="#591" id="591">591</a>
-<a href="#592" id="592">592</a>
-<a href="#593" id="593">593</a>
-<a href="#594" id="594">594</a>
-<a href="#595" id="595">595</a>
-<a href="#596" id="596">596</a>
-<a href="#597" id="597">597</a>
-<a href="#598" id="598">598</a>
-<a href="#599" id="599">599</a>
-<a href="#600" id="600">600</a>
-<a href="#601" id="601">601</a>
-<a href="#602" id="602">602</a>
-<a href="#603" id="603">603</a>
-<a href="#604" id="604">604</a>
-<a href="#605" id="605">605</a>
-<a href="#606" id="606">606</a>
-<a href="#607" id="607">607</a>
-<a href="#608" id="608">608</a>
-<a href="#609" id="609">609</a>
-<a href="#610" id="610">610</a>
-<a href="#611" id="611">611</a>
-<a href="#612" id="612">612</a>
-<a href="#613" id="613">613</a>
 </pre><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
 <span class="macro">pick! </span>{
   <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
     <span class="attr">#[derive(Default, Clone, Copy, PartialEq, Eq)]
     #[repr(C, align(<span class="number">32</span>))]
-    </span><span class="kw">pub struct </span>i32x8 { avx2: m256i }
-  } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-    <span class="attr">#[derive(Default, Clone, Copy, PartialEq, Eq)]
-    #[repr(C, align(<span class="number">32</span>))]
-    </span><span class="kw">pub struct </span>i32x8 { <span class="kw">pub</span>(<span class="kw">crate</span>) sse0: m128i, <span class="kw">pub</span>(<span class="kw">crate</span>) sse1: m128i }
-  } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-    <span class="kw">use </span>core::arch::wasm32::<span class="kw-2">*</span>;
-
-    <span class="attr">#[derive(Clone, Copy)]
-    #[repr(C, align(<span class="number">32</span>))]
-    </span><span class="kw">pub struct </span>i32x8 { simd0: v128, simd1: v128 }
-
-    <span class="kw">impl </span>Default <span class="kw">for </span>i32x8 {
-      <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::splat(<span class="number">0</span>)
-      }
-    }
-
-    <span class="kw">impl </span>PartialEq <span class="kw">for </span>i32x8 {
-      <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-        !v128_any_true(v128_or(v128_xor(<span class="self">self</span>.simd0, other.simd0), v128_xor(<span class="self">self</span>.simd1, other.simd1)))
-      }
-    }
-
-    <span class="kw">impl </span>Eq <span class="kw">for </span>i32x8 { }
+    </span><span class="kw">pub struct </span>i32x8 { <span class="kw">pub</span>(<span class="kw">crate</span>) avx2: m256i }
   } <span class="kw">else </span>{
     <span class="attr">#[derive(Default, Clone, Copy, PartialEq, Eq)]
     #[repr(C, align(<span class="number">32</span>))]
-    </span><span class="kw">pub struct </span>i32x8 { arr: [i32;<span class="number">8</span>] }
+    </span><span class="kw">pub struct </span>i32x8 { <span class="kw">pub</span>(<span class="kw">crate</span>) a : i32x4, <span class="kw">pub</span>(<span class="kw">crate</span>) b : i32x4}
   }
 }
 
@@ -662,21 +554,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: add_i32_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: add_i32_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: add_i32_m128i(<span class="self">self</span>.sse1, rhs.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_add(<span class="self">self</span>.simd0, rhs.simd0), simd1: i32x4_add(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].wrapping_add(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].wrapping_add(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].wrapping_add(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].wrapping_add(rhs.arr[<span class="number">3</span>]),
-          <span class="self">self</span>.arr[<span class="number">4</span>].wrapping_add(rhs.arr[<span class="number">4</span>]),
-          <span class="self">self</span>.arr[<span class="number">5</span>].wrapping_add(rhs.arr[<span class="number">5</span>]),
-          <span class="self">self</span>.arr[<span class="number">6</span>].wrapping_add(rhs.arr[<span class="number">6</span>]),
-          <span class="self">self</span>.arr[<span class="number">7</span>].wrapping_add(rhs.arr[<span class="number">7</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.add(rhs.a),
+          b : <span class="self">self</span>.b.add(rhs.b),
+        }
       }
     }
   }
@@ -690,21 +572,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: sub_i32_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: sub_i32_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: sub_i32_m128i(<span class="self">self</span>.sse1, rhs.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_sub(<span class="self">self</span>.simd0, rhs.simd0), simd1: i32x4_sub(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].wrapping_sub(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].wrapping_sub(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].wrapping_sub(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].wrapping_sub(rhs.arr[<span class="number">3</span>]),
-          <span class="self">self</span>.arr[<span class="number">4</span>].wrapping_sub(rhs.arr[<span class="number">4</span>]),
-          <span class="self">self</span>.arr[<span class="number">5</span>].wrapping_sub(rhs.arr[<span class="number">5</span>]),
-          <span class="self">self</span>.arr[<span class="number">6</span>].wrapping_sub(rhs.arr[<span class="number">6</span>]),
-          <span class="self">self</span>.arr[<span class="number">7</span>].wrapping_sub(rhs.arr[<span class="number">7</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.sub(rhs.a),
+          b : <span class="self">self</span>.b.sub(rhs.b),
+        }
       }
     }
   }
@@ -718,23 +590,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: mul_i32_keep_low_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse4.1&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: mul_i32_keep_low_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: mul_i32_keep_low_m128i(<span class="self">self</span>.sse1, rhs.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_mul(<span class="self">self</span>.simd0, rhs.simd0), simd1: i32x4_mul(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="kw">let </span>arr1: [i32; <span class="number">8</span>] = cast(<span class="self">self</span>);
-        <span class="kw">let </span>arr2: [i32; <span class="number">8</span>] = cast(rhs);
-        cast([
-          arr1[<span class="number">0</span>].wrapping_mul(arr2[<span class="number">0</span>]),
-          arr1[<span class="number">1</span>].wrapping_mul(arr2[<span class="number">1</span>]),
-          arr1[<span class="number">2</span>].wrapping_mul(arr2[<span class="number">2</span>]),
-          arr1[<span class="number">3</span>].wrapping_mul(arr2[<span class="number">3</span>]),
-          arr1[<span class="number">4</span>].wrapping_mul(arr2[<span class="number">4</span>]),
-          arr1[<span class="number">5</span>].wrapping_mul(arr2[<span class="number">5</span>]),
-          arr1[<span class="number">6</span>].wrapping_mul(arr2[<span class="number">6</span>]),
-          arr1[<span class="number">7</span>].wrapping_mul(arr2[<span class="number">7</span>]),
-        ])
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.mul(rhs.a),
+          b : <span class="self">self</span>.b.mul(rhs.b),
+        }
       }
     }
   }
@@ -802,21 +662,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: bitand_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: bitand_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: bitand_m128i(<span class="self">self</span>.sse1, rhs.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_and(<span class="self">self</span>.simd0, rhs.simd0), simd1: v128_and(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].bitand(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].bitand(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].bitand(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].bitand(rhs.arr[<span class="number">3</span>]),
-          <span class="self">self</span>.arr[<span class="number">4</span>].bitand(rhs.arr[<span class="number">4</span>]),
-          <span class="self">self</span>.arr[<span class="number">5</span>].bitand(rhs.arr[<span class="number">5</span>]),
-          <span class="self">self</span>.arr[<span class="number">6</span>].bitand(rhs.arr[<span class="number">6</span>]),
-          <span class="self">self</span>.arr[<span class="number">7</span>].bitand(rhs.arr[<span class="number">7</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.bitand(rhs.a),
+          b : <span class="self">self</span>.b.bitand(rhs.b),
+        }
       }
     }
   }
@@ -828,25 +678,14 @@
   #[must_use]
   </span><span class="kw">fn </span>bitor(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
     <span class="macro">pick! </span>{
-      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ avx2: bitor_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: bitor_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: bitor_m128i(<span class="self">self</span>.sse1, rhs.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_or(<span class="self">self</span>.simd0, rhs.simd0), simd1: v128_or(<span class="self">self</span>.simd1, rhs.simd1) }
-      } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].bitor(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].bitor(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].bitor(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].bitor(rhs.arr[<span class="number">3</span>]),
-          <span class="self">self</span>.arr[<span class="number">4</span>].bitor(rhs.arr[<span class="number">4</span>]),
-          <span class="self">self</span>.arr[<span class="number">5</span>].bitor(rhs.arr[<span class="number">5</span>]),
-          <span class="self">self</span>.arr[<span class="number">6</span>].bitor(rhs.arr[<span class="number">6</span>]),
-          <span class="self">self</span>.arr[<span class="number">7</span>].bitor(rhs.arr[<span class="number">7</span>]),
-        ]}
+    <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
+      <span class="self">Self </span>{ avx2: bitor_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
+    } <span class="kw">else </span>{
+      <span class="self">Self </span>{
+        a : <span class="self">self</span>.a.bitor(rhs.a),
+        b : <span class="self">self</span>.b.bitor(rhs.b),
       }
-    }
+    }    }
   }
 }
 
@@ -858,21 +697,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: bitxor_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: bitxor_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: bitxor_m128i(<span class="self">self</span>.sse1, rhs.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_xor(<span class="self">self</span>.simd0, rhs.simd0), simd1: v128_xor(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].bitxor(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].bitxor(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].bitxor(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].bitxor(rhs.arr[<span class="number">3</span>]),
-          <span class="self">self</span>.arr[<span class="number">4</span>].bitxor(rhs.arr[<span class="number">4</span>]),
-          <span class="self">self</span>.arr[<span class="number">5</span>].bitxor(rhs.arr[<span class="number">5</span>]),
-          <span class="self">self</span>.arr[<span class="number">6</span>].bitxor(rhs.arr[<span class="number">6</span>]),
-          <span class="self">self</span>.arr[<span class="number">7</span>].bitxor(rhs.arr[<span class="number">7</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.bitxor(rhs.a),
+          b : <span class="self">self</span>.b.bitxor(rhs.b),
+        }
       }
     }
   }
@@ -890,24 +719,11 @@
           <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
             <span class="kw">let </span>shift = cast([rhs <span class="kw">as </span>u64, <span class="number">0</span>]);
             <span class="self">Self </span>{ avx2: shl_all_u32_m256i(<span class="self">self</span>.avx2, shift) }
-          } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-            <span class="kw">let </span>shift = cast([rhs <span class="kw">as </span>u64, <span class="number">0</span>]);
-            <span class="self">Self </span>{ sse0: shl_all_u32_m128i(<span class="self">self</span>.sse0, shift), sse1: shl_all_u32_m128i(<span class="self">self</span>.sse1, shift)}
-          } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-            <span class="kw">let </span>u = rhs <span class="kw">as </span>u32;
-            <span class="self">Self </span>{ simd0: i32x4_shl(<span class="self">self</span>.simd0, u), simd1: i32x4_shl(<span class="self">self</span>.simd1, u) }
           } <span class="kw">else </span>{
-            <span class="kw">let </span>u = rhs <span class="kw">as </span>u64;
-            <span class="self">Self </span>{ arr: [
-              <span class="self">self</span>.arr[<span class="number">0</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">1</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">2</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">3</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">4</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">5</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">6</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">7</span>] &lt;&lt; u,
-            ]}
+            <span class="self">Self </span>{
+              a : <span class="self">self</span>.a.shl(rhs),
+              b : <span class="self">self</span>.b.shl(rhs),
+            }
           }
         }
       }
@@ -928,24 +744,11 @@
           <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
             <span class="kw">let </span>shift = cast([rhs <span class="kw">as </span>u64, <span class="number">0</span>]);
             <span class="self">Self </span>{ avx2: shr_all_i32_m256i(<span class="self">self</span>.avx2, shift) }
-          } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-            <span class="kw">let </span>shift = cast([rhs <span class="kw">as </span>u64, <span class="number">0</span>]);
-            <span class="self">Self </span>{ sse0: shr_all_i32_m128i(<span class="self">self</span>.sse0, shift), sse1: shr_all_i32_m128i(<span class="self">self</span>.sse1, shift)}
-          } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-            <span class="kw">let </span>u = rhs <span class="kw">as </span>u32;
-            <span class="self">Self </span>{ simd0: i32x4_shr(<span class="self">self</span>.simd0, u), simd1: i32x4_shr(<span class="self">self</span>.simd1, u) }
           } <span class="kw">else </span>{
-            <span class="kw">let </span>u = rhs <span class="kw">as </span>u64;
-            <span class="self">Self </span>{ arr: [
-              <span class="self">self</span>.arr[<span class="number">0</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">1</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">2</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">3</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">4</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">5</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">6</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">7</span>] &gt;&gt; u,
-            ]}
+            <span class="self">Self </span>{
+              a : <span class="self">self</span>.a.shr(rhs),
+              b : <span class="self">self</span>.b.shr(rhs),
+            }
           }
         }
       }
@@ -963,21 +766,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: cmp_eq_mask_i32_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: cmp_eq_mask_i32_m128i(<span class="self">self</span>.sse0,rhs.sse0), sse1: cmp_eq_mask_i32_m128i(<span class="self">self</span>.sse1,rhs.sse1), }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_eq(<span class="self">self</span>.simd0, rhs.simd0), simd1: i32x4_eq(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] == rhs.arr[<span class="number">0</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">1</span>] == rhs.arr[<span class="number">1</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">2</span>] == rhs.arr[<span class="number">2</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">3</span>] == rhs.arr[<span class="number">3</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">4</span>] == rhs.arr[<span class="number">4</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">5</span>] == rhs.arr[<span class="number">5</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">6</span>] == rhs.arr[<span class="number">6</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">7</span>] == rhs.arr[<span class="number">7</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.cmp_eq(rhs.a),
+          b : <span class="self">self</span>.b.cmp_eq(rhs.b),
+        }
       }
     }
   }
@@ -991,21 +784,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: cmp_gt_mask_i32_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: cmp_gt_mask_i32_m128i(<span class="self">self</span>.sse0,rhs.sse0), sse1: cmp_gt_mask_i32_m128i(<span class="self">self</span>.sse1,rhs.sse1), }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_gt(<span class="self">self</span>.simd0, rhs.simd0), simd1: i32x4_gt(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] &gt; rhs.arr[<span class="number">0</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">1</span>] &gt; rhs.arr[<span class="number">1</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">2</span>] &gt; rhs.arr[<span class="number">2</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">3</span>] &gt; rhs.arr[<span class="number">3</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">4</span>] &gt; rhs.arr[<span class="number">4</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">5</span>] &gt; rhs.arr[<span class="number">5</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">6</span>] &gt; rhs.arr[<span class="number">6</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">7</span>] &gt; rhs.arr[<span class="number">7</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.cmp_gt(rhs.a),
+          b : <span class="self">self</span>.b.cmp_gt(rhs.b),
+        }
       }
     }
   }
@@ -1019,21 +802,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: !cmp_gt_mask_i32_m256i(<span class="self">self</span>.avx2, rhs.avx2)  ^ cmp_eq_mask_i32_m256i(<span class="self">self</span>.avx2,rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: cmp_lt_mask_i32_m128i(<span class="self">self</span>.sse0,rhs.sse0), sse1: cmp_lt_mask_i32_m128i(<span class="self">self</span>.sse1,rhs.sse1), }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_lt(<span class="self">self</span>.simd0, rhs.simd0), simd1: i32x4_lt(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] &lt; rhs.arr[<span class="number">0</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">1</span>] &lt; rhs.arr[<span class="number">1</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">2</span>] &lt; rhs.arr[<span class="number">2</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">3</span>] &lt; rhs.arr[<span class="number">3</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">4</span>] &lt; rhs.arr[<span class="number">4</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">5</span>] &lt; rhs.arr[<span class="number">5</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">6</span>] &lt; rhs.arr[<span class="number">6</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">7</span>] &lt; rhs.arr[<span class="number">7</span>] { -<span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.cmp_lt(rhs.a),
+          b : <span class="self">self</span>.b.cmp_lt(rhs.b),
+        }
       }
     }
   }
@@ -1044,18 +817,45 @@
   </span><span class="kw">pub fn </span>new(array: [i32; <span class="number">8</span>]) -&gt; <span class="self">Self </span>{
     <span class="self">Self</span>::from(array)
   }
+
+  <span class="doccomment">/// widens and sign extends to i32x8
+  </span><span class="attr">#[inline]
+  #[must_use]
+  </span><span class="kw">pub fn </span>from_i16x8(v: i16x8) -&gt; <span class="self">Self </span>{
+    <span class="macro">pick! </span>{
+      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
+        i32x8 { avx2:convert_to_i32_m256i_from_i16_m128i(v.sse) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
+        i32x8 {
+          a: i32x4 { sse: shr_imm_i32_m128i::&lt;<span class="number">16</span>&gt;( unpack_low_i16_m128i(v.sse, v.sse)) },
+          b: i32x4 { sse: shr_imm_i32_m128i::&lt;<span class="number">16</span>&gt;( unpack_high_i16_m128i(v.sse, v.sse)) },
+        }
+      } <span class="kw">else </span>{
+        i32x8::new([
+          v.as_array_ref()[<span class="number">0</span>] <span class="kw">as </span>i32,
+          v.as_array_ref()[<span class="number">1</span>] <span class="kw">as </span>i32,
+          v.as_array_ref()[<span class="number">2</span>] <span class="kw">as </span>i32,
+          v.as_array_ref()[<span class="number">3</span>] <span class="kw">as </span>i32,
+          v.as_array_ref()[<span class="number">4</span>] <span class="kw">as </span>i32,
+          v.as_array_ref()[<span class="number">5</span>] <span class="kw">as </span>i32,
+          v.as_array_ref()[<span class="number">6</span>] <span class="kw">as </span>i32,
+          v.as_array_ref()[<span class="number">7</span>] <span class="kw">as </span>i32,
+        ])
+      }
+    }
+  }
+
   <span class="attr">#[inline]
   #[must_use]
   </span><span class="kw">pub fn </span>blend(<span class="self">self</span>, t: <span class="self">Self</span>, f: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: blend_varying_i8_m256i(f.avx2, t.avx2, <span class="self">self</span>.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse4.1&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: blend_varying_i8_m128i(f.sse0, t.sse0, <span class="self">self</span>.sse0), sse1: blend_varying_i8_m128i(f.sse1, t.sse1, <span class="self">self</span>.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_bitselect(t.simd0, f.simd0, <span class="self">self</span>.simd0), simd1: v128_bitselect(t.simd1, f.simd1, <span class="self">self</span>.simd1) }
       } <span class="kw">else </span>{
-        generic_bit_blend(<span class="self">self</span>, t, f)
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.blend(t.a, f.a),
+          b : <span class="self">self</span>.b.blend(t.b, f.b)
+        }
       }
     }
   }
@@ -1065,22 +865,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: abs_i32_m256i(<span class="self">self</span>.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;ssse3&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: abs_i32_m128i(<span class="self">self</span>.sse0), sse1: abs_i32_m128i(<span class="self">self</span>.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_abs(<span class="self">self</span>.simd0), simd1: i32x4_abs(<span class="self">self</span>.simd1) }
       } <span class="kw">else </span>{
-        <span class="kw">let </span>arr: [i32; <span class="number">8</span>] = cast(<span class="self">self</span>);
-        cast([
-          arr[<span class="number">0</span>].wrapping_abs(),
-          arr[<span class="number">1</span>].wrapping_abs(),
-          arr[<span class="number">2</span>].wrapping_abs(),
-          arr[<span class="number">3</span>].wrapping_abs(),
-          arr[<span class="number">4</span>].wrapping_abs(),
-          arr[<span class="number">5</span>].wrapping_abs(),
-          arr[<span class="number">6</span>].wrapping_abs(),
-          arr[<span class="number">7</span>].wrapping_abs(),
-        ])
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.abs(),
+          b : <span class="self">self</span>.b.abs(),
+        }
       }
     }
   }
@@ -1090,12 +879,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: max_i32_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse4.1&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: max_i32_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: max_i32_m128i(<span class="self">self</span>.sse1, rhs.sse1) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_max(<span class="self">self</span>.simd0, rhs.simd0), simd1: i32x4_max(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">self</span>.cmp_lt(rhs).blend(rhs, <span class="self">self</span>)
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.max(rhs.a),
+          b : <span class="self">self</span>.b.max(rhs.b),
+        }
       }
     }
   }
@@ -1105,12 +893,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: min_i32_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse4.1&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: min_i32_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: min_i32_m128i(<span class="self">self</span>.sse1, rhs.sse1) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: i32x4_min(<span class="self">self</span>.simd0, rhs.simd0), simd1: i32x4_min(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">self</span>.cmp_lt(rhs).blend(<span class="self">self</span>, rhs)
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.min(rhs.a),
+          b : <span class="self">self</span>.b.min(rhs.b),
+        }
       }
     }
   }
@@ -1120,21 +907,10 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         cast(convert_to_m256_from_i32_m256i(<span class="self">self</span>.avx2))
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        cast(<span class="self">Self </span>{ sse0 : cast(convert_to_m128_from_i32_m128i(<span class="self">self</span>.sse0)), sse1 : cast(convert_to_m128_from_i32_m128i(<span class="self">self</span>.sse1)) })
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        cast(<span class="self">Self </span>{ simd0: f32x4_convert_i32x4(<span class="self">self</span>.simd0), simd1: f32x4_convert_i32x4(<span class="self">self</span>.simd1) })
       } <span class="kw">else </span>{
-        <span class="kw">let </span>arr: [i32; <span class="number">8</span>] = cast(<span class="self">self</span>);
         cast([
-          arr[<span class="number">0</span>] <span class="kw">as </span>f32,
-          arr[<span class="number">1</span>] <span class="kw">as </span>f32,
-          arr[<span class="number">2</span>] <span class="kw">as </span>f32,
-          arr[<span class="number">3</span>] <span class="kw">as </span>f32,
-          arr[<span class="number">4</span>] <span class="kw">as </span>f32,
-          arr[<span class="number">5</span>] <span class="kw">as </span>f32,
-          arr[<span class="number">6</span>] <span class="kw">as </span>f32,
-          arr[<span class="number">7</span>] <span class="kw">as </span>f32,
+          <span class="self">self</span>.a.round_float(),
+          <span class="self">self</span>.b.round_float(),
         ])
       }
     }
@@ -1146,18 +922,8 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         move_mask_i8_m256i(<span class="self">self</span>.avx2)
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        move_mask_i8_m128i(<span class="self">self</span>.sse1) &lt;&lt; <span class="number">4 </span>| move_mask_i8_m128i(<span class="self">self</span>.sse0)
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        (i32x4_bitmask(<span class="self">self</span>.simd1) <span class="kw">as </span>i32) &lt;&lt; <span class="number">4 </span>| i32x4_bitmask(<span class="self">self</span>.simd0) <span class="kw">as </span>i32
       } <span class="kw">else </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="number">0</span>;
-        <span class="kw">for </span>(index, i_eight) <span class="kw">in </span><span class="self">self</span>.arr.iter().copied().enumerate() {
-          <span class="kw">if </span>i_eight &lt; <span class="number">0 </span>{
-            out |= <span class="number">1 </span>&lt;&lt; index;
-          }
-        }
-        out
+        <span class="self">self</span>.a.move_mask() | (<span class="self">self</span>.b.move_mask() &lt;&lt; <span class="number">4</span>)
       }
     }
   }
@@ -1165,23 +931,22 @@
   #[must_use]
   </span><span class="kw">pub fn </span>any(<span class="self">self</span>) -&gt; bool {
     <span class="macro">pick! </span>{
-      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        v128_any_true(<span class="self">self</span>.simd0) | v128_any_true(<span class="self">self</span>.simd1)
-      } <span class="kw">else </span>{
-        <span class="self">self</span>.move_mask() != <span class="number">0
-      </span>}
+      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
+        move_mask_i8_m256i(<span class="self">self</span>.avx2) != <span class="number">0
+      </span>} <span class="kw">else </span>{
+        <span class="self">self</span>.a.any() || <span class="self">self</span>.b.any()
+      }
     }
   }
   <span class="attr">#[inline]
   #[must_use]
   </span><span class="kw">pub fn </span>all(<span class="self">self</span>) -&gt; bool {
     <span class="macro">pick! </span>{
-      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        u32x4_all_true(<span class="self">self</span>.simd0) &amp; u32x4_all_true(<span class="self">self</span>.simd1)
-      } <span class="kw">else </span>{
-        <span class="comment">// eight lanes
-        </span><span class="self">self</span>.move_mask() == <span class="number">0b1111_1111
-      </span>}
+      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
+        move_mask_i8_m256i(<span class="self">self</span>.avx2) == <span class="number">0b11111111
+      </span>} <span class="kw">else </span>{
+        <span class="self">self</span>.a.all() &amp;&amp; <span class="self">self</span>.b.all()
+      }
     }
   }
   <span class="attr">#[inline]
@@ -1190,36 +955,103 @@
     !<span class="self">self</span>.any()
   }
 
-  <span class="kw">pub fn </span>to_array(<span class="self">self</span>) -&gt; [i32; <span class="number">8</span>] {
+  <span class="doccomment">/// Transpose matrix of 8x8 i32 matrix. Currently only accelerated on AVX2.
+  </span><span class="attr">#[must_use]
+  #[inline]
+  </span><span class="kw">pub fn </span>transpose(data: [i32x8; <span class="number">8</span>]) -&gt; [i32x8; <span class="number">8</span>] {
+    <span class="macro">pick! </span>{
+      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
+        <span class="kw">let </span>a0 = unpack_low_i32_m256i(data[<span class="number">0</span>].avx2, data[<span class="number">1</span>].avx2);
+        <span class="kw">let </span>a1 = unpack_high_i32_m256i(data[<span class="number">0</span>].avx2, data[<span class="number">1</span>].avx2);
+        <span class="kw">let </span>a2 = unpack_low_i32_m256i(data[<span class="number">2</span>].avx2, data[<span class="number">3</span>].avx2);
+        <span class="kw">let </span>a3 = unpack_high_i32_m256i(data[<span class="number">2</span>].avx2, data[<span class="number">3</span>].avx2);
+        <span class="kw">let </span>a4 = unpack_low_i32_m256i(data[<span class="number">4</span>].avx2, data[<span class="number">5</span>].avx2);
+        <span class="kw">let </span>a5 = unpack_high_i32_m256i(data[<span class="number">4</span>].avx2, data[<span class="number">5</span>].avx2);
+        <span class="kw">let </span>a6 = unpack_low_i32_m256i(data[<span class="number">6</span>].avx2, data[<span class="number">7</span>].avx2);
+        <span class="kw">let </span>a7 = unpack_high_i32_m256i(data[<span class="number">6</span>].avx2, data[<span class="number">7</span>].avx2);
+
+        <span class="kw">pub const fn </span>mm_shuffle(z: i32, y: i32, x: i32, w: i32) -&gt; i32 {
+          (z &lt;&lt; <span class="number">6</span>) | (y &lt;&lt; <span class="number">4</span>) | (x &lt;&lt; <span class="number">2</span>) | w
+        }
+
+        <span class="kw">const </span>SHUFF_LO : i32 = mm_shuffle(<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>);
+        <span class="kw">const </span>SHUFF_HI : i32 = mm_shuffle(<span class="number">3</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">2</span>);
+
+        <span class="comment">// possible todo: intel performance manual suggests alternative with blend to avoid port 5 pressure
+        // (since blend runs on a different port than shuffle)
+        </span><span class="kw">let </span>b0 = cast::&lt;m256,m256i&gt;(shuffle_m256::&lt;SHUFF_LO&gt;(cast(a0),cast(a2)));
+        <span class="kw">let </span>b1 = cast::&lt;m256,m256i&gt;(shuffle_m256::&lt;SHUFF_HI&gt;(cast(a0),cast(a2)));
+        <span class="kw">let </span>b2 = cast::&lt;m256,m256i&gt;(shuffle_m256::&lt;SHUFF_LO&gt;(cast(a1),cast(a3)));
+        <span class="kw">let </span>b3 = cast::&lt;m256,m256i&gt;(shuffle_m256::&lt;SHUFF_HI&gt;(cast(a1),cast(a3)));
+        <span class="kw">let </span>b4 = cast::&lt;m256,m256i&gt;(shuffle_m256::&lt;SHUFF_LO&gt;(cast(a4),cast(a6)));
+        <span class="kw">let </span>b5 = cast::&lt;m256,m256i&gt;(shuffle_m256::&lt;SHUFF_HI&gt;(cast(a4),cast(a6)));
+        <span class="kw">let </span>b6 = cast::&lt;m256,m256i&gt;(shuffle_m256::&lt;SHUFF_LO&gt;(cast(a5),cast(a7)));
+        <span class="kw">let </span>b7 = cast::&lt;m256,m256i&gt;(shuffle_m256::&lt;SHUFF_HI&gt;(cast(a5),cast(a7)));
+
+        [
+          i32x8 { avx2: permute2z_m256i::&lt;<span class="number">0x20</span>&gt;(b0, b4) },
+          i32x8 { avx2: permute2z_m256i::&lt;<span class="number">0x20</span>&gt;(b1, b5) },
+          i32x8 { avx2: permute2z_m256i::&lt;<span class="number">0x20</span>&gt;(b2, b6) },
+          i32x8 { avx2: permute2z_m256i::&lt;<span class="number">0x20</span>&gt;(b3, b7) },
+          i32x8 { avx2: permute2z_m256i::&lt;<span class="number">0x31</span>&gt;(b0, b4) },
+          i32x8 { avx2: permute2z_m256i::&lt;<span class="number">0x31</span>&gt;(b1, b5) },
+          i32x8 { avx2: permute2z_m256i::&lt;<span class="number">0x31</span>&gt;(b2, b6) },
+          i32x8 { avx2: permute2z_m256i::&lt;<span class="number">0x31</span>&gt;(b3, b7) }
+        ]
+      } <span class="kw">else </span>{
+        <span class="comment">// possible todo: not sure that 128bit SIMD gives us a a lot of speedup here
+
+        </span><span class="attr">#[inline(always)]
+        </span><span class="kw">fn </span>transpose_column(data: <span class="kw-2">&amp;</span>[i32x8; <span class="number">8</span>], index: usize) -&gt; i32x8 {
+          i32x8::new([
+            data[<span class="number">0</span>].as_array_ref()[index],
+            data[<span class="number">1</span>].as_array_ref()[index],
+            data[<span class="number">2</span>].as_array_ref()[index],
+            data[<span class="number">3</span>].as_array_ref()[index],
+            data[<span class="number">4</span>].as_array_ref()[index],
+            data[<span class="number">5</span>].as_array_ref()[index],
+            data[<span class="number">6</span>].as_array_ref()[index],
+            data[<span class="number">7</span>].as_array_ref()[index],
+          ])
+        }
+
+        [
+          transpose_column(<span class="kw-2">&amp;</span>data, <span class="number">0</span>),
+          transpose_column(<span class="kw-2">&amp;</span>data, <span class="number">1</span>),
+          transpose_column(<span class="kw-2">&amp;</span>data, <span class="number">2</span>),
+          transpose_column(<span class="kw-2">&amp;</span>data, <span class="number">3</span>),
+          transpose_column(<span class="kw-2">&amp;</span>data, <span class="number">4</span>),
+          transpose_column(<span class="kw-2">&amp;</span>data, <span class="number">5</span>),
+          transpose_column(<span class="kw-2">&amp;</span>data, <span class="number">6</span>),
+          transpose_column(<span class="kw-2">&amp;</span>data, <span class="number">7</span>),
+        ]
+      }
+    }
+  }
+
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>to_array(<span class="self">self</span>) -&gt; [i32; <span class="number">8</span>] {
     cast(<span class="self">self</span>)
   }
 
-  <span class="kw">pub fn </span>as_array_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[i32; <span class="number">8</span>] {
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>as_array_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[i32; <span class="number">8</span>] {
     cast_ref(<span class="self">self</span>)
   }
 }
 
 <span class="kw">impl </span>Not <span class="kw">for </span>i32x8 {
   <span class="kw">type </span>Output = <span class="self">Self</span>;
-  <span class="kw">fn </span>not(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+  <span class="attr">#[inline]
+  </span><span class="kw">fn </span>not(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: <span class="self">self</span>.avx2.not()  }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: <span class="self">self</span>.sse0.not(), sse1: <span class="self">self</span>.sse1.not() }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_not(<span class="self">self</span>.simd0), simd1: v128_not(<span class="self">self</span>.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          !<span class="self">self</span>.arr[<span class="number">0</span>],
-          !<span class="self">self</span>.arr[<span class="number">1</span>],
-          !<span class="self">self</span>.arr[<span class="number">2</span>],
-          !<span class="self">self</span>.arr[<span class="number">3</span>],
-          !<span class="self">self</span>.arr[<span class="number">4</span>],
-          !<span class="self">self</span>.arr[<span class="number">5</span>],
-          !<span class="self">self</span>.arr[<span class="number">6</span>],
-          !<span class="self">self</span>.arr[<span class="number">7</span>],
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.not(),
+          b : <span class="self">self</span>.b.not(),
+        }
       }
     }
   }

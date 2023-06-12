@@ -49,6 +49,8 @@
 <a href="#49" id="49">49</a>
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
 </pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::{
         graphics::{AssetLoader, Image},
@@ -66,7 +68,7 @@
 
 <span class="kw">impl </span>Sketch <span class="kw">for </span>LoadingSketch {
     <span class="kw">fn </span>setup(<span class="kw-2">&amp;mut </span><span class="self">self</span>, sim: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::Sim2D) {
-        sim.g.clear_color = [<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.1</span>, <span class="number">1.0</span>];
+        sim.g.clear_color = [<span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.8</span>, <span class="number">1.0</span>];
         sim.w.resize(<span class="number">1200.0</span>, <span class="number">800.0</span>);
 
         <span class="self">self</span>.angle = <span class="number">0.0
@@ -80,6 +82,8 @@
             )
             .unwrap()
             .into_rgba8(),
+            <span class="bool-val">true</span>,
+            <span class="string">&quot;LoadingSketch_Loading.png&quot;</span>,
         );
         <span class="prelude-val">Ok</span>(())
     }

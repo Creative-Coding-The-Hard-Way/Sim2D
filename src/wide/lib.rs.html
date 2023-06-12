@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/wide-0.7.4/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wide/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/wide-0.7.9/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wide/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -936,8 +936,49 @@
 <a href="#936" id="936">936</a>
 <a href="#937" id="937">937</a>
 <a href="#938" id="938">938</a>
+<a href="#939" id="939">939</a>
+<a href="#940" id="940">940</a>
+<a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
 </pre><pre class="rust"><code><span class="attr">#![no_std]
 #![allow(non_camel_case_types)]
+#![warn(clippy::missing_inline_in_public_items)]
+#![allow(clippy::eq_op)]
+#![allow(clippy::excessive_precision)]
+#![allow(clippy::let_and_return)]
+#![allow(clippy::unusual_byte_groupings)]
+#![allow(clippy::misrefactored_assign_op)]
+#![cfg_attr(test, allow(clippy::approx_constant))]
 
 </span><span class="doccomment">//! A crate to help you go wide.
 //!
@@ -957,15 +998,14 @@
 
 </span><span class="comment">// Note(Lokathor): Due to standard library magic, the std-only methods for f32
 // and f64 will automatically be available simply by declaring this.
-
-// TODO
-// Add/Sub/Mul/Div with constant
-// Shuffle left/right/by index
-
 </span><span class="attr">#[cfg(feature = <span class="string">&quot;std&quot;</span>)]
 </span><span class="kw">extern crate </span>std;
 
-<span class="kw">use </span>core::{
+<span class="comment">// TODO
+// Add/Sub/Mul/Div with constant
+// Shuffle left/right/by index
+
+</span><span class="kw">use </span>core::{
   fmt::{
     Binary, Debug, Display, LowerExp, LowerHex, Octal, UpperExp, UpperHex,
   },
@@ -1379,7 +1419,8 @@
   ($(<span class="macro-nonterminal">$t</span>:ty),+ $(,)<span class="question-mark">?</span>) =&gt; {
     $(
       <span class="kw">impl</span>&lt;RHS&gt; core::iter::Sum&lt;RHS&gt; <span class="kw">for </span><span class="macro-nonterminal">$t </span><span class="kw">where </span><span class="macro-nonterminal">$t</span>: AddAssign&lt;RHS&gt; {
-        <span class="kw">fn </span>sum&lt;I: Iterator&lt;Item = RHS&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+        <span class="attr">#[inline]
+        </span><span class="kw">fn </span>sum&lt;I: Iterator&lt;Item = RHS&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
           <span class="kw">let </span><span class="kw-2">mut </span>total = <span class="self">Self</span>::zeroed();
           <span class="kw">for </span>val <span class="kw">in </span>iter {
             total += val;
@@ -1399,7 +1440,8 @@
   ($(<span class="macro-nonterminal">$t</span>:ty),+ $(,)<span class="question-mark">?</span>) =&gt; {
     $(
       <span class="kw">impl</span>&lt;RHS&gt; core::iter::Product&lt;RHS&gt; <span class="kw">for </span><span class="macro-nonterminal">$t </span><span class="kw">where </span><span class="macro-nonterminal">$t</span>: MulAssign&lt;RHS&gt; {
-        <span class="kw">fn </span>product&lt;I: Iterator&lt;Item = RHS&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+        <span class="attr">#[inline]
+        </span><span class="kw">fn </span>product&lt;I: Iterator&lt;Item = RHS&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
           <span class="kw">let </span><span class="kw-2">mut </span>total = <span class="self">Self</span>::from(<span class="number">1.0</span>);
           <span class="kw">for </span>val <span class="kw">in </span>iter {
             total <span class="kw-2">*</span>= val;
@@ -1419,7 +1461,8 @@
   ($(<span class="macro-nonterminal">$t</span>:ty),+ $(,)<span class="question-mark">?</span>) =&gt; {
     $(
       <span class="kw">impl</span>&lt;RHS&gt; core::iter::Product&lt;RHS&gt; <span class="kw">for </span><span class="macro-nonterminal">$t </span><span class="kw">where </span><span class="macro-nonterminal">$t</span>: MulAssign&lt;RHS&gt; {
-        <span class="kw">fn </span>product&lt;I: Iterator&lt;Item = RHS&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+        <span class="attr">#[inline]
+        </span><span class="kw">fn </span>product&lt;I: Iterator&lt;Item = RHS&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
           <span class="kw">let </span><span class="kw-2">mut </span>total = <span class="self">Self</span>::from(<span class="number">1</span>);
           <span class="kw">for </span>val <span class="kw">in </span>iter {
             total <span class="kw-2">*</span>= val;
@@ -1495,7 +1538,8 @@
     $( <span class="comment">// do per trait
       </span>$( <span class="comment">// do per simd type
         </span><span class="kw">impl </span><span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$simd </span>{
-          <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>core::fmt::Formatter) -&gt; core::fmt::Result {
+          <span class="attr">#[allow(clippy::missing_inline_in_public_items)]
+          </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>core::fmt::Formatter) -&gt; core::fmt::Result {
             <span class="kw">let </span>a: <span class="macro-nonterminal">$arr </span>= cast(<span class="kw-2">*</span><span class="self">self</span>);
             <span class="macro">write!</span>(f, <span class="string">&quot;(&quot;</span>)<span class="question-mark">?</span>;
             <span class="kw">for </span>(x, a_ref) <span class="kw">in </span>a.iter().enumerate() {
@@ -1543,7 +1587,8 @@
 </span><span class="macro">macro_rules! </span>from_array {
   (<span class="macro-nonterminal">$ty</span>:ty,<span class="macro-nonterminal">$dst</span>:ty,<span class="macro-nonterminal">$dst_wide</span>:ident,<span class="number">32</span>) =&gt; {
     <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]&gt; <span class="kw">for </span><span class="macro-nonterminal">$dst_wide </span>{
-      <span class="kw">fn </span>from(src: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]) -&gt; <span class="macro-nonterminal">$dst_wide </span>{
+      <span class="attr">#[inline]
+      </span><span class="kw">fn </span>from(src: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]) -&gt; <span class="macro-nonterminal">$dst_wide </span>{
         <span class="kw">match </span>src.len() {
           <span class="number">32 </span>=&gt; <span class="macro-nonterminal">$dst_wide::from</span>([src[<span class="number">0</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">1</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">2</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">3</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">4</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">5</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">6</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">7</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">8</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">9</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">10</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">11</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">12</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">13</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">14</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">15</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">16</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">17</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">18</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">19</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">20</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">21</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">22</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">23</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">24</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">25</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">26</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">27</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">28</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">29</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">30</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">31</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>,]),
           <span class="number">31 </span>=&gt; <span class="macro-nonterminal">$dst_wide::from</span>([src[<span class="number">0</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">1</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">2</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">3</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">4</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">5</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">6</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">7</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">8</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">9</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">10</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">11</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">12</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">13</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">14</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">15</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">16</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">17</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">18</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">19</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">20</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">21</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">22</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">23</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">24</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">25</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">26</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">27</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">28</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">29</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">30</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>,<span class="number">0 </span><span class="kw">as </span><span class="macro-nonterminal">$dst</span>,]),
@@ -1586,7 +1631,8 @@
   };
   (<span class="macro-nonterminal">$ty</span>:ty,<span class="macro-nonterminal">$dst</span>:ty,<span class="macro-nonterminal">$dst_wide</span>:ident,<span class="number">16</span>) =&gt; {
     <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]&gt; <span class="kw">for </span><span class="macro-nonterminal">$dst_wide </span>{
-      <span class="kw">fn </span>from(src: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]) -&gt; <span class="macro-nonterminal">$dst_wide </span>{
+      <span class="attr">#[inline]
+      </span><span class="kw">fn </span>from(src: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]) -&gt; <span class="macro-nonterminal">$dst_wide </span>{
         <span class="kw">match </span>src.len() {
           <span class="number">16 </span>=&gt; <span class="macro-nonterminal">$dst_wide::from</span>([src[<span class="number">0</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">1</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">2</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">3</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">4</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">5</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">6</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">7</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">8</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">9</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">10</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">11</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">12</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">13</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">14</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">15</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>,]),
           <span class="number">15 </span>=&gt; <span class="macro-nonterminal">$dst_wide::from</span>([src[<span class="number">0</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">1</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">2</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">3</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">4</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">5</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">6</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">7</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">8</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">9</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">10</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">11</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">12</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">13</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">14</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>,<span class="number">0 </span><span class="kw">as </span><span class="macro-nonterminal">$dst</span>,]),
@@ -1613,7 +1659,8 @@
   };
   (<span class="macro-nonterminal">$ty</span>:ty,<span class="macro-nonterminal">$dst</span>:ty,<span class="macro-nonterminal">$dst_wide</span>:ident,<span class="number">8</span>) =&gt; {
     <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]&gt; <span class="kw">for </span><span class="macro-nonterminal">$dst_wide </span>{
-      <span class="kw">fn </span>from(src: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]) -&gt; <span class="macro-nonterminal">$dst_wide </span>{
+      <span class="attr">#[inline]
+      </span><span class="kw">fn </span>from(src: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]) -&gt; <span class="macro-nonterminal">$dst_wide </span>{
         <span class="kw">match </span>src.len() {
           <span class="number">8 </span>=&gt; <span class="macro-nonterminal">$dst_wide::from</span>([src[<span class="number">0</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">1</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">2</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">3</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">4</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">5</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">6</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">7</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>,]),
           <span class="number">7 </span>=&gt; <span class="macro-nonterminal">$dst_wide::from</span>([src[<span class="number">0</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">1</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">2</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">3</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">4</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">5</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">6</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>,<span class="number">0 </span><span class="kw">as </span><span class="macro-nonterminal">$dst</span>,]),
@@ -1633,7 +1680,8 @@
   };
   (<span class="macro-nonterminal">$ty</span>:ty,<span class="macro-nonterminal">$dst</span>:ty,<span class="macro-nonterminal">$dst_wide</span>:ident,<span class="number">4</span>) =&gt; {
     <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]&gt; <span class="kw">for </span><span class="macro-nonterminal">$dst_wide </span>{
-      <span class="kw">fn </span>from(src: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]) -&gt; <span class="macro-nonterminal">$dst_wide </span>{
+      <span class="attr">#[inline]
+      </span><span class="kw">fn </span>from(src: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>]) -&gt; <span class="macro-nonterminal">$dst_wide </span>{
         <span class="kw">match </span>src.len() {
           <span class="number">4 </span>=&gt; <span class="macro-nonterminal">$dst_wide::from</span>([src[<span class="number">0</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">1</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">2</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">3</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>,]),
           <span class="number">3 </span>=&gt; <span class="macro-nonterminal">$dst_wide::from</span>([src[<span class="number">0</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">1</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>, src[<span class="number">2</span>] <span class="kw">as </span><span class="macro-nonterminal">$dst</span>,<span class="number">0 </span><span class="kw">as </span><span class="macro-nonterminal">$dst</span>,]),
@@ -1681,11 +1729,22 @@
   <span class="kw">let </span><span class="kw-2">mut </span>ix1: wu32;
   <span class="kw">let </span><span class="kw-2">mut </span>q1: wu32;
   <span class="comment">// extract data
-  </span>{
-    <span class="kw">let </span>[low, high]: [u32; <span class="number">2</span>] = cast(x);
-    ix0 = high <span class="kw">as </span>i32;
-    ix1 = w(low);
+
+  </span><span class="macro">pick! </span>{
+    <span class="kw">if </span><span class="attr">#[cfg(target_endian = <span class="string">&quot;little&quot;</span>)]
+    </span>{
+      <span class="kw">let </span>[low, high]: [u32; <span class="number">2</span>] = cast(x);
+      ix0 = high <span class="kw">as </span>i32;
+      ix1 = w(low);
+    }
+    <span class="kw">else
+    </span>{
+      <span class="kw">let </span>[high, low]: [u32; <span class="number">2</span>] = cast(x);
+      ix0 = high <span class="kw">as </span>i32;
+      ix1 = w(low);
+    }
   }
+
   <span class="comment">// inf and nan
   </span>{
     <span class="kw">if </span>x.is_nan() {
@@ -1805,7 +1864,16 @@
   }
   ix0 += m &lt;&lt; <span class="number">20</span>;
 
-  cast::&lt;[u32; <span class="number">2</span>], f64&gt;([ix1.<span class="number">0</span>, ix0 <span class="kw">as </span>u32])
+  <span class="macro">pick! </span>{
+    <span class="kw">if </span><span class="attr">#[cfg(target_endian = <span class="string">&quot;little&quot;</span>)]
+    </span>{
+      cast::&lt;[u32; <span class="number">2</span>], f64&gt;([ix1.<span class="number">0</span>, ix0 <span class="kw">as </span>u32])
+    }
+    <span class="kw">else
+    </span>{
+      cast::&lt;[u32; <span class="number">2</span>], f64&gt;([ix0 <span class="kw">as </span>u32, ix1.<span class="number">0</span>])
+    }
+  }
 }
 
 <span class="attr">#[test]

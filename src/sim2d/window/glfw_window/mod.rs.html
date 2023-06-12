@@ -147,13 +147,12 @@
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>window_state;
 
 <span class="kw">use </span>{
     <span class="kw">crate</span>::graphics::vulkan_api::RenderDevice,
     anyhow::{bail, Context, <span class="prelude-ty">Result</span>},
-    ash::{vk, vk::Handle},
+    ash::vk,
     ccthw_ash_instance::{PhysicalDeviceFeatures, VulkanInstance},
     glfw::{ClientApiHint, WindowEvent, WindowHint, WindowMode},
     std::sync::{mpsc::Receiver, Arc},
@@ -235,17 +234,16 @@
         <span class="kw">let </span>instance = <span class="self">self</span>.create_vulkan_instance()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>surface = {
-            <span class="kw">let </span><span class="kw-2">mut </span>surface_handle: u64 = <span class="number">0</span>;
-            <span class="kw">let </span>result =
-                vk::Result::from_raw(<span class="self">self</span>.window_handle.create_window_surface(
-                    instance.ash().handle().as_raw() <span class="kw">as </span>usize,
-                    std::ptr::null(),
-                    <span class="kw-2">&amp;mut </span>surface_handle,
-                ) <span class="kw">as </span>i32);
+            <span class="kw">let </span><span class="kw-2">mut </span>surface = vk::SurfaceKHR::null();
+            <span class="kw">let </span>result = <span class="self">self</span>.window_handle.create_window_surface(
+                instance.ash().handle(),
+                std::ptr::null(),
+                <span class="kw-2">&amp;mut </span>surface,
+            );
             <span class="kw">if </span>result != vk::Result::SUCCESS {
                 <span class="macro">bail!</span>(<span class="string">&quot;Unable to create a Vulkan SurfaceKHR with GLFW!&quot;</span>);
             }
-            vk::SurfaceKHR::from_raw(surface_handle)
+            surface
         };
 
         <span class="kw">let </span>device = RenderDevice::new(instance, device_features, surface)

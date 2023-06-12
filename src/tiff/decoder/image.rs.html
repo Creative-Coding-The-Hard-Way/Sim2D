@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/tiff-0.7.3/src/decoder/image.rs`."><title>image.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tiff/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/tiff-0.8.1/src/decoder/image.rs`."><title>image.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tiff/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -555,11 +555,43 @@
 <a href="#555" id="555">555</a>
 <a href="#556" id="556">556</a>
 <a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::ifd::{Directory, Value};
-<span class="kw">use </span><span class="kw">super</span>::stream::{
-    add_app14segment, ByteOrder, DeflateReader, JpegReader, JpegTagApp14Transform, LZWReader,
-    PackBitsReader,
-};
+<span class="kw">use </span><span class="kw">super</span>::stream::{ByteOrder, DeflateReader, JpegReader, LZWReader, PackBitsReader};
 <span class="kw">use </span><span class="kw">super</span>::tag_reader::TagReader;
 <span class="kw">use super</span>::{fp_predict_f32, fp_predict_f64, DecodingBuffer, Limits};
 <span class="kw">use super</span>::{stream::SmartReader, ChunkType};
@@ -654,6 +686,11 @@
 
         <span class="kw">let </span>width = tag_reader.require_tag(Tag::ImageWidth)<span class="question-mark">?</span>.into_u32()<span class="question-mark">?</span>;
         <span class="kw">let </span>height = tag_reader.require_tag(Tag::ImageLength)<span class="question-mark">?</span>.into_u32()<span class="question-mark">?</span>;
+        <span class="kw">if </span>width == <span class="number">0 </span>|| height == <span class="number">0 </span>{
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TiffError::FormatError(TiffFormatError::InvalidDimensions(
+                width, height,
+            )));
+        }
 
         <span class="kw">let </span>photometric_interpretation = tag_reader
             .find_tag(Tag::PhotometricInterpretation)<span class="question-mark">?
@@ -673,7 +710,7 @@
         <span class="kw">let </span>jpeg_tables = <span class="kw">if </span>compression_method == CompressionMethod::ModernJPEG
             &amp;&amp; ifd.contains_key(<span class="kw-2">&amp;</span>Tag::JPEGTables)
         {
-            <span class="kw">let </span><span class="kw-2">mut </span>vec = tag_reader
+            <span class="kw">let </span>vec = tag_reader
                 .find_tag(Tag::JPEGTables)<span class="question-mark">?
                 </span>.unwrap()
                 .into_u8_vec()<span class="question-mark">?</span>;
@@ -681,11 +718,6 @@
                 <span class="kw">return </span><span class="prelude-val">Err</span>(TiffError::FormatError(
                     TiffFormatError::InvalidTagValueType(Tag::JPEGTables),
                 ));
-            }
-
-            <span class="comment">// TODO: Can we avoid this somehow?
-            </span><span class="kw">if </span>photometric_interpretation == PhotometricInterpretation::RGB {
-                add_app14segment(<span class="kw-2">&amp;mut </span>vec, JpegTagApp14Transform::App14TransformUnknown)
             }
 
             <span class="prelude-val">Some</span>(Arc::new(vec))
@@ -765,7 +797,11 @@
                 strip_decoder = <span class="prelude-val">Some</span>(StripDecodeState { rows_per_strip });
                 tile_attributes = <span class="prelude-val">None</span>;
 
-                <span class="kw">if </span>chunk_offsets.len() != chunk_bytes.len() {
+                <span class="kw">if </span>chunk_offsets.len() != chunk_bytes.len()
+                    || rows_per_strip == <span class="number">0
+                    </span>|| u32::try_from(chunk_offsets.len())<span class="question-mark">?
+                        </span>!= height.saturating_sub(<span class="number">1</span>) / rows_per_strip + <span class="number">1
+                </span>{
                     <span class="kw">return </span><span class="prelude-val">Err</span>(TiffError::FormatError(
                         TiffFormatError::InconsistentSizesEncountered,
                     ));
@@ -880,6 +916,7 @@
 
     <span class="kw">fn </span>create_reader&lt;<span class="lifetime">&#39;r</span>, R: <span class="lifetime">&#39;r </span>+ Read&gt;(
         reader: R,
+        photometric_interpretation: PhotometricInterpretation,
         compression_method: CompressionMethod,
         compressed_length: u64,
         jpeg_tables: <span class="prelude-ty">Option</span>&lt;Arc&lt;Vec&lt;u8&gt;&gt;&gt;,
@@ -902,7 +939,36 @@
 
                 <span class="kw">let </span>jpeg_reader = JpegReader::new(reader, compressed_length, jpeg_tables)<span class="question-mark">?</span>;
                 <span class="kw">let </span><span class="kw-2">mut </span>decoder = jpeg::Decoder::new(jpeg_reader);
-                <span class="kw">let </span>data = decoder.decode().unwrap();
+
+                <span class="kw">match </span>photometric_interpretation {
+                    PhotometricInterpretation::RGB =&gt; {
+                        decoder.set_color_transform(jpeg::ColorTransform::RGB)
+                    }
+                    PhotometricInterpretation::WhiteIsZero =&gt; {
+                        decoder.set_color_transform(jpeg::ColorTransform::None)
+                    }
+                    PhotometricInterpretation::BlackIsZero =&gt; {
+                        decoder.set_color_transform(jpeg::ColorTransform::None)
+                    }
+                    PhotometricInterpretation::TransparencyMask =&gt; {
+                        decoder.set_color_transform(jpeg::ColorTransform::None)
+                    }
+                    PhotometricInterpretation::CMYK =&gt; {
+                        decoder.set_color_transform(jpeg::ColorTransform::CMYK)
+                    }
+                    PhotometricInterpretation::YCbCr =&gt; {
+                        decoder.set_color_transform(jpeg::ColorTransform::YCbCr)
+                    }
+                    photometric_interpretation =&gt; {
+                        <span class="kw">return </span><span class="prelude-val">Err</span>(TiffError::UnsupportedError(
+                            TiffUnsupportedError::UnsupportedInterpretation(
+                                photometric_interpretation,
+                            ),
+                        ));
+                    }
+                }
+
+                <span class="kw">let </span>data = decoder.decode()<span class="question-mark">?</span>;
 
                 Box::new(Cursor::new(data))
             }
@@ -1005,7 +1071,6 @@
                         TiffUnsupportedError::FloatingPointPredictor(color_type),
                     ));
                 }
-                Predictor::__NonExhaustive =&gt; <span class="macro">unreachable!</span>(),
             },
             (type_, <span class="kw">_</span>) =&gt; {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(TiffError::UnsupportedError(
@@ -1051,8 +1116,13 @@
         <span class="kw">let </span>padding_right = chunk_dims.<span class="number">0 </span>- data_dims.<span class="number">0</span>;
 
         <span class="kw">let </span>jpeg_tables = <span class="self">self</span>.jpeg_tables.clone();
-        <span class="kw">let </span><span class="kw-2">mut </span>reader =
-            <span class="self">Self</span>::create_reader(reader, compression_method, <span class="kw-2">*</span>compressed_bytes, jpeg_tables)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>reader = <span class="self">Self</span>::create_reader(
+            reader,
+            photometric_interpretation,
+            compression_method,
+            <span class="kw-2">*</span>compressed_bytes,
+            jpeg_tables,
+        )<span class="question-mark">?</span>;
 
         <span class="kw">if </span>output_width == data_dims.<span class="number">0 </span><span class="kw">as </span>usize &amp;&amp; padding_right == <span class="number">0 </span>{
             <span class="kw">let </span>total_samples = data_dims.<span class="number">0 </span><span class="kw">as </span>usize * data_dims.<span class="number">1 </span><span class="kw">as </span>usize * samples;

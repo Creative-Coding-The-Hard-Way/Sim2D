@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/ash-0.37.0+1.3.209/src/device.rs`."><title>device.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../ash/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/ash-0.37.3+1.3.251/src/device.rs`."><title>device.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../ash/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2512,6 +2512,215 @@
 <a href="#2512" id="2512">2512</a>
 <a href="#2513" id="2513">2513</a>
 <a href="#2514" id="2514">2514</a>
+<a href="#2515" id="2515">2515</a>
+<a href="#2516" id="2516">2516</a>
+<a href="#2517" id="2517">2517</a>
+<a href="#2518" id="2518">2518</a>
+<a href="#2519" id="2519">2519</a>
+<a href="#2520" id="2520">2520</a>
+<a href="#2521" id="2521">2521</a>
+<a href="#2522" id="2522">2522</a>
+<a href="#2523" id="2523">2523</a>
+<a href="#2524" id="2524">2524</a>
+<a href="#2525" id="2525">2525</a>
+<a href="#2526" id="2526">2526</a>
+<a href="#2527" id="2527">2527</a>
+<a href="#2528" id="2528">2528</a>
+<a href="#2529" id="2529">2529</a>
+<a href="#2530" id="2530">2530</a>
+<a href="#2531" id="2531">2531</a>
+<a href="#2532" id="2532">2532</a>
+<a href="#2533" id="2533">2533</a>
+<a href="#2534" id="2534">2534</a>
+<a href="#2535" id="2535">2535</a>
+<a href="#2536" id="2536">2536</a>
+<a href="#2537" id="2537">2537</a>
+<a href="#2538" id="2538">2538</a>
+<a href="#2539" id="2539">2539</a>
+<a href="#2540" id="2540">2540</a>
+<a href="#2541" id="2541">2541</a>
+<a href="#2542" id="2542">2542</a>
+<a href="#2543" id="2543">2543</a>
+<a href="#2544" id="2544">2544</a>
+<a href="#2545" id="2545">2545</a>
+<a href="#2546" id="2546">2546</a>
+<a href="#2547" id="2547">2547</a>
+<a href="#2548" id="2548">2548</a>
+<a href="#2549" id="2549">2549</a>
+<a href="#2550" id="2550">2550</a>
+<a href="#2551" id="2551">2551</a>
+<a href="#2552" id="2552">2552</a>
+<a href="#2553" id="2553">2553</a>
+<a href="#2554" id="2554">2554</a>
+<a href="#2555" id="2555">2555</a>
+<a href="#2556" id="2556">2556</a>
+<a href="#2557" id="2557">2557</a>
+<a href="#2558" id="2558">2558</a>
+<a href="#2559" id="2559">2559</a>
+<a href="#2560" id="2560">2560</a>
+<a href="#2561" id="2561">2561</a>
+<a href="#2562" id="2562">2562</a>
+<a href="#2563" id="2563">2563</a>
+<a href="#2564" id="2564">2564</a>
+<a href="#2565" id="2565">2565</a>
+<a href="#2566" id="2566">2566</a>
+<a href="#2567" id="2567">2567</a>
+<a href="#2568" id="2568">2568</a>
+<a href="#2569" id="2569">2569</a>
+<a href="#2570" id="2570">2570</a>
+<a href="#2571" id="2571">2571</a>
+<a href="#2572" id="2572">2572</a>
+<a href="#2573" id="2573">2573</a>
+<a href="#2574" id="2574">2574</a>
+<a href="#2575" id="2575">2575</a>
+<a href="#2576" id="2576">2576</a>
+<a href="#2577" id="2577">2577</a>
+<a href="#2578" id="2578">2578</a>
+<a href="#2579" id="2579">2579</a>
+<a href="#2580" id="2580">2580</a>
+<a href="#2581" id="2581">2581</a>
+<a href="#2582" id="2582">2582</a>
+<a href="#2583" id="2583">2583</a>
+<a href="#2584" id="2584">2584</a>
+<a href="#2585" id="2585">2585</a>
+<a href="#2586" id="2586">2586</a>
+<a href="#2587" id="2587">2587</a>
+<a href="#2588" id="2588">2588</a>
+<a href="#2589" id="2589">2589</a>
+<a href="#2590" id="2590">2590</a>
+<a href="#2591" id="2591">2591</a>
+<a href="#2592" id="2592">2592</a>
+<a href="#2593" id="2593">2593</a>
+<a href="#2594" id="2594">2594</a>
+<a href="#2595" id="2595">2595</a>
+<a href="#2596" id="2596">2596</a>
+<a href="#2597" id="2597">2597</a>
+<a href="#2598" id="2598">2598</a>
+<a href="#2599" id="2599">2599</a>
+<a href="#2600" id="2600">2600</a>
+<a href="#2601" id="2601">2601</a>
+<a href="#2602" id="2602">2602</a>
+<a href="#2603" id="2603">2603</a>
+<a href="#2604" id="2604">2604</a>
+<a href="#2605" id="2605">2605</a>
+<a href="#2606" id="2606">2606</a>
+<a href="#2607" id="2607">2607</a>
+<a href="#2608" id="2608">2608</a>
+<a href="#2609" id="2609">2609</a>
+<a href="#2610" id="2610">2610</a>
+<a href="#2611" id="2611">2611</a>
+<a href="#2612" id="2612">2612</a>
+<a href="#2613" id="2613">2613</a>
+<a href="#2614" id="2614">2614</a>
+<a href="#2615" id="2615">2615</a>
+<a href="#2616" id="2616">2616</a>
+<a href="#2617" id="2617">2617</a>
+<a href="#2618" id="2618">2618</a>
+<a href="#2619" id="2619">2619</a>
+<a href="#2620" id="2620">2620</a>
+<a href="#2621" id="2621">2621</a>
+<a href="#2622" id="2622">2622</a>
+<a href="#2623" id="2623">2623</a>
+<a href="#2624" id="2624">2624</a>
+<a href="#2625" id="2625">2625</a>
+<a href="#2626" id="2626">2626</a>
+<a href="#2627" id="2627">2627</a>
+<a href="#2628" id="2628">2628</a>
+<a href="#2629" id="2629">2629</a>
+<a href="#2630" id="2630">2630</a>
+<a href="#2631" id="2631">2631</a>
+<a href="#2632" id="2632">2632</a>
+<a href="#2633" id="2633">2633</a>
+<a href="#2634" id="2634">2634</a>
+<a href="#2635" id="2635">2635</a>
+<a href="#2636" id="2636">2636</a>
+<a href="#2637" id="2637">2637</a>
+<a href="#2638" id="2638">2638</a>
+<a href="#2639" id="2639">2639</a>
+<a href="#2640" id="2640">2640</a>
+<a href="#2641" id="2641">2641</a>
+<a href="#2642" id="2642">2642</a>
+<a href="#2643" id="2643">2643</a>
+<a href="#2644" id="2644">2644</a>
+<a href="#2645" id="2645">2645</a>
+<a href="#2646" id="2646">2646</a>
+<a href="#2647" id="2647">2647</a>
+<a href="#2648" id="2648">2648</a>
+<a href="#2649" id="2649">2649</a>
+<a href="#2650" id="2650">2650</a>
+<a href="#2651" id="2651">2651</a>
+<a href="#2652" id="2652">2652</a>
+<a href="#2653" id="2653">2653</a>
+<a href="#2654" id="2654">2654</a>
+<a href="#2655" id="2655">2655</a>
+<a href="#2656" id="2656">2656</a>
+<a href="#2657" id="2657">2657</a>
+<a href="#2658" id="2658">2658</a>
+<a href="#2659" id="2659">2659</a>
+<a href="#2660" id="2660">2660</a>
+<a href="#2661" id="2661">2661</a>
+<a href="#2662" id="2662">2662</a>
+<a href="#2663" id="2663">2663</a>
+<a href="#2664" id="2664">2664</a>
+<a href="#2665" id="2665">2665</a>
+<a href="#2666" id="2666">2666</a>
+<a href="#2667" id="2667">2667</a>
+<a href="#2668" id="2668">2668</a>
+<a href="#2669" id="2669">2669</a>
+<a href="#2670" id="2670">2670</a>
+<a href="#2671" id="2671">2671</a>
+<a href="#2672" id="2672">2672</a>
+<a href="#2673" id="2673">2673</a>
+<a href="#2674" id="2674">2674</a>
+<a href="#2675" id="2675">2675</a>
+<a href="#2676" id="2676">2676</a>
+<a href="#2677" id="2677">2677</a>
+<a href="#2678" id="2678">2678</a>
+<a href="#2679" id="2679">2679</a>
+<a href="#2680" id="2680">2680</a>
+<a href="#2681" id="2681">2681</a>
+<a href="#2682" id="2682">2682</a>
+<a href="#2683" id="2683">2683</a>
+<a href="#2684" id="2684">2684</a>
+<a href="#2685" id="2685">2685</a>
+<a href="#2686" id="2686">2686</a>
+<a href="#2687" id="2687">2687</a>
+<a href="#2688" id="2688">2688</a>
+<a href="#2689" id="2689">2689</a>
+<a href="#2690" id="2690">2690</a>
+<a href="#2691" id="2691">2691</a>
+<a href="#2692" id="2692">2692</a>
+<a href="#2693" id="2693">2693</a>
+<a href="#2694" id="2694">2694</a>
+<a href="#2695" id="2695">2695</a>
+<a href="#2696" id="2696">2696</a>
+<a href="#2697" id="2697">2697</a>
+<a href="#2698" id="2698">2698</a>
+<a href="#2699" id="2699">2699</a>
+<a href="#2700" id="2700">2700</a>
+<a href="#2701" id="2701">2701</a>
+<a href="#2702" id="2702">2702</a>
+<a href="#2703" id="2703">2703</a>
+<a href="#2704" id="2704">2704</a>
+<a href="#2705" id="2705">2705</a>
+<a href="#2706" id="2706">2706</a>
+<a href="#2707" id="2707">2707</a>
+<a href="#2708" id="2708">2708</a>
+<a href="#2709" id="2709">2709</a>
+<a href="#2710" id="2710">2710</a>
+<a href="#2711" id="2711">2711</a>
+<a href="#2712" id="2712">2712</a>
+<a href="#2713" id="2713">2713</a>
+<a href="#2714" id="2714">2714</a>
+<a href="#2715" id="2715">2715</a>
+<a href="#2716" id="2716">2716</a>
+<a href="#2717" id="2717">2717</a>
+<a href="#2718" id="2718">2718</a>
+<a href="#2719" id="2719">2719</a>
+<a href="#2720" id="2720">2720</a>
+<a href="#2721" id="2721">2721</a>
+<a href="#2722" id="2722">2722</a>
+<a href="#2723" id="2723">2723</a>
 </pre><pre class="rust"><code><span class="attr">#![allow(clippy::trivially_copy_pass_by_ref)]
 </span><span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::vk;
@@ -2547,7 +2756,8 @@
         }
     }
 
-    <span class="kw">pub fn </span>handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; vk::Device {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; vk::Device {
         <span class="self">self</span>.handle
     }
 }
@@ -2555,11 +2765,13 @@
 <span class="doccomment">/// Vulkan core 1.3
 </span><span class="attr">#[allow(non_camel_case_types)]
 </span><span class="kw">impl </span>Device {
-    <span class="kw">pub fn </span>fp_v1_3(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::DeviceFnV1_3 {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>fp_v1_3(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::DeviceFnV1_3 {
         <span class="kw-2">&amp;</span><span class="self">self</span>.device_fn_1_3
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreatePrivateDataSlot.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_private_data_slot(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::PrivateDataSlotCreateInfo,
@@ -2576,6 +2788,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyPrivateDataSlot.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_private_data_slot(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         private_data_slot: vk::PrivateDataSlot,
@@ -2589,6 +2802,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkSetPrivateData.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>set_private_data&lt;T: vk::Handle&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         object: T,
@@ -2606,6 +2820,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPrivateData.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_private_data&lt;T: vk::Handle&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         object: T,
@@ -2623,6 +2838,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPipelineBarrier2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_pipeline_barrier2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2632,6 +2848,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdResetEvent2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_reset_event2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2642,6 +2859,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetEvent2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_event2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2652,6 +2870,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWaitEvents2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_wait_events2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2668,6 +2887,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_write_timestamp2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2679,6 +2899,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueueSubmit2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>queue_submit2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         queue: vk::Queue,
@@ -2690,6 +2911,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBuffer2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_buffer2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2698,6 +2920,7 @@
         (<span class="self">self</span>.device_fn_1_3.cmd_copy_buffer2)(command_buffer, copy_buffer_info)
     }
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImage2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_image2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2706,6 +2929,7 @@
         (<span class="self">self</span>.device_fn_1_3.cmd_copy_image2)(command_buffer, copy_image_info)
     }
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBufferToImage2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_buffer_to_image2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2714,6 +2938,7 @@
         (<span class="self">self</span>.device_fn_1_3.cmd_copy_buffer_to_image2)(command_buffer, copy_buffer_to_image_info)
     }
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToBuffer2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_image_to_buffer2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2722,6 +2947,7 @@
         (<span class="self">self</span>.device_fn_1_3.cmd_copy_image_to_buffer2)(command_buffer, copy_image_to_buffer_info)
     }
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBlitImage2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_blit_image2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2730,6 +2956,7 @@
         (<span class="self">self</span>.device_fn_1_3.cmd_blit_image2)(command_buffer, blit_image_info)
     }
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdResolveImage2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_resolve_image2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2739,6 +2966,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginRendering.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_begin_rendering(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2748,11 +2976,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndRendering.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_end_rendering(<span class="kw-2">&amp;</span><span class="self">self</span>, command_buffer: vk::CommandBuffer) {
         (<span class="self">self</span>.device_fn_1_3.cmd_end_rendering)(command_buffer)
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCullMode.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_cull_mode(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2762,6 +2992,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetFrontFace.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_front_face(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2771,6 +3002,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveTopology.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_primitive_topology(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2780,6 +3012,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWithCount.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_viewport_with_count(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2793,6 +3026,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetScissorWithCount.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_scissor_with_count(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2806,6 +3040,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_bind_vertex_buffers2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2840,6 +3075,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthTestEnable.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_depth_test_enable(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2849,6 +3085,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthWriteEnable.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_depth_write_enable(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2858,6 +3095,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthCompareOp.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_depth_compare_op(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2867,6 +3105,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBoundsTestEnable.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_depth_bounds_test_enable(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2879,6 +3118,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilTestEnable.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_stencil_test_enable(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2888,6 +3128,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilOp.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_stencil_op(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2908,6 +3149,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizerDiscardEnable.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_rasterizer_discard_enable(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2920,6 +3162,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBiasEnable.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_depth_bias_enable(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2929,6 +3172,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveRestartEnable.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_primitive_restart_enable(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -2941,34 +3185,45 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceBufferMemoryRequirements.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_buffer_memory_requirements(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        create_info: <span class="kw-2">&amp;</span>vk::DeviceBufferMemoryRequirements,
+        memory_requirements: <span class="kw-2">&amp;</span>vk::DeviceBufferMemoryRequirements,
         out: <span class="kw-2">&amp;mut </span>vk::MemoryRequirements2,
     ) {
-        (<span class="self">self</span>.device_fn_1_3.get_device_buffer_memory_requirements)(<span class="self">self</span>.handle, create_info, out)
+        (<span class="self">self</span>.device_fn_1_3.get_device_buffer_memory_requirements)(
+            <span class="self">self</span>.handle,
+            memory_requirements,
+            out,
+        )
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceImageMemoryRequirements.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_image_memory_requirements(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        create_info: <span class="kw-2">&amp;</span>vk::DeviceImageMemoryRequirements,
+        memory_requirements: <span class="kw-2">&amp;</span>vk::DeviceImageMemoryRequirements,
         out: <span class="kw-2">&amp;mut </span>vk::MemoryRequirements2,
     ) {
-        (<span class="self">self</span>.device_fn_1_3.get_device_image_memory_requirements)(<span class="self">self</span>.handle, create_info, out)
+        (<span class="self">self</span>.device_fn_1_3.get_device_image_memory_requirements)(
+            <span class="self">self</span>.handle,
+            memory_requirements,
+            out,
+        )
     }
 
     <span class="doccomment">/// Retrieve the number of elements to pass to [`get_device_image_sparse_memory_requirements()`][Self::get_device_image_sparse_memory_requirements()]
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_image_sparse_memory_requirements_len(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        create_info: <span class="kw-2">&amp;</span>vk::DeviceImageMemoryRequirements,
+        memory_requirements: <span class="kw-2">&amp;</span>vk::DeviceImageMemoryRequirements,
     ) -&gt; usize {
         <span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
         (<span class="self">self
             </span>.device_fn_1_3
             .get_device_image_sparse_memory_requirements)(
             <span class="self">self</span>.handle,
-            create_info,
+            memory_requirements,
             <span class="kw-2">&amp;mut </span>count,
             std::ptr::null_mut(),
         );
@@ -2979,9 +3234,10 @@
     ///
     /// Call [`get_device_image_sparse_memory_requirements_len()`][Self::get_device_image_sparse_memory_requirements_len()] to query the number of elements to pass to `out`.
     /// Be sure to [`Default::default()`]-initialize these elements and optionally set their `p_next` pointer.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_image_sparse_memory_requirements(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        create_info: <span class="kw-2">&amp;</span>vk::DeviceImageMemoryRequirements,
+        memory_requirements: <span class="kw-2">&amp;</span>vk::DeviceImageMemoryRequirements,
         out: <span class="kw-2">&amp;mut </span>[vk::SparseImageMemoryRequirements2],
     ) {
         <span class="kw">let </span><span class="kw-2">mut </span>count = out.len() <span class="kw">as </span>u32;
@@ -2989,7 +3245,7 @@
             </span>.device_fn_1_3
             .get_device_image_sparse_memory_requirements)(
             <span class="self">self</span>.handle,
-            create_info,
+            memory_requirements,
             <span class="kw-2">&amp;mut </span>count,
             out.as_mut_ptr(),
         );
@@ -3000,11 +3256,13 @@
 <span class="doccomment">/// Vulkan core 1.2
 </span><span class="attr">#[allow(non_camel_case_types)]
 </span><span class="kw">impl </span>Device {
-    <span class="kw">pub fn </span>fp_v1_2(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::DeviceFnV1_2 {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>fp_v1_2(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::DeviceFnV1_2 {
         <span class="kw-2">&amp;</span><span class="self">self</span>.device_fn_1_2
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectCount.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_draw_indirect_count(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3027,6 +3285,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexedIndirectCount.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_draw_indexed_indirect_count(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3049,6 +3308,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateRenderPass2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_render_pass2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::RenderPassCreateInfo2,
@@ -3065,6 +3325,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginRenderPass2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_begin_render_pass2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3079,6 +3340,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdNextSubpass2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_next_subpass2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3093,6 +3355,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndRenderPass2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_end_render_pass2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3102,6 +3365,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetQueryPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>reset_query_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         query_pool: vk::QueryPool,
@@ -3112,6 +3376,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreCounterValue.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_semaphore_counter_value(<span class="kw-2">&amp;</span><span class="self">self</span>, semaphore: vk::Semaphore) -&gt; VkResult&lt;u64&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>value = <span class="number">0</span>;
         (<span class="self">self</span>.device_fn_1_2.get_semaphore_counter_value)(<span class="self">self</span>.handle(), semaphore, <span class="kw-2">&amp;mut </span>value)
@@ -3119,6 +3384,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkWaitSemaphores.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>wait_semaphores(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         wait_info: <span class="kw-2">&amp;</span>vk::SemaphoreWaitInfo,
@@ -3128,11 +3394,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkSignalSemaphore.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>signal_semaphore(<span class="kw-2">&amp;</span><span class="self">self</span>, signal_info: <span class="kw-2">&amp;</span>vk::SemaphoreSignalInfo) -&gt; VkResult&lt;()&gt; {
         (<span class="self">self</span>.device_fn_1_2.signal_semaphore)(<span class="self">self</span>.handle(), signal_info).result()
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetBufferDeviceAddress.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_buffer_device_address(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>vk::BufferDeviceAddressInfo,
@@ -3141,6 +3409,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetBufferOpaqueCaptureAddress.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_buffer_opaque_capture_address(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>vk::BufferDeviceAddressInfo,
@@ -3149,6 +3418,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceMemoryOpaqueCaptureAddress.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_memory_opaque_capture_address(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>vk::DeviceMemoryOpaqueCaptureAddressInfo,
@@ -3160,11 +3430,13 @@
 <span class="doccomment">/// Vulkan core 1.1
 </span><span class="attr">#[allow(non_camel_case_types)]
 </span><span class="kw">impl </span>Device {
-    <span class="kw">pub fn </span>fp_v1_1(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::DeviceFnV1_1 {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>fp_v1_1(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::DeviceFnV1_1 {
         <span class="kw-2">&amp;</span><span class="self">self</span>.device_fn_1_1
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindBufferMemory2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>bind_buffer_memory2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         bind_infos: <span class="kw-2">&amp;</span>[vk::BindBufferMemoryInfo],
@@ -3178,6 +3450,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindImageMemory2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>bind_image_memory2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         bind_infos: <span class="kw-2">&amp;</span>[vk::BindImageMemoryInfo],
@@ -3191,6 +3464,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceGroupPeerMemoryFeatures.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_group_peer_memory_features(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         heap_index: u32,
@@ -3209,11 +3483,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDeviceMask.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_device_mask(<span class="kw-2">&amp;</span><span class="self">self</span>, command_buffer: vk::CommandBuffer, device_mask: u32) {
         (<span class="self">self</span>.device_fn_1_1.cmd_set_device_mask)(command_buffer, device_mask);
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchBase.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_dispatch_base(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3236,6 +3512,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetImageMemoryRequirements2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_image_memory_requirements2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>vk::ImageMemoryRequirementsInfo2,
@@ -3245,6 +3522,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetBufferMemoryRequirements2.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_buffer_memory_requirements2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>vk::BufferMemoryRequirementsInfo2,
@@ -3254,6 +3532,7 @@
     }
 
     <span class="doccomment">/// Retrieve the number of elements to pass to [`get_image_sparse_memory_requirements2()`][Self::get_image_sparse_memory_requirements2()]
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_image_sparse_memory_requirements2_len(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>vk::ImageSparseMemoryRequirementsInfo2,
@@ -3272,6 +3551,7 @@
     ///
     /// Call [`get_image_sparse_memory_requirements2_len()`][Self::get_image_sparse_memory_requirements2_len()] to query the number of elements to pass to `out`.
     /// Be sure to [`Default::default()`]-initialize these elements and optionally set their `p_next` pointer.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_image_sparse_memory_requirements2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         info: <span class="kw-2">&amp;</span>vk::ImageSparseMemoryRequirementsInfo2,
@@ -3288,6 +3568,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkTrimCommandPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>trim_command_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_pool: vk::CommandPool,
@@ -3296,7 +3577,16 @@
         (<span class="self">self</span>.device_fn_1_1.trim_command_pool)(<span class="self">self</span>.handle(), command_pool, flags);
     }
 
+    <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceQueue2.html&gt;
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub unsafe fn </span>get_device_queue2(<span class="kw-2">&amp;</span><span class="self">self</span>, queue_info: <span class="kw-2">&amp;</span>vk::DeviceQueueInfo2) -&gt; vk::Queue {
+        <span class="kw">let </span><span class="kw-2">mut </span>queue = mem::zeroed();
+        (<span class="self">self</span>.device_fn_1_1.get_device_queue2)(<span class="self">self</span>.handle(), queue_info, <span class="kw-2">&amp;mut </span>queue);
+        queue
+    }
+
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSamplerYcbcrConversion.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_sampler_ycbcr_conversion(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::SamplerYcbcrConversionCreateInfo,
@@ -3313,6 +3603,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySamplerYcbcrConversion.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_sampler_ycbcr_conversion(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         ycbcr_conversion: vk::SamplerYcbcrConversion,
@@ -3326,6 +3617,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateDescriptorUpdateTemplate.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_descriptor_update_template(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::DescriptorUpdateTemplateCreateInfo,
@@ -3342,6 +3634,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyDescriptorUpdateTemplate.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_descriptor_update_template(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         descriptor_update_template: vk::DescriptorUpdateTemplate,
@@ -3355,6 +3648,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkUpdateDescriptorSetWithTemplate.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>update_descriptor_set_with_template(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         descriptor_set: vk::DescriptorSet,
@@ -3370,6 +3664,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutSupport.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_descriptor_set_layout_support(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::DescriptorSetLayoutCreateInfo,
@@ -3382,16 +3677,19 @@
 <span class="doccomment">/// Vulkan core 1.0
 </span><span class="attr">#[allow(non_camel_case_types)]
 </span><span class="kw">impl </span>Device {
-    <span class="kw">pub fn </span>fp_v1_0(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::DeviceFnV1_0 {
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>fp_v1_0(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>vk::DeviceFnV1_0 {
         <span class="kw-2">&amp;</span><span class="self">self</span>.device_fn_1_0
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyDevice.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_device(<span class="kw-2">&amp;</span><span class="self">self</span>, allocation_callbacks: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>vk::AllocationCallbacks&gt;) {
         (<span class="self">self</span>.device_fn_1_0.destroy_device)(<span class="self">self</span>.handle(), allocation_callbacks.as_raw_ptr());
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySampler.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_sampler(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         sampler: vk::Sampler,
@@ -3405,6 +3703,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkFreeMemory.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>free_memory(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         memory: vk::DeviceMemory,
@@ -3414,6 +3713,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkFreeCommandBuffers.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>free_command_buffers(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_pool: vk::CommandPool,
@@ -3428,6 +3728,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateEvent.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_event(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::EventCreateInfo,
@@ -3446,6 +3747,7 @@
     <span class="doccomment">/// Returns [`true`] if the event was set, and [`false`] if the event was reset, otherwise it will
     /// return the error code.
     /// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetEventStatus.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_event_status(<span class="kw-2">&amp;</span><span class="self">self</span>, event: vk::Event) -&gt; VkResult&lt;bool&gt; {
         <span class="kw">let </span>err_code = (<span class="self">self</span>.device_fn_1_0.get_event_status)(<span class="self">self</span>.handle(), event);
         <span class="kw">match </span>err_code {
@@ -3456,15 +3758,18 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkSetEvent.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>set_event(<span class="kw-2">&amp;</span><span class="self">self</span>, event: vk::Event) -&gt; VkResult&lt;()&gt; {
         (<span class="self">self</span>.device_fn_1_0.set_event)(<span class="self">self</span>.handle(), event).result()
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetEvent.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>reset_event(<span class="kw-2">&amp;</span><span class="self">self</span>, event: vk::Event) -&gt; VkResult&lt;()&gt; {
         (<span class="self">self</span>.device_fn_1_0.reset_event)(<span class="self">self</span>.handle(), event).result()
     }
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetEvent.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_event(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3474,6 +3779,7 @@
         (<span class="self">self</span>.device_fn_1_0.cmd_set_event)(command_buffer, event, stage_mask);
     }
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdResetEvent.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_reset_event(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3484,6 +3790,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWaitEvents.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_wait_events(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3510,6 +3817,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyFence.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_fence(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         fence: vk::Fence,
@@ -3519,6 +3827,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyEvent.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_event(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         event: vk::Event,
@@ -3528,6 +3837,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyImage.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_image(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         image: vk::Image,
@@ -3537,6 +3847,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyCommandPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_command_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pool: vk::CommandPool,
@@ -3550,6 +3861,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyImageView.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_image_view(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         image_view: vk::ImageView,
@@ -3563,6 +3875,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyRenderPass.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_render_pass(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         renderpass: vk::RenderPass,
@@ -3576,6 +3889,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyFramebuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_framebuffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         framebuffer: vk::Framebuffer,
@@ -3589,6 +3903,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyPipelineLayout.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_pipeline_layout(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pipeline_layout: vk::PipelineLayout,
@@ -3602,6 +3917,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyPipelineCache.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_pipeline_cache(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pipeline_cache: vk::PipelineCache,
@@ -3615,6 +3931,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         buffer: vk::Buffer,
@@ -3628,6 +3945,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderModule.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_shader_module(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         shader: vk::ShaderModule,
@@ -3641,6 +3959,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyPipeline.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_pipeline(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pipeline: vk::Pipeline,
@@ -3654,6 +3973,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySemaphore.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_semaphore(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         semaphore: vk::Semaphore,
@@ -3667,6 +3987,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyDescriptorPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_descriptor_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pool: vk::DescriptorPool,
@@ -3680,6 +4001,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyQueryPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_query_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pool: vk::QueryPool,
@@ -3693,6 +4015,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyDescriptorSetLayout.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_descriptor_set_layout(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         layout: vk::DescriptorSetLayout,
@@ -3706,6 +4029,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkFreeDescriptorSets.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>free_descriptor_sets(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pool: vk::DescriptorPool,
@@ -3721,6 +4045,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkUpdateDescriptorSets.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>update_descriptor_sets(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         descriptor_writes: <span class="kw-2">&amp;</span>[vk::WriteDescriptorSet],
@@ -3736,6 +4061,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSampler.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_sampler(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::SamplerCreateInfo,
@@ -3752,6 +4078,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBlitImage.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_blit_image(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3775,6 +4102,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdResolveImage.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_resolve_image(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3796,6 +4124,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdFillBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_fill_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3808,6 +4137,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdUpdateBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_update_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3825,6 +4155,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3842,6 +4173,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_image_to_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3861,6 +4193,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBufferToImage.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_buffer_to_image(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3880,6 +4213,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImage.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_image(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3901,22 +4235,25 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkAllocateDescriptorSets.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>allocate_descriptor_sets(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        create_info: <span class="kw-2">&amp;</span>vk::DescriptorSetAllocateInfo,
+        allocate_info: <span class="kw-2">&amp;</span>vk::DescriptorSetAllocateInfo,
     ) -&gt; VkResult&lt;Vec&lt;vk::DescriptorSet&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>desc_set = Vec::with_capacity(create_info.descriptor_set_count <span class="kw">as </span>usize);
-        <span class="kw">let </span>err_code = (<span class="self">self</span>.device_fn_1_0.allocate_descriptor_sets)(
+        <span class="kw">let </span><span class="kw-2">mut </span>desc_set = Vec::with_capacity(allocate_info.descriptor_set_count <span class="kw">as </span>usize);
+        (<span class="self">self</span>.device_fn_1_0.allocate_descriptor_sets)(
             <span class="self">self</span>.handle(),
-            create_info,
+            allocate_info,
             desc_set.as_mut_ptr(),
-        );
+        )
+        .result()<span class="question-mark">?</span>;
 
-        desc_set.set_len(create_info.descriptor_set_count <span class="kw">as </span>usize);
-        err_code.result_with_success(desc_set)
+        desc_set.set_len(allocate_info.descriptor_set_count <span class="kw">as </span>usize);
+        <span class="prelude-val">Ok</span>(desc_set)
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateDescriptorSetLayout.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_descriptor_set_layout(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::DescriptorSetLayoutCreateInfo,
@@ -3933,11 +4270,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDeviceWaitIdle.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>device_wait_idle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; VkResult&lt;()&gt; {
         (<span class="self">self</span>.device_fn_1_0.device_wait_idle)(<span class="self">self</span>.handle()).result()
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateDescriptorPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_descriptor_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::DescriptorPoolCreateInfo,
@@ -3954,6 +4293,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetDescriptorPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>reset_descriptor_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pool: vk::DescriptorPool,
@@ -3963,6 +4303,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetCommandPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>reset_command_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_pool: vk::CommandPool,
@@ -3972,6 +4313,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetCommandBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>reset_command_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3981,12 +4323,14 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetFences.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>reset_fences(<span class="kw-2">&amp;</span><span class="self">self</span>, fences: <span class="kw-2">&amp;</span>[vk::Fence]) -&gt; VkResult&lt;()&gt; {
         (<span class="self">self</span>.device_fn_1_0.reset_fences)(<span class="self">self</span>.handle(), fences.len() <span class="kw">as </span>u32, fences.as_ptr())
             .result()
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindIndexBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_bind_index_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -3998,6 +4342,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdClearColorImage.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_clear_color_image(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4017,6 +4362,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdClearDepthStencilImage.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_clear_depth_stencil_image(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4036,6 +4382,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdClearAttachments.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_clear_attachments(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4052,6 +4399,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexed.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_draw_indexed(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4072,6 +4420,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexedIndirect.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_draw_indexed_indirect(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4090,6 +4439,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdExecuteCommands.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_execute_commands(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         primary_command_buffer: vk::CommandBuffer,
@@ -4103,6 +4453,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorSets.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_bind_descriptor_sets(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4125,6 +4476,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyQueryPoolResults.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_copy_query_pool_results(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4149,6 +4501,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPushConstants.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_push_constants(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4168,16 +4521,18 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginRenderPass.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_begin_render_pass(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
-        create_info: <span class="kw-2">&amp;</span>vk::RenderPassBeginInfo,
+        render_pass_begin: <span class="kw-2">&amp;</span>vk::RenderPassBeginInfo,
         contents: vk::SubpassContents,
     ) {
-        (<span class="self">self</span>.device_fn_1_0.cmd_begin_render_pass)(command_buffer, create_info, contents);
+        (<span class="self">self</span>.device_fn_1_0.cmd_begin_render_pass)(command_buffer, render_pass_begin, contents);
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdNextSubpass.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_next_subpass(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4187,6 +4542,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindPipeline.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_bind_pipeline(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4197,6 +4553,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetScissor.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_scissor(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4212,11 +4569,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineWidth.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_line_width(<span class="kw-2">&amp;</span><span class="self">self</span>, command_buffer: vk::CommandBuffer, line_width: f32) {
         (<span class="self">self</span>.device_fn_1_0.cmd_set_line_width)(command_buffer, line_width);
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_bind_vertex_buffers(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4235,11 +4594,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndRenderPass.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_end_render_pass(<span class="kw-2">&amp;</span><span class="self">self</span>, command_buffer: vk::CommandBuffer) {
         (<span class="self">self</span>.device_fn_1_0.cmd_end_render_pass)(command_buffer);
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDraw.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_draw(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4258,6 +4619,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirect.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_draw_indirect(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4270,6 +4632,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatch.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_dispatch(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4286,6 +4649,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchIndirect.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_dispatch_indirect(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4296,6 +4660,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewport.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_viewport(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4311,6 +4676,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBias.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_depth_bias(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4327,6 +4693,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetBlendConstants.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_blend_constants(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4336,6 +4703,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBounds.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_depth_bounds(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4350,6 +4718,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilCompareMask.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_stencil_compare_mask(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4360,6 +4729,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilWriteMask.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_stencil_write_mask(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4370,6 +4740,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilReference.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_set_stencil_reference(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4380,6 +4751,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetQueryPoolResults.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_query_pool_results&lt;T&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         query_pool: vk::QueryPool,
@@ -4400,7 +4772,7 @@
             first_query,
             query_count,
             data_size,
-            data.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
+            data.as_mut_ptr().cast(),
             mem::size_of::&lt;T&gt;() <span class="kw">as _</span>,
             flags,
         )
@@ -4408,6 +4780,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginQuery.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_begin_query(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4419,6 +4792,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndQuery.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_end_query(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4429,6 +4803,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdResetQueryPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_reset_query_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4440,6 +4815,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_write_timestamp(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4451,6 +4827,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSemaphore.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_semaphore(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::SemaphoreCreateInfo,
@@ -4467,6 +4844,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateGraphicsPipelines.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_graphics_pipelines(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pipeline_cache: vk::PipelineCache,
@@ -4490,6 +4868,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateComputePipelines.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_compute_pipelines(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pipeline_cache: vk::PipelineCache,
@@ -4513,6 +4892,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::BufferCreateInfo,
@@ -4529,6 +4909,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreatePipelineLayout.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_pipeline_layout(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::PipelineLayoutCreateInfo,
@@ -4545,6 +4926,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreatePipelineCache.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_pipeline_cache(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::PipelineCacheCreateInfo,
@@ -4561,6 +4943,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPipelineCacheData.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_pipeline_cache_data(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         pipeline_cache: vk::PipelineCache,
@@ -4576,6 +4959,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkMergePipelineCaches.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>merge_pipeline_caches(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         dst_cache: vk::PipelineCache,
@@ -4591,6 +4975,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkMapMemory.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>map_memory(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         memory: vk::DeviceMemory,
@@ -4604,11 +4989,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkUnmapMemory.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>unmap_memory(<span class="kw-2">&amp;</span><span class="self">self</span>, memory: vk::DeviceMemory) {
         (<span class="self">self</span>.device_fn_1_0.unmap_memory)(<span class="self">self</span>.handle(), memory);
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkInvalidateMappedMemoryRanges.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>invalidate_mapped_memory_ranges(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         ranges: <span class="kw-2">&amp;</span>[vk::MappedMemoryRange],
@@ -4622,6 +5009,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkFlushMappedMemoryRanges.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>flush_mapped_memory_ranges(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         ranges: <span class="kw-2">&amp;</span>[vk::MappedMemoryRange],
@@ -4635,6 +5023,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateFramebuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_framebuffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::FramebufferCreateInfo,
@@ -4651,6 +5040,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceQueue.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_queue(<span class="kw-2">&amp;</span><span class="self">self</span>, queue_family_index: u32, queue_index: u32) -&gt; vk::Queue {
         <span class="kw">let </span><span class="kw-2">mut </span>queue = mem::zeroed();
         (<span class="self">self</span>.device_fn_1_0.get_device_queue)(
@@ -4663,6 +5053,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPipelineBarrier.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>cmd_pipeline_barrier(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4688,6 +5079,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateRenderPass.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_render_pass(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::RenderPassCreateInfo,
@@ -4704,6 +5096,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBeginCommandBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>begin_command_buffer(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         command_buffer: vk::CommandBuffer,
@@ -4713,11 +5106,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkEndCommandBuffer.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>end_command_buffer(<span class="kw-2">&amp;</span><span class="self">self</span>, command_buffer: vk::CommandBuffer) -&gt; VkResult&lt;()&gt; {
         (<span class="self">self</span>.device_fn_1_0.end_command_buffer)(command_buffer).result()
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkWaitForFences.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>wait_for_fences(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         fences: <span class="kw-2">&amp;</span>[vk::Fence],
@@ -4735,6 +5130,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetFenceStatus.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_fence_status(<span class="kw-2">&amp;</span><span class="self">self</span>, fence: vk::Fence) -&gt; VkResult&lt;bool&gt; {
         <span class="kw">let </span>err_code = (<span class="self">self</span>.device_fn_1_0.get_fence_status)(<span class="self">self</span>.handle(), fence);
         <span class="kw">match </span>err_code {
@@ -4745,11 +5141,13 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueueWaitIdle.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>queue_wait_idle(<span class="kw-2">&amp;</span><span class="self">self</span>, queue: vk::Queue) -&gt; VkResult&lt;()&gt; {
         (<span class="self">self</span>.device_fn_1_0.queue_wait_idle)(queue).result()
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueueSubmit.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>queue_submit(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         queue: vk::Queue,
@@ -4761,6 +5159,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueueBindSparse.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>queue_bind_sparse(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         queue: vk::Queue,
@@ -4777,6 +5176,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateBufferView.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_buffer_view(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::BufferViewCreateInfo,
@@ -4793,6 +5193,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyBufferView.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>destroy_buffer_view(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         buffer_view: vk::BufferView,
@@ -4806,6 +5207,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateImageView.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_image_view(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::ImageViewCreateInfo,
@@ -4822,21 +5224,24 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkAllocateCommandBuffers.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>allocate_command_buffers(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        create_info: <span class="kw-2">&amp;</span>vk::CommandBufferAllocateInfo,
+        allocate_info: <span class="kw-2">&amp;</span>vk::CommandBufferAllocateInfo,
     ) -&gt; VkResult&lt;Vec&lt;vk::CommandBuffer&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>buffers = Vec::with_capacity(create_info.command_buffer_count <span class="kw">as </span>usize);
-        <span class="kw">let </span>err_code = (<span class="self">self</span>.device_fn_1_0.allocate_command_buffers)(
+        <span class="kw">let </span><span class="kw-2">mut </span>buffers = Vec::with_capacity(allocate_info.command_buffer_count <span class="kw">as </span>usize);
+        (<span class="self">self</span>.device_fn_1_0.allocate_command_buffers)(
             <span class="self">self</span>.handle(),
-            create_info,
+            allocate_info,
             buffers.as_mut_ptr(),
-        );
-        buffers.set_len(create_info.command_buffer_count <span class="kw">as </span>usize);
-        err_code.result_with_success(buffers)
+        )
+        .result()<span class="question-mark">?</span>;
+        buffers.set_len(allocate_info.command_buffer_count <span class="kw">as </span>usize);
+        <span class="prelude-val">Ok</span>(buffers)
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateCommandPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_command_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::CommandPoolCreateInfo,
@@ -4853,6 +5258,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateQueryPool.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_query_pool(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::QueryPoolCreateInfo,
@@ -4869,6 +5275,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateImage.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_image(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::ImageCreateInfo,
@@ -4885,6 +5292,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetImageSubresourceLayout.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_image_subresource_layout(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         image: vk::Image,
@@ -4901,6 +5309,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetImageMemoryRequirements.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_image_memory_requirements(<span class="kw-2">&amp;</span><span class="self">self</span>, image: vk::Image) -&gt; vk::MemoryRequirements {
         <span class="kw">let </span><span class="kw-2">mut </span>mem_req = mem::zeroed();
         (<span class="self">self</span>.device_fn_1_0.get_image_memory_requirements)(<span class="self">self</span>.handle(), image, <span class="kw-2">&amp;mut </span>mem_req);
@@ -4908,6 +5317,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetBufferMemoryRequirements.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_buffer_memory_requirements(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         buffer: vk::Buffer,
@@ -4918,15 +5328,16 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkAllocateMemory.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>allocate_memory(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        create_info: <span class="kw-2">&amp;</span>vk::MemoryAllocateInfo,
+        allocate_info: <span class="kw-2">&amp;</span>vk::MemoryAllocateInfo,
         allocation_callbacks: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>vk::AllocationCallbacks&gt;,
     ) -&gt; VkResult&lt;vk::DeviceMemory&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>memory = mem::zeroed();
         (<span class="self">self</span>.device_fn_1_0.allocate_memory)(
             <span class="self">self</span>.handle(),
-            create_info,
+            allocate_info,
             allocation_callbacks.as_raw_ptr(),
             <span class="kw-2">&amp;mut </span>memory,
         )
@@ -4934,6 +5345,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateShaderModule.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_shader_module(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::ShaderModuleCreateInfo,
@@ -4950,6 +5362,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateFence.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>create_fence(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         create_info: <span class="kw-2">&amp;</span>vk::FenceCreateInfo,
@@ -4966,6 +5379,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindBufferMemory.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>bind_buffer_memory(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         buffer: vk::Buffer,
@@ -4977,6 +5391,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindImageMemory.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>bind_image_memory(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         image: vk::Image,
@@ -4987,6 +5402,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetRenderAreaGranularity.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_render_area_granularity(<span class="kw-2">&amp;</span><span class="self">self</span>, render_pass: vk::RenderPass) -&gt; vk::Extent2D {
         <span class="kw">let </span><span class="kw-2">mut </span>granularity = mem::zeroed();
         (<span class="self">self</span>.device_fn_1_0.get_render_area_granularity)(
@@ -4998,6 +5414,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceMemoryCommitment.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_device_memory_commitment(<span class="kw-2">&amp;</span><span class="self">self</span>, memory: vk::DeviceMemory) -&gt; vk::DeviceSize {
         <span class="kw">let </span><span class="kw-2">mut </span>committed_memory_in_bytes = <span class="number">0</span>;
         (<span class="self">self</span>.device_fn_1_0.get_device_memory_commitment)(
@@ -5009,6 +5426,7 @@
     }
 
     <span class="doccomment">/// &lt;https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetImageSparseMemoryRequirements.html&gt;
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub unsafe fn </span>get_image_sparse_memory_requirements(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         image: vk::Image,

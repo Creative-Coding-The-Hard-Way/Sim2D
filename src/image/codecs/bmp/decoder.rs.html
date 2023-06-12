@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/image-0.24.4/./src/codecs/bmp/decoder.rs`."><title>decoder.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../image/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/image-0.24.6/./src/codecs/bmp/decoder.rs`."><title>decoder.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../image/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1629,6 +1629,21 @@
 <a href="#1629" id="1629">1629</a>
 <a href="#1630" id="1630">1630</a>
 <a href="#1631" id="1631">1631</a>
+<a href="#1632" id="1632">1632</a>
+<a href="#1633" id="1633">1633</a>
+<a href="#1634" id="1634">1634</a>
+<a href="#1635" id="1635">1635</a>
+<a href="#1636" id="1636">1636</a>
+<a href="#1637" id="1637">1637</a>
+<a href="#1638" id="1638">1638</a>
+<a href="#1639" id="1639">1639</a>
+<a href="#1640" id="1640">1640</a>
+<a href="#1641" id="1641">1641</a>
+<a href="#1642" id="1642">1642</a>
+<a href="#1643" id="1643">1643</a>
+<a href="#1644" id="1644">1644</a>
+<a href="#1645" id="1645">1645</a>
+<a href="#1646" id="1646">1646</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::cmp::{<span class="self">self</span>, Ordering};
 <span class="kw">use </span>std::convert::TryFrom;
 <span class="kw">use </span>std::io::{<span class="self">self</span>, Cursor, Read, Seek, SeekFrom};
@@ -2260,9 +2275,8 @@
 }
 
 <span class="kw">impl</span>&lt;R: Read + Seek&gt; BmpDecoder&lt;R&gt; {
-    <span class="doccomment">/// Create a new decoder that decodes from the stream ```r```
-    </span><span class="kw">pub fn </span>new(reader: R) -&gt; ImageResult&lt;BmpDecoder&lt;R&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>decoder = BmpDecoder {
+    <span class="kw">fn </span>new_decoder(reader: R) -&gt; BmpDecoder&lt;R&gt; {
+        BmpDecoder {
             reader,
 
             bmp_header_type: BMPHeaderType::Info,
@@ -2281,35 +2295,29 @@
             colors_used: <span class="number">0</span>,
             palette: <span class="prelude-val">None</span>,
             bitfields: <span class="prelude-val">None</span>,
-        };
+        }
+    }
 
+    <span class="doccomment">/// Create a new decoder that decodes from the stream ```r```
+    </span><span class="kw">pub fn </span>new(reader: R) -&gt; ImageResult&lt;BmpDecoder&lt;R&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>decoder = <span class="self">Self</span>::new_decoder(reader);
+        decoder.read_metadata()<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(decoder)
+    }
+
+    <span class="doccomment">/// Create a new decoder that decodes from the stream ```r``` without first
+    /// reading a BITMAPFILEHEADER. This is useful for decoding the CF_DIB format
+    /// directly from the Windows clipboard.
+    </span><span class="kw">pub fn </span>new_without_file_header(reader: R) -&gt; ImageResult&lt;BmpDecoder&lt;R&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>decoder = <span class="self">Self</span>::new_decoder(reader);
+        decoder.no_file_header = <span class="bool-val">true</span>;
         decoder.read_metadata()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(decoder)
     }
 
     <span class="attr">#[cfg(feature = <span class="string">&quot;ico&quot;</span>)]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_with_ico_format(reader: R) -&gt; ImageResult&lt;BmpDecoder&lt;R&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>decoder = BmpDecoder {
-            reader,
-
-            bmp_header_type: BMPHeaderType::Info,
-            indexed_color: <span class="bool-val">false</span>,
-
-            width: <span class="number">0</span>,
-            height: <span class="number">0</span>,
-            data_offset: <span class="number">0</span>,
-            top_down: <span class="bool-val">false</span>,
-            no_file_header: <span class="bool-val">false</span>,
-            add_alpha_channel: <span class="bool-val">false</span>,
-            has_loaded_metadata: <span class="bool-val">false</span>,
-            image_type: ImageType::Palette,
-
-            bit_count: <span class="number">0</span>,
-            colors_used: <span class="number">0</span>,
-            palette: <span class="prelude-val">None</span>,
-            bitfields: <span class="prelude-val">None</span>,
-        };
-
+        <span class="kw">let </span><span class="kw-2">mut </span>decoder = <span class="self">Self</span>::new_decoder(reader);
         decoder.read_metadata_in_ico_format()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(decoder)
     }
@@ -3257,6 +3265,28 @@
             <span class="kw">let </span>allocated = extend_buffer(<span class="kw-2">&amp;mut </span>as_vec, test_case.<span class="number">1</span>, <span class="bool-val">false</span>);
             <span class="macro">assert_eq!</span>(allocated.len(), extended_by);
             <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>as_vec[extended_by..], test_case.<span class="number">0</span>);
+        }
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_no_header() {
+        <span class="kw">let </span>tests = [
+            <span class="string">&quot;Info_R8_G8_B8.bmp&quot;</span>,
+            <span class="string">&quot;Info_A8_R8_G8_B8.bmp&quot;</span>,
+            <span class="string">&quot;Info_8_Bit.bmp&quot;</span>,
+            <span class="string">&quot;Info_4_Bit.bmp&quot;</span>,
+            <span class="string">&quot;Info_1_Bit.bmp&quot;</span>,
+        ];
+
+        <span class="kw">for </span>name <span class="kw">in </span><span class="kw-2">&amp;</span>tests {
+            <span class="kw">let </span>path = <span class="macro">format!</span>(<span class="string">&quot;tests/images/bmp/images/{name}&quot;</span>);
+            <span class="kw">let </span>ref_img = <span class="kw">crate</span>::open(<span class="kw-2">&amp;</span>path).unwrap();
+            <span class="kw">let </span><span class="kw-2">mut </span>data = std::fs::read(<span class="kw-2">&amp;</span>path).unwrap();
+            <span class="comment">// skip the BITMAPFILEHEADER
+            </span><span class="kw">let </span>slice = <span class="kw-2">&amp;mut </span>data[<span class="number">14</span>..];
+            <span class="kw">let </span>decoder = BmpDecoder::new_without_file_header(Cursor::new(slice)).unwrap();
+            <span class="kw">let </span>no_hdr_img = <span class="kw">crate</span>::DynamicImage::from_decoder(decoder).unwrap();
+            <span class="macro">assert_eq!</span>(ref_img, no_hdr_img);
         }
     }
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.9.0/src/tuple_impl.rs`."><title>tuple_impl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../itertools/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.10.5/src/tuple_impl.rs`."><title>tuple_impl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../itertools/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -277,16 +277,72 @@
 <a href="#277" id="277">277</a>
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Some iterator that produces tuples
 
 </span><span class="kw">use </span>std::iter::Fuse;
+<span class="kw">use </span>std::iter::FusedIterator;
+<span class="kw">use </span>std::iter::Take;
+<span class="kw">use </span>std::iter::Cycle;
+<span class="kw">use </span>std::marker::PhantomData;
 
 <span class="comment">// `HomogeneousTuple` is a public facade for `TupleCollect`, allowing
 // tuple-related methods to be used by clients in generic contexts, while
 // hiding the implementation details of `TupleCollect`.
 // See https://github.com/rust-itertools/itertools/issues/387
 
-</span><span class="doccomment">/// Implemented for homogeneous tuples of size up to 4.
+</span><span class="doccomment">/// Implemented for homogeneous tuples of size up to 12.
 </span><span class="kw">pub trait </span>HomogeneousTuple
     : TupleCollect
 {}
@@ -295,8 +351,8 @@
 
 <span class="doccomment">/// An iterator over a incomplete tuple.
 ///
-/// See [`.tuples()`](../trait.Itertools.html#method.tuples) and
-/// [`Tuples::into_buffer()`](struct.Tuples.html#method.into_buffer).
+/// See [`.tuples()`](crate::Itertools::tuples) and
+/// [`Tuples::into_buffer()`].
 </span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>TupleBuffer&lt;T&gt;
     <span class="kw">where </span>T: HomogeneousTuple
@@ -333,12 +389,12 @@
 
     <span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
         <span class="kw">let </span>buffer = <span class="kw-2">&amp;</span><span class="self">self</span>.buf.as_ref()[<span class="self">self</span>.cur..];
-        <span class="kw">let </span>len = <span class="kw">if </span>buffer.len() == <span class="number">0 </span>{
+        <span class="kw">let </span>len = <span class="kw">if </span>buffer.is_empty() {
             <span class="number">0
         </span>} <span class="kw">else </span>{
             buffer.iter()
                   .position(|x| x.is_none())
-                  .unwrap_or(buffer.len())
+                  .unwrap_or_else(|| buffer.len())
         };
         (len, <span class="prelude-val">Some</span>(len))
     }
@@ -351,8 +407,8 @@
 
 <span class="doccomment">/// An iterator that groups the items in tuples of a specific size.
 ///
-/// See [`.tuples()`](../trait.Itertools.html#method.tuples) for more information.
-</span><span class="attr">#[derive(Clone)]
+/// See [`.tuples()`](crate::Itertools::tuples) for more information.
+</span><span class="attr">#[derive(Clone, Debug)]
 #[must_use = <span class="string">&quot;iterator adaptors are lazy and do nothing unless consumed&quot;</span>]
 </span><span class="kw">pub struct </span>Tuples&lt;I, T&gt;
     <span class="kw">where </span>I: Iterator&lt;Item = T::Item&gt;,
@@ -379,7 +435,7 @@
 {
     <span class="kw">type </span>Item = T;
 
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         T::collect_from_iter(<span class="kw-2">&amp;mut </span><span class="self">self</span>.iter, <span class="kw-2">&amp;mut </span><span class="self">self</span>.buf)
     }
 }
@@ -406,7 +462,7 @@
 
 <span class="doccomment">/// An iterator over all contiguous windows that produces tuples of a specific size.
 ///
-/// See [`.tuple_windows()`](../trait.Itertools.html#method.tuple_windows) for more
+/// See [`.tuple_windows()`](crate::Itertools::tuple_windows) for more
 /// information.
 </span><span class="attr">#[must_use = <span class="string">&quot;iterator adaptors are lazy and do nothing unless consumed&quot;</span>]
 #[derive(Clone, Debug)]
@@ -437,8 +493,8 @@
     }
 
     TupleWindows {
-        last,
         iter,
+        last,
     }
 }
 
@@ -449,7 +505,7 @@
 {
     <span class="kw">type </span>Item = T;
 
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         <span class="kw">if </span>T::num_items() == <span class="number">1 </span>{
             <span class="kw">return </span>T::collect_from_iter_no_buf(<span class="kw-2">&amp;mut </span><span class="self">self</span>.iter)
         }
@@ -461,6 +517,54 @@
         }
         <span class="prelude-val">None
     </span>}
+}
+
+<span class="kw">impl</span>&lt;I, T&gt; FusedIterator <span class="kw">for </span>TupleWindows&lt;I, T&gt;
+    <span class="kw">where </span>I: FusedIterator&lt;Item = T::Item&gt;,
+          T: HomogeneousTuple + Clone,
+          T::Item: Clone
+{}
+
+<span class="doccomment">/// An iterator over all windows,wrapping back to the first elements when the
+/// window would otherwise exceed the length of the iterator, producing tuples
+/// of a specific size.
+///
+/// See [`.circular_tuple_windows()`](crate::Itertools::circular_tuple_windows) for more
+/// information.
+</span><span class="attr">#[must_use = <span class="string">&quot;iterator adaptors are lazy and do nothing unless consumed&quot;</span>]
+#[derive(Debug)]
+</span><span class="kw">pub struct </span>CircularTupleWindows&lt;I, T: Clone&gt;
+    <span class="kw">where </span>I: Iterator&lt;Item = T::Item&gt; + Clone,
+          T: TupleCollect + Clone
+{
+    iter: Take&lt;TupleWindows&lt;Cycle&lt;I&gt;, T&gt;&gt;,
+    phantom_data: PhantomData&lt;T&gt;
+}
+
+<span class="kw">pub fn </span>circular_tuple_windows&lt;I, T&gt;(iter: I) -&gt; CircularTupleWindows&lt;I, T&gt;
+    <span class="kw">where </span>I: Iterator&lt;Item = T::Item&gt; + Clone + ExactSizeIterator,
+          T: TupleCollect + Clone,
+          T::Item: Clone
+{
+    <span class="kw">let </span>len = iter.len();
+    <span class="kw">let </span>iter = tuple_windows(iter.cycle()).take(len);
+
+    CircularTupleWindows {
+        iter,
+        phantom_data: PhantomData{}
+    }
+}
+
+<span class="kw">impl</span>&lt;I, T&gt; Iterator <span class="kw">for </span>CircularTupleWindows&lt;I, T&gt;
+    <span class="kw">where </span>I: Iterator&lt;Item = T::Item&gt; + Clone,
+          T: TupleCollect + Clone,
+          T::Item: Clone
+{
+    <span class="kw">type </span>Item = T;
+
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="self">self</span>.iter.next()
+    }
 }
 
 <span class="kw">pub trait </span>TupleCollect: Sized {
@@ -478,16 +582,29 @@
     <span class="kw">fn </span>left_shift_push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, item: <span class="self">Self</span>::Item);
 }
 
+<span class="macro">macro_rules! </span>count_ident{
+    () =&gt; {<span class="number">0</span>};
+    (<span class="macro-nonterminal">$i0</span>:ident, $(<span class="macro-nonterminal">$i</span>:ident,)<span class="kw-2">*</span>) =&gt; {<span class="number">1 </span>+ <span class="macro">count_ident!</span>($(<span class="macro-nonterminal">$i</span>,)<span class="kw-2">*</span>)};
+}
+<span class="macro">macro_rules! </span>rev_for_each_ident{
+    (<span class="macro-nonterminal">$m</span>:ident, ) =&gt; {};
+    (<span class="macro-nonterminal">$m</span>:ident, <span class="macro-nonterminal">$i0</span>:ident, $(<span class="macro-nonterminal">$i</span>:ident,)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">rev_for_each_ident!</span>(<span class="macro-nonterminal">$m</span>, $(<span class="macro-nonterminal">$i</span>,)<span class="kw-2">*</span>);
+        <span class="macro-nonterminal">$</span><span class="macro">m!</span>(<span class="macro-nonterminal">$i0</span>);
+    };
+}
+
 <span class="macro">macro_rules! </span>impl_tuple_collect {
-    () =&gt; ();
-    (<span class="macro-nonterminal">$N</span>:expr; <span class="macro-nonterminal">$A</span>:ident ; $(<span class="macro-nonterminal">$X</span>:ident),* ; $(<span class="macro-nonterminal">$Y</span>:ident),* ; $(<span class="macro-nonterminal">$Y_rev</span>:ident),<span class="kw-2">*</span>) =&gt; (
-        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$A</span>&gt; TupleCollect <span class="kw">for </span>($(<span class="macro-nonterminal">$X</span>),<span class="kw-2">*</span>,) {
-            <span class="kw">type </span>Item = <span class="macro-nonterminal">$A</span>;
-            <span class="kw">type </span>Buffer = [<span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$A</span>&gt;; <span class="macro-nonterminal">$N </span>- <span class="number">1</span>];
+    (<span class="macro-nonterminal">$dummy</span>:ident,) =&gt; {}; <span class="comment">// stop
+    </span>(<span class="macro-nonterminal">$dummy</span>:ident, $(<span class="macro-nonterminal">$Y</span>:ident,)<span class="kw-2">*</span>) =&gt; (
+        <span class="macro">impl_tuple_collect!</span>($(<span class="macro-nonterminal">$Y</span>,)<span class="kw-2">*</span>);
+        <span class="kw">impl</span>&lt;A&gt; TupleCollect <span class="kw">for </span>($(<span class="macro">ignore_ident!</span>(<span class="macro-nonterminal">$Y</span>, A),)<span class="kw-2">*</span>) {
+            <span class="kw">type </span>Item = A;
+            <span class="kw">type </span>Buffer = [<span class="prelude-ty">Option</span>&lt;A&gt;; <span class="macro">count_ident!</span>($(<span class="macro-nonterminal">$Y</span>,)<span class="kw-2">*</span>) - <span class="number">1</span>];
 
             <span class="attr">#[allow(unused_assignments, unused_mut)]
             </span><span class="kw">fn </span>collect_from_iter&lt;I&gt;(iter: I, buf: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Buffer) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;
-                <span class="kw">where </span>I: IntoIterator&lt;Item = <span class="macro-nonterminal">$A</span>&gt;
+                <span class="kw">where </span>I: IntoIterator&lt;Item = A&gt;
             {
                 <span class="kw">let </span><span class="kw-2">mut </span>iter = iter.into_iter();
                 $(
@@ -515,46 +632,33 @@
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             }
 
-            <span class="attr">#[allow(unused_assignments)]
-            </span><span class="kw">fn </span>collect_from_iter_no_buf&lt;I&gt;(iter: I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;
-                <span class="kw">where </span>I: IntoIterator&lt;Item = <span class="macro-nonterminal">$A</span>&gt;
+            <span class="kw">fn </span>collect_from_iter_no_buf&lt;I&gt;(iter: I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;
+                <span class="kw">where </span>I: IntoIterator&lt;Item = A&gt;
             {
                 <span class="kw">let </span><span class="kw-2">mut </span>iter = iter.into_iter();
-                <span class="kw">loop </span>{
-                    $(
-                        <span class="kw">let </span><span class="macro-nonterminal">$Y </span>= <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="macro-nonterminal">$Y</span>) = iter.next() {
-                            <span class="macro-nonterminal">$Y
-                        </span>} <span class="kw">else </span>{
-                            <span class="kw">break</span>;
-                        };
-                    )*
-                    <span class="kw">return </span><span class="prelude-val">Some</span>(($(<span class="macro-nonterminal">$Y</span>),<span class="kw-2">*</span>,))
-                }
 
-                <span class="kw">return </span><span class="prelude-val">None</span>;
+                <span class="prelude-val">Some</span>(($(
+                    { <span class="kw">let </span><span class="macro-nonterminal">$Y </span>= iter.next()<span class="question-mark">?</span>; <span class="macro-nonterminal">$Y </span>},
+                )<span class="kw-2">*</span>))
             }
 
             <span class="kw">fn </span>num_items() -&gt; usize {
-                <span class="macro-nonterminal">$N
-            </span>}
+                <span class="macro">count_ident!</span>($(<span class="macro-nonterminal">$Y</span>,)<span class="kw-2">*</span>)
+            }
 
-            <span class="kw">fn </span>left_shift_push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, item: <span class="macro-nonterminal">$A</span>) {
+            <span class="kw">fn </span>left_shift_push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>item: A) {
                 <span class="kw">use </span>std::mem::replace;
 
                 <span class="kw">let </span><span class="kw-2">&amp;mut </span>($(<span class="kw-2">ref mut </span><span class="macro-nonterminal">$Y</span>),<span class="kw-2">*</span>,) = <span class="self">self</span>;
-                <span class="kw">let </span>tmp = item;
-                $(
-                    <span class="kw">let </span>tmp = replace(<span class="macro-nonterminal">$Y_rev</span>, tmp);
-                )*
-                drop(tmp);
+                <span class="macro">macro_rules! </span>replace_item{(<span class="macro-nonterminal">$i</span>:ident) =&gt; {
+                    item = replace(<span class="macro-nonterminal">$i</span>, item);
+                }}
+                <span class="macro">rev_for_each_ident!</span>(replace_item, $(<span class="macro-nonterminal">$Y</span>,)<span class="kw-2">*</span>);
+                drop(item);
             }
         }
     )
 }
-
-<span class="macro">impl_tuple_collect!</span>(<span class="number">1</span>; A; A; a; a);
-<span class="macro">impl_tuple_collect!</span>(<span class="number">2</span>; A; A, A; a, b; b, a);
-<span class="macro">impl_tuple_collect!</span>(<span class="number">3</span>; A; A, A, A; a, b, c; c, b, a);
-<span class="macro">impl_tuple_collect!</span>(<span class="number">4</span>; A; A, A, A, A; a, b, c, d; d, c, b, a);
+<span class="macro">impl_tuple_collect!</span>(dummy, a, b, c, d, e, f, g, h, i, j, k, l,);
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="itertools" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>

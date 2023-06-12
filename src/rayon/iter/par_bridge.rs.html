@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rayon-1.5.3/src/iter/par_bridge.rs`."><title>par_bridge.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../rayon/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rayon-1.7.0/src/iter/par_bridge.rs`."><title>par_bridge.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../rayon/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -160,70 +160,12 @@
 <a href="#160" id="160">160</a>
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
-<a href="#163" id="163">163</a>
-<a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
-<a href="#170" id="170">170</a>
-<a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-</pre><pre class="rust"><code><span class="kw">use </span>crossbeam_deque::{Steal, Stealer, Worker};
+</pre><pre class="rust"><code><span class="kw">use </span>std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+<span class="kw">use </span>std::sync::Mutex;
 
-<span class="kw">use </span>std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
-<span class="kw">use </span>std::sync::{Mutex, TryLockError};
-<span class="kw">use </span>std::thread::yield_now;
-
-<span class="kw">use </span><span class="kw">crate</span>::current_num_threads;
 <span class="kw">use </span><span class="kw">crate</span>::iter::plumbing::{bridge_unindexed, Folder, UnindexedConsumer, UnindexedProducer};
 <span class="kw">use </span><span class="kw">crate</span>::iter::ParallelIterator;
+<span class="kw">use crate</span>::{current_num_threads, current_thread_index};
 
 <span class="doccomment">/// Conversion trait to convert an `Iterator` to a `ParallelIterator`.
 ///
@@ -295,71 +237,46 @@
     <span class="kw">where
         </span>C: UnindexedConsumer&lt;<span class="self">Self</span>::Item&gt;,
     {
-        <span class="kw">let </span>split_count = AtomicUsize::new(current_num_threads());
-        <span class="kw">let </span>worker = Worker::new_fifo();
-        <span class="kw">let </span>stealer = worker.stealer();
-        <span class="kw">let </span>done = AtomicBool::new(<span class="bool-val">false</span>);
-        <span class="kw">let </span>iter = Mutex::new((<span class="self">self</span>.iter, worker));
+        <span class="kw">let </span>num_threads = current_num_threads();
+        <span class="kw">let </span>threads_started: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..num_threads).map(|<span class="kw">_</span>| AtomicBool::new(<span class="bool-val">false</span>)).collect();
 
         bridge_unindexed(
-            IterParallelProducer {
-                split_count: <span class="kw-2">&amp;</span>split_count,
-                done: <span class="kw-2">&amp;</span>done,
-                iter: <span class="kw-2">&amp;</span>iter,
-                items: stealer,
+            <span class="kw-2">&amp;</span>IterParallelProducer {
+                split_count: AtomicUsize::new(num_threads),
+                iter: Mutex::new(<span class="self">self</span>.iter.fuse()),
+                threads_started: <span class="kw-2">&amp;</span>threads_started,
             },
             consumer,
         )
     }
 }
 
-<span class="kw">struct </span>IterParallelProducer&lt;<span class="lifetime">&#39;a</span>, Iter: Iterator&gt; {
-    split_count: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AtomicUsize,
-    done: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AtomicBool,
-    iter: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Mutex&lt;(Iter, Worker&lt;Iter::Item&gt;)&gt;,
-    items: Stealer&lt;Iter::Item&gt;,
+<span class="kw">struct </span>IterParallelProducer&lt;<span class="lifetime">&#39;a</span>, Iter&gt; {
+    split_count: AtomicUsize,
+    iter: Mutex&lt;std::iter::Fuse&lt;Iter&gt;&gt;,
+    threads_started: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[AtomicBool],
 }
 
-<span class="comment">// manual clone because T doesn&#39;t need to be Clone, but the derive assumes it should be
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, Iter: Iterator + <span class="lifetime">&#39;a</span>&gt; Clone <span class="kw">for </span>IterParallelProducer&lt;<span class="lifetime">&#39;a</span>, Iter&gt; {
-    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-        IterParallelProducer {
-            split_count: <span class="self">self</span>.split_count,
-            done: <span class="self">self</span>.done,
-            iter: <span class="self">self</span>.iter,
-            items: <span class="self">self</span>.items.clone(),
-        }
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, Iter: Iterator + Send + <span class="lifetime">&#39;a</span>&gt; UnindexedProducer <span class="kw">for </span>IterParallelProducer&lt;<span class="lifetime">&#39;a</span>, Iter&gt;
-<span class="kw">where
-    </span>Iter::Item: Send,
-{
+<span class="kw">impl</span>&lt;Iter: Iterator + Send&gt; UnindexedProducer <span class="kw">for </span><span class="kw-2">&amp;</span>IterParallelProducer&lt;<span class="lifetime">&#39;_</span>, Iter&gt; {
     <span class="kw">type </span>Item = Iter::Item;
 
     <span class="kw">fn </span>split(<span class="self">self</span>) -&gt; (<span class="self">Self</span>, <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;) {
         <span class="kw">let </span><span class="kw-2">mut </span>count = <span class="self">self</span>.split_count.load(Ordering::SeqCst);
 
         <span class="kw">loop </span>{
-            <span class="comment">// Check if the iterator is exhausted *and* we&#39;ve consumed every item from it.
-            </span><span class="kw">let </span>done = <span class="self">self</span>.done.load(Ordering::SeqCst) &amp;&amp; <span class="self">self</span>.items.is_empty();
-
-            <span class="kw">match </span>count.checked_sub(<span class="number">1</span>) {
-                <span class="prelude-val">Some</span>(new_count) <span class="kw">if </span>!done =&gt; {
-                    <span class="kw">match </span><span class="self">self</span>.split_count.compare_exchange_weak(
-                        count,
-                        new_count,
-                        Ordering::SeqCst,
-                        Ordering::SeqCst,
-                    ) {
-                        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="kw">return </span>(<span class="self">self</span>.clone(), <span class="prelude-val">Some</span>(<span class="self">self</span>)),
-                        <span class="prelude-val">Err</span>(last_count) =&gt; count = last_count,
-                    }
+            <span class="comment">// Check if the iterator is exhausted
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(new_count) = count.checked_sub(<span class="number">1</span>) {
+                <span class="kw">match </span><span class="self">self</span>.split_count.compare_exchange_weak(
+                    count,
+                    new_count,
+                    Ordering::SeqCst,
+                    Ordering::SeqCst,
+                ) {
+                    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="kw">return </span>(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>)),
+                    <span class="prelude-val">Err</span>(last_count) =&gt; count = last_count,
                 }
-                <span class="kw">_ </span>=&gt; {
-                    <span class="kw">return </span>(<span class="self">self</span>, <span class="prelude-val">None</span>);
-                }
+            } <span class="kw">else </span>{
+                <span class="kw">return </span>(<span class="self">self</span>, <span class="prelude-val">None</span>);
             }
         }
     }
@@ -368,66 +285,39 @@
     <span class="kw">where
         </span>F: Folder&lt;<span class="self">Self</span>::Item&gt;,
     {
+        <span class="comment">// Guard against work-stealing-induced recursion, in case `Iter::next()`
+        // calls rayon internally, so we don&#39;t deadlock our mutex. We might also
+        // be recursing via `folder` methods, which doesn&#39;t present a mutex hazard,
+        // but it&#39;s lower overhead for us to just check this once, rather than
+        // updating additional shared state on every mutex lock/unlock.
+        // (If this isn&#39;t a rayon thread, then there&#39;s no work-stealing anyway...)
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(i) = current_thread_index() {
+            <span class="comment">// Note: If the number of threads in the pool ever grows dynamically, then
+            // we&#39;ll end up sharing flags and may falsely detect recursion -- that&#39;s
+            // still fine for overall correctness, just not optimal for parallelism.
+            </span><span class="kw">let </span>thread_started = <span class="kw-2">&amp;</span><span class="self">self</span>.threads_started[i % <span class="self">self</span>.threads_started.len()];
+            <span class="kw">if </span>thread_started.swap(<span class="bool-val">true</span>, Ordering::Relaxed) {
+                <span class="comment">// We can&#39;t make progress with a nested mutex, so just return and let
+                // the outermost loop continue with the rest of the iterator items.
+                </span><span class="kw">return </span>folder;
+            }
+        }
+
         <span class="kw">loop </span>{
-            <span class="kw">match </span><span class="self">self</span>.items.steal() {
-                Steal::Success(it) =&gt; {
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>iter) = <span class="self">self</span>.iter.lock() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(it) = iter.next() {
+                    drop(iter);
                     folder = folder.consume(it);
                     <span class="kw">if </span>folder.full() {
                         <span class="kw">return </span>folder;
                     }
+                } <span class="kw">else </span>{
+                    <span class="kw">return </span>folder;
                 }
-                Steal::Empty =&gt; {
-                    <span class="comment">// Don&#39;t storm the mutex if we&#39;re already done.
-                    </span><span class="kw">if </span><span class="self">self</span>.done.load(Ordering::SeqCst) {
-                        <span class="comment">// Someone might have pushed more between our `steal()` and `done.load()`
-                        </span><span class="kw">if </span><span class="self">self</span>.items.is_empty() {
-                            <span class="comment">// The iterator is out of items, no use in continuing
-                            </span><span class="kw">return </span>folder;
-                        }
-                    } <span class="kw">else </span>{
-                        <span class="comment">// our cache is out of items, time to load more from the iterator
-                        </span><span class="kw">match </span><span class="self">self</span>.iter.try_lock() {
-                            <span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>guard) =&gt; {
-                                <span class="comment">// Check `done` again in case we raced with the previous lock
-                                // holder on its way out.
-                                </span><span class="kw">if </span><span class="self">self</span>.done.load(Ordering::SeqCst) {
-                                    <span class="kw">if </span><span class="self">self</span>.items.is_empty() {
-                                        <span class="kw">return </span>folder;
-                                    }
-                                    <span class="kw">continue</span>;
-                                }
-
-                                <span class="kw">let </span>count = current_num_threads();
-                                <span class="kw">let </span>count = (count * count) * <span class="number">2</span>;
-
-                                <span class="kw">let </span>(<span class="kw-2">ref mut </span>iter, <span class="kw-2">ref </span>worker) = <span class="kw-2">*</span>guard;
-
-                                <span class="comment">// while worker.len() &lt; count {
-                                // FIXME the new deque doesn&#39;t let us count items.  We can just
-                                // push a number of items, but that doesn&#39;t consider active
-                                // stealers elsewhere.
-                                </span><span class="kw">for _ in </span><span class="number">0</span>..count {
-                                    <span class="kw">if let </span><span class="prelude-val">Some</span>(it) = iter.next() {
-                                        worker.push(it);
-                                    } <span class="kw">else </span>{
-                                        <span class="self">self</span>.done.store(<span class="bool-val">true</span>, Ordering::SeqCst);
-                                        <span class="kw">break</span>;
-                                    }
-                                }
-                            }
-                            <span class="prelude-val">Err</span>(TryLockError::WouldBlock) =&gt; {
-                                <span class="comment">// someone else has the mutex, just sit tight until it&#39;s ready
-                                </span>yield_now(); <span class="comment">//TODO: use a thread-pool-aware yield? (#548)
-                            </span>}
-                            <span class="prelude-val">Err</span>(TryLockError::Poisoned(<span class="kw">_</span>)) =&gt; {
-                                <span class="comment">// any panics from other threads will have been caught by the pool,
-                                // and will be re-thrown when joined - just exit
-                                </span><span class="kw">return </span>folder;
-                            }
-                        }
-                    }
-                }
-                Steal::Retry =&gt; (),
+            } <span class="kw">else </span>{
+                <span class="comment">// any panics from other threads will have been caught by the pool,
+                // and will be re-thrown when joined - just exit
+                </span><span class="kw">return </span>folder;
             }
         }
     }

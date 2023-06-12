@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/flexi_logger-0.24.0/src/primary_writer/multi_writer.rs`."><title>multi_writer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../flexi_logger/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/flexi_logger-0.25.5/src/primary_writer/multi_writer.rs`."><title>multi_writer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../flexi_logger/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -155,18 +155,47 @@
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::logger::Duplicate;
-<span class="kw">use </span><span class="kw">crate</span>::util::write_buffered;
-<span class="kw">use </span><span class="kw">crate</span>::writers::{FileLogWriter, FileLogWriterBuilder, FileLogWriterConfig, LogWriter};
-<span class="kw">use crate</span>::{DeferredNow, FlexiLoggerError, FormatFunction};
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+</pre><pre class="rust"><code><span class="kw">use crate</span>::{
+    logger::Duplicate,
+    util::{eprint_err, write_buffered, ErrorCode},
+    writers::{FileLogWriter, FileLogWriterBuilder, FileLogWriterConfig, LogWriter},
+    {DeferredNow, FlexiLoggerError, FormatFunction},
+};
 <span class="kw">use </span>log::Record;
-<span class="kw">use </span>std::io::Write;
+<span class="kw">use </span>std::{io::Write, path::PathBuf};
 
 <span class="comment">// The `MultiWriter` writes logs to a FileLogWriter and/or another Writer,
 // and can duplicate messages to stderr or stdout.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>MultiWriter {
     duplicate_stderr: Duplicate,
     duplicate_stdout: Duplicate,
+    support_capture: bool,
     format_for_stderr: FormatFunction,
     format_for_stdout: FormatFunction,
     o_file_writer: <span class="prelude-ty">Option</span>&lt;Box&lt;FileLogWriter&gt;&gt;,
@@ -177,6 +206,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
         duplicate_stderr: Duplicate,
         duplicate_stdout: Duplicate,
+        support_capture: bool,
         format_for_stderr: FormatFunction,
         format_for_stdout: FormatFunction,
         o_file_writer: <span class="prelude-ty">Option</span>&lt;Box&lt;FileLogWriter&gt;&gt;,
@@ -185,6 +215,7 @@
         MultiWriter {
             duplicate_stderr,
             duplicate_stdout,
+            support_capture,
             format_for_stderr,
             format_for_stdout,
             o_file_writer,
@@ -211,6 +242,13 @@
                 flw.reopen_outputfile()
             })
     }
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>existing_log_files(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;PathBuf&gt;, FlexiLoggerError&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(fw) = <span class="self">self</span>.o_file_writer.as_ref() {
+            fw.existing_log_files()
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Ok</span>(Vec::new())
+        }
+    }
 }
 
 <span class="kw">impl </span>LogWriter <span class="kw">for </span>MultiWriter {
@@ -232,14 +270,21 @@
             Duplicate::Trace | Duplicate::All =&gt; <span class="bool-val">true</span>,
             Duplicate::None =&gt; <span class="bool-val">false</span>,
         } {
-            write_buffered(
-                <span class="self">self</span>.format_for_stderr,
-                now,
-                record,
-                <span class="kw-2">&amp;mut </span>std::io::stderr(),
-                <span class="attr">#[cfg(test)]
-                </span><span class="prelude-val">None</span>,
-            )<span class="question-mark">?</span>;
+            <span class="kw">if </span><span class="self">self</span>.support_capture {
+                <span class="kw">let </span><span class="kw-2">mut </span>tmp_buf = Vec::&lt;u8&gt;::with_capacity(<span class="number">200</span>);
+                (<span class="self">self</span>.format_for_stderr)(<span class="kw-2">&amp;mut </span>tmp_buf, now, record)
+                    .unwrap_or_else(|e| eprint_err(ErrorCode::Format, <span class="string">&quot;formatting failed&quot;</span>, <span class="kw-2">&amp;</span>e));
+                <span class="macro">eprintln!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8_lossy(<span class="kw-2">&amp;</span>tmp_buf));
+            } <span class="kw">else </span>{
+                write_buffered(
+                    <span class="self">self</span>.format_for_stderr,
+                    now,
+                    record,
+                    <span class="kw-2">&amp;mut </span>std::io::stderr(),
+                    <span class="attr">#[cfg(test)]
+                    </span><span class="prelude-val">None</span>,
+                )<span class="question-mark">?</span>;
+            }
         }
 
         <span class="kw">if match </span><span class="self">self</span>.duplicate_stdout {
@@ -250,14 +295,21 @@
             Duplicate::Trace | Duplicate::All =&gt; <span class="bool-val">true</span>,
             Duplicate::None =&gt; <span class="bool-val">false</span>,
         } {
-            write_buffered(
-                <span class="self">self</span>.format_for_stdout,
-                now,
-                record,
-                <span class="kw-2">&amp;mut </span>std::io::stdout(),
-                <span class="attr">#[cfg(test)]
-                </span><span class="prelude-val">None</span>,
-            )<span class="question-mark">?</span>;
+            <span class="kw">if </span><span class="self">self</span>.support_capture {
+                <span class="kw">let </span><span class="kw-2">mut </span>tmp_buf = Vec::&lt;u8&gt;::with_capacity(<span class="number">200</span>);
+                (<span class="self">self</span>.format_for_stdout)(<span class="kw-2">&amp;mut </span>tmp_buf, now, record)
+                    .unwrap_or_else(|e| eprint_err(ErrorCode::Format, <span class="string">&quot;formatting failed&quot;</span>, <span class="kw-2">&amp;</span>e));
+                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8_lossy(<span class="kw-2">&amp;</span>tmp_buf));
+            } <span class="kw">else </span>{
+                write_buffered(
+                    <span class="self">self</span>.format_for_stdout,
+                    now,
+                    record,
+                    <span class="kw-2">&amp;mut </span>std::io::stdout(),
+                    <span class="attr">#[cfg(test)]
+                    </span><span class="prelude-val">None</span>,
+                )<span class="question-mark">?</span>;
+            }
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>writer) = <span class="self">self</span>.o_file_writer {

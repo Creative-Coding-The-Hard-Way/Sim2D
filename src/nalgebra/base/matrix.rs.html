@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.31.1/src/base/matrix.rs`."><title>matrix.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.32.2/src/base/matrix.rs`."><title>matrix.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2186,6 +2186,64 @@
 <a href="#2186" id="2186">2186</a>
 <a href="#2187" id="2187">2187</a>
 <a href="#2188" id="2188">2188</a>
+<a href="#2189" id="2189">2189</a>
+<a href="#2190" id="2190">2190</a>
+<a href="#2191" id="2191">2191</a>
+<a href="#2192" id="2192">2192</a>
+<a href="#2193" id="2193">2193</a>
+<a href="#2194" id="2194">2194</a>
+<a href="#2195" id="2195">2195</a>
+<a href="#2196" id="2196">2196</a>
+<a href="#2197" id="2197">2197</a>
+<a href="#2198" id="2198">2198</a>
+<a href="#2199" id="2199">2199</a>
+<a href="#2200" id="2200">2200</a>
+<a href="#2201" id="2201">2201</a>
+<a href="#2202" id="2202">2202</a>
+<a href="#2203" id="2203">2203</a>
+<a href="#2204" id="2204">2204</a>
+<a href="#2205" id="2205">2205</a>
+<a href="#2206" id="2206">2206</a>
+<a href="#2207" id="2207">2207</a>
+<a href="#2208" id="2208">2208</a>
+<a href="#2209" id="2209">2209</a>
+<a href="#2210" id="2210">2210</a>
+<a href="#2211" id="2211">2211</a>
+<a href="#2212" id="2212">2212</a>
+<a href="#2213" id="2213">2213</a>
+<a href="#2214" id="2214">2214</a>
+<a href="#2215" id="2215">2215</a>
+<a href="#2216" id="2216">2216</a>
+<a href="#2217" id="2217">2217</a>
+<a href="#2218" id="2218">2218</a>
+<a href="#2219" id="2219">2219</a>
+<a href="#2220" id="2220">2220</a>
+<a href="#2221" id="2221">2221</a>
+<a href="#2222" id="2222">2222</a>
+<a href="#2223" id="2223">2223</a>
+<a href="#2224" id="2224">2224</a>
+<a href="#2225" id="2225">2225</a>
+<a href="#2226" id="2226">2226</a>
+<a href="#2227" id="2227">2227</a>
+<a href="#2228" id="2228">2228</a>
+<a href="#2229" id="2229">2229</a>
+<a href="#2230" id="2230">2230</a>
+<a href="#2231" id="2231">2231</a>
+<a href="#2232" id="2232">2232</a>
+<a href="#2233" id="2233">2233</a>
+<a href="#2234" id="2234">2234</a>
+<a href="#2235" id="2235">2235</a>
+<a href="#2236" id="2236">2236</a>
+<a href="#2237" id="2237">2237</a>
+<a href="#2238" id="2238">2238</a>
+<a href="#2239" id="2239">2239</a>
+<a href="#2240" id="2240">2240</a>
+<a href="#2241" id="2241">2241</a>
+<a href="#2242" id="2242">2242</a>
+<a href="#2243" id="2243">2243</a>
+<a href="#2244" id="2244">2244</a>
+<a href="#2245" id="2245">2245</a>
+<a href="#2246" id="2246">2246</a>
 </pre><pre class="rust"><code><span class="kw">use </span>num::{One, Zero};
 
 <span class="kw">use </span>approx::{AbsDiffEq, RelativeEq, UlpsEq};
@@ -2198,6 +2256,11 @@
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;serde-serialize-no-std&quot;</span>)]
 </span><span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;rkyv-serialize-no-std&quot;</span>)]
+</span><span class="kw">use </span><span class="kw">super</span>::rkyv_wrappers::CustomPhantom;
+<span class="attr">#[cfg(feature = <span class="string">&quot;rkyv-serialize-no-std&quot;</span>)]
+</span><span class="kw">use </span>rkyv::{with::With, Archive, Archived};
 
 <span class="kw">use </span>simba::scalar::{ClosedAdd, ClosedMul, ClosedSub, Field, SupersetOf};
 <span class="kw">use </span>simba::simd::SimdPartialOrd;
@@ -2215,7 +2278,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::storage::IsContiguous;
 <span class="kw">use </span><span class="kw">crate</span>::uninit::{Init, InitStatus, Uninit};
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">use crate</span>::{DMatrix, DVector, Dynamic, RowDVector, VecStorage};
+</span><span class="kw">use crate</span>::{DMatrix, DVector, Dyn, RowDVector, VecStorage};
 <span class="kw">use </span>std::mem::MaybeUninit;
 
 <span class="doccomment">/// A square matrix.
@@ -2284,16 +2347,17 @@
 ///
 /// #### Iteration, map, and fold
 /// - [Iteration on components, rows, and columns &lt;span style=&quot;float:right;&quot;&gt;`iter`, `column_iter`…&lt;/span&gt;](#iteration-on-components-rows-and-columns)
+/// - [Parallel iterators using rayon &lt;span style=&quot;float:right;&quot;&gt;`par_column_iter`, `par_column_iter_mut`…&lt;/span&gt;](#parallel-iterators-using-rayon)
 /// - [Elementwise mapping and folding &lt;span style=&quot;float:right;&quot;&gt;`map`, `fold`, `zip_map`…&lt;/span&gt;](#elementwise-mapping-and-folding)
 /// - [Folding or columns and rows &lt;span style=&quot;float:right;&quot;&gt;`compress_rows`, `compress_columns`…&lt;/span&gt;](#folding-on-columns-and-rows)
 ///
-/// #### Vector and matrix slicing
-/// - [Creating matrix slices from `&amp;[T]` &lt;span style=&quot;float:right;&quot;&gt;`from_slice`, `from_slice_with_strides`…&lt;/span&gt;](#creating-matrix-slices-from-t)
-/// - [Creating mutable matrix slices from `&amp;mut [T]` &lt;span style=&quot;float:right;&quot;&gt;`from_slice_mut`, `from_slice_with_strides_mut`…&lt;/span&gt;](#creating-mutable-matrix-slices-from-mut-t)
-/// - [Slicing based on index and length &lt;span style=&quot;float:right;&quot;&gt;`row`, `columns`, `slice`…&lt;/span&gt;](#slicing-based-on-index-and-length)
-/// - [Mutable slicing based on index and length &lt;span style=&quot;float:right;&quot;&gt;`row_mut`, `columns_mut`, `slice_mut`…&lt;/span&gt;](#mutable-slicing-based-on-index-and-length)
-/// - [Slicing based on ranges &lt;span style=&quot;float:right;&quot;&gt;`rows_range`, `columns_range`…&lt;/span&gt;](#slicing-based-on-ranges)
-/// - [Mutable slicing based on ranges &lt;span style=&quot;float:right;&quot;&gt;`rows_range_mut`, `columns_range_mut`…&lt;/span&gt;](#mutable-slicing-based-on-ranges)
+/// #### Vector and matrix views
+/// - [Creating matrix views from `&amp;[T]` &lt;span style=&quot;float:right;&quot;&gt;`from_slice`, `from_slice_with_strides`…&lt;/span&gt;](#creating-matrix-views-from-t)
+/// - [Creating mutable matrix views from `&amp;mut [T]` &lt;span style=&quot;float:right;&quot;&gt;`from_slice_mut`, `from_slice_with_strides_mut`…&lt;/span&gt;](#creating-mutable-matrix-views-from-mut-t)
+/// - [Views based on index and length &lt;span style=&quot;float:right;&quot;&gt;`row`, `columns`, `view`…&lt;/span&gt;](#views-based-on-index-and-length)
+/// - [Mutable views based on index and length &lt;span style=&quot;float:right;&quot;&gt;`row_mut`, `columns_mut`, `view_mut`…&lt;/span&gt;](#mutable-views-based-on-index-and-length)
+/// - [Views based on ranges &lt;span style=&quot;float:right;&quot;&gt;`rows_range`, `columns_range`…&lt;/span&gt;](#views-based-on-ranges)
+/// - [Mutable views based on ranges &lt;span style=&quot;float:right;&quot;&gt;`rows_range_mut`, `columns_range_mut`…&lt;/span&gt;](#mutable-views-based-on-ranges)
 ///
 /// #### In-place modification of a single matrix or vector
 /// - [In-place filling &lt;span style=&quot;float:right;&quot;&gt;`fill`, `fill_diagonal`, `fill_with_identity`…&lt;/span&gt;](#in-place-filling)
@@ -2328,21 +2392,29 @@
 /// - type-level unsigned integer constants (e.g. `U1024`, `U10000`) from the `typenum::` crate.
 /// Using those, you will not get error messages as nice as for numbers smaller than 128 defined on
 /// the `nalgebra::` module.
-/// - the special value `Dynamic` from the `nalgebra::` root module. This indicates that the
+/// - the special value `Dyn` from the `nalgebra::` root module. This indicates that the
 /// specified dimension is not known at compile-time. Note that this will generally imply that the
 /// matrix data storage `S` performs a dynamic allocation and contains extra metadata for the
 /// matrix shape.
 ///
-/// Note that mixing `Dynamic` with type-level unsigned integers is allowed. Actually, a
-/// dynamically-sized column vector should be represented as a `Matrix&lt;T, Dynamic, U1, S&gt;` (given
+/// Note that mixing `Dyn` with type-level unsigned integers is allowed. Actually, a
+/// dynamically-sized column vector should be represented as a `Matrix&lt;T, Dyn, U1, S&gt;` (given
 /// some concrete types for `T` and a compatible data storage type `S`).
 </span><span class="attr">#[repr(C)]
 #[derive(Clone, Copy)]
-#[cfg_attr(feature = <span class="string">&quot;rkyv-serialize&quot;</span>, derive(bytecheck::CheckBytes))]
 #[cfg_attr(
     feature = <span class="string">&quot;rkyv-serialize-no-std&quot;</span>,
-    derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
+    derive(Archive, rkyv::Serialize, rkyv::Deserialize),
+    archive(
+        <span class="kw">as </span>= <span class="string">&quot;Matrix&lt;T::Archived, R, C, S::Archived&gt;&quot;</span>,
+        bound(archive = <span class="string">&quot;
+        T: Archive,
+        S: Archive,
+        With&lt;PhantomData&lt;(T, R, C)&gt;, CustomPhantom&lt;(Archived&lt;T&gt;, R, C)&gt;&gt;: Archive&lt;Archived = PhantomData&lt;(Archived&lt;T&gt;, R, C)&gt;&gt;
+    &quot;</span>)
+    )
 )]
+#[cfg_attr(feature = <span class="string">&quot;rkyv-serialize&quot;</span>, derive(bytecheck::CheckBytes))]
 #[cfg_attr(feature = <span class="string">&quot;cuda&quot;</span>, derive(cust_core::DeviceCopy))]
 </span><span class="kw">pub struct </span>Matrix&lt;T, R, C, S&gt; {
     <span class="doccomment">/// The data storage that contains all the matrix components. Disappointed?
@@ -2380,6 +2452,7 @@
     //       of the `RawStorage` trait. However, because we don&#39;t have
     //       specialization, this is not possible because these `T, R, C`
     //       allows us to desambiguate a lot of configurations.
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;rkyv-serialize-no-std&quot;</span>, with(CustomPhantom&lt;(T::Archived, R, C)&gt;))]
     </span>_phantoms: PhantomData&lt;(T, R, C)&gt;,
 }
 
@@ -2514,7 +2587,7 @@
     ///
     /// This method exists primarily as a workaround for the fact that `from_data` can not
     /// work in `const fn` contexts.
-    </span><span class="kw">pub const fn </span>from_vec_storage(storage: VecStorage&lt;T, Dynamic, Dynamic&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub const fn </span>from_vec_storage(storage: VecStorage&lt;T, Dyn, Dyn&gt;) -&gt; <span class="self">Self </span>{
         <span class="comment">// This is sound because the dimensions of the matrix and the storage are guaranteed
         // to be the same
         </span><span class="kw">unsafe </span>{ <span class="self">Self</span>::from_data_statically_unchecked(storage) }
@@ -2529,7 +2602,7 @@
     ///
     /// This method exists primarily as a workaround for the fact that `from_data` can not
     /// work in `const fn` contexts.
-    </span><span class="kw">pub const fn </span>from_vec_storage(storage: VecStorage&lt;T, Dynamic, U1&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub const fn </span>from_vec_storage(storage: VecStorage&lt;T, Dyn, U1&gt;) -&gt; <span class="self">Self </span>{
         <span class="comment">// This is sound because the dimensions of the matrix and the storage are guaranteed
         // to be the same
         </span><span class="kw">unsafe </span>{ <span class="self">Self</span>::from_data_statically_unchecked(storage) }
@@ -2544,7 +2617,7 @@
     ///
     /// This method exists primarily as a workaround for the fact that `from_data` can not
     /// work in `const fn` contexts.
-    </span><span class="kw">pub const fn </span>from_vec_storage(storage: VecStorage&lt;T, U1, Dynamic&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub const fn </span>from_vec_storage(storage: VecStorage&lt;T, U1, Dyn&gt;) -&gt; <span class="self">Self </span>{
         <span class="comment">// This is sound because the dimensions of the matrix and the storage are guaranteed
         // to be the same
         </span><span class="kw">unsafe </span>{ <span class="self">Self</span>::from_data_statically_unchecked(storage) }
@@ -2590,7 +2663,7 @@
         (nrows.value(), ncols.value())
     }
 
-    <span class="doccomment">/// The shape of this matrix wrapped into their representative types (`Const` or `Dynamic`).
+    <span class="doccomment">/// The shape of this matrix wrapped into their representative types (`Const` or `Dyn`).
     </span><span class="attr">#[inline]
     #[must_use]
     </span><span class="kw">pub fn </span>shape_generic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (R, C) {
@@ -2631,7 +2704,7 @@
     /// ```
     /// # use nalgebra::DMatrix;
     /// let mat = DMatrix::&lt;f32&gt;::zeros(10, 10);
-    /// let slice = mat.slice_with_steps((0, 0), (5, 3), (1, 2));
+    /// let view = mat.view_with_steps((0, 0), (5, 3), (1, 2));
     /// // The column strides is the number of steps (here 2) multiplied by the corresponding dimension.
     /// assert_eq!(mat.strides(), (1, 10));
     /// ```
@@ -2922,6 +2995,24 @@
         DefaultAllocator: Allocator&lt;T2, R, C&gt;,
     {
         <span class="kw">crate</span>::convert(<span class="self">self</span>)
+    }
+
+    <span class="doccomment">/// Attempts to cast the components of `self` to another type.
+    ///
+    /// # Example
+    /// ```
+    /// # use nalgebra::Vector3;
+    /// let q = Vector3::new(1.0f64, 2.0, 3.0);
+    /// let q2 = q.try_cast::&lt;i32&gt;();
+    /// assert_eq!(q2, Some(Vector3::new(1, 2, 3)));
+    /// ```
+    </span><span class="kw">pub fn </span>try_cast&lt;T2: Scalar&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OMatrix&lt;T2, R, C&gt;&gt;
+    <span class="kw">where
+        </span>T: Scalar,
+        <span class="self">Self</span>: SupersetOf&lt;OMatrix&lt;T2, R, C&gt;&gt;,
+        DefaultAllocator: Allocator&lt;T2, R, C&gt;,
+    {
+        <span class="kw">crate</span>::try_convert(<span class="self">self</span>)
     }
 
     <span class="doccomment">/// Similar to `self.iter().fold(init, f)` except that `init` is replaced by a closure.
@@ -3800,7 +3891,7 @@
         </span>);
         <span class="kw">let </span>dim = DimSum::&lt;D, U1&gt;::from_usize(<span class="self">self</span>.nrows() + <span class="number">1</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>res = OMatrix::identity_generic(dim, dim);
-        res.generic_slice_mut::&lt;D, D&gt;((<span class="number">0</span>, <span class="number">0</span>), <span class="self">self</span>.shape_generic())
+        res.generic_view_mut::&lt;D, D&gt;((<span class="number">0</span>, <span class="number">0</span>), <span class="self">self</span>.shape_generic())
             .copy_from(<span class="self">self</span>);
         res
     }
@@ -3828,7 +3919,7 @@
     {
         <span class="kw">if </span>v[v.len() - <span class="number">1</span>].is_zero() {
             <span class="kw">let </span>nrows = D::from_usize(v.len() - <span class="number">1</span>);
-            <span class="prelude-val">Some</span>(v.generic_slice((<span class="number">0</span>, <span class="number">0</span>), (nrows, Const::&lt;<span class="number">1</span>&gt;)).into_owned())
+            <span class="prelude-val">Some</span>(v.generic_view((<span class="number">0</span>, <span class="number">0</span>), (nrows, Const::&lt;<span class="number">1</span>&gt;)).into_owned())
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>}
@@ -3848,7 +3939,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>res = Matrix::uninit(hnrows, Const::&lt;<span class="number">1</span>&gt;);
         <span class="comment">// This is basically a copy_from except that we warp the copied
         // values into MaybeUninit.
-        </span>res.generic_slice_mut((<span class="number">0</span>, <span class="number">0</span>), <span class="self">self</span>.shape_generic())
+        </span>res.generic_view_mut((<span class="number">0</span>, <span class="number">0</span>), <span class="self">self</span>.shape_generic())
             .zip_apply(<span class="self">self</span>, |out, e| <span class="kw-2">*</span>out = MaybeUninit::new(e));
         res[(len, <span class="number">0</span>)] = MaybeUninit::new(element);
 
@@ -4372,6 +4463,31 @@
                 }
             }
         }
+    }
+}
+
+<span class="kw">impl</span>&lt;T, D, S&gt; Unit&lt;Vector&lt;T, D, S&gt;&gt;
+<span class="kw">where
+    </span>T: Scalar,
+    D: Dim,
+    S: RawStorage&lt;T, D, U1&gt;,
+{
+    <span class="doccomment">/// Cast the components of `self` to another type.
+    ///
+    /// # Example
+    /// ```
+    /// # use nalgebra::Vector3;
+    /// let v = Vector3::&lt;f64&gt;::y_axis();
+    /// let v2 = v.cast::&lt;f32&gt;();
+    /// assert_eq!(v2, Vector3::&lt;f32&gt;::y_axis());
+    /// ```
+    </span><span class="kw">pub fn </span>cast&lt;T2: Scalar&gt;(<span class="self">self</span>) -&gt; Unit&lt;OVector&lt;T2, D&gt;&gt;
+    <span class="kw">where
+        </span>T: Scalar,
+        OVector&lt;T2, D&gt;: SupersetOf&lt;Vector&lt;T, D, S&gt;&gt;,
+        DefaultAllocator: Allocator&lt;T2, D, U1&gt;,
+    {
+        Unit::new_unchecked(<span class="kw">crate</span>::convert_ref(<span class="self">self</span>.as_ref()))
     }
 }
 </code></pre></div>

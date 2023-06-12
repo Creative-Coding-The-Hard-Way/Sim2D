@@ -4,11 +4,11 @@
 group is dropped without keeping it around, then <code>GroupBy</code> uses
 no allocations. It needs allocations only if several group iterators
 are alive at the same time.</p>
-<p>This type implements <code>IntoIterator</code> (it is <strong>not</strong> an iterator
+<p>This type implements <a href="https://doc.rust-lang.org/1.69.0/core/iter/traits/collect/trait.IntoIterator.html" title="trait core::iter::traits::collect::IntoIterator"><code>IntoIterator</code></a> (it is <strong>not</strong> an iterator
 itself), because the group iterators need to borrow from this
 value. It should be stored in a local variable or temporary and
 iterated.</p>
-<p>See <a href="../trait.Itertools.html#method.group_by"><code>.group_by()</code></a> for more information.</p>
+<p>See <a href="../trait.Itertools.html#method.group_by" title="method itertools::Itertools::group_by"><code>.group_by()</code></a> for more information.</p>
 </div></details><h2 id="trait-implementations" class="small-section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-IntoIterator-for-%26'a+GroupBy%3CK,+I,+F%3E" class="impl"><a class="srclink rightside" href="../../src/itertools/groupbylazy.rs.html#337-349">source</a><a href="#impl-IntoIterator-for-%26'a+GroupBy%3CK,+I,+F%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, K, I, F&gt; <a class="trait" href="https://doc.rust-lang.org/1.69.0/core/iter/traits/collect/trait.IntoIterator.html" title="trait core::iter::traits::collect::IntoIterator">IntoIterator</a> for &amp;'a <a class="struct" href="struct.GroupBy.html" title="struct itertools::structs::GroupBy">GroupBy</a>&lt;K, I, F&gt;<span class="where fmt-newline">where
     I: <a class="trait" href="https://doc.rust-lang.org/1.69.0/core/iter/traits/iterator/trait.Iterator.html" title="trait core::iter::traits::iterator::Iterator">Iterator</a>,
     I::<a class="associatedtype" href="https://doc.rust-lang.org/1.69.0/core/iter/traits/iterator/trait.Iterator.html#associatedtype.Item" title="type core::iter::traits::iterator::Iterator::Item">Item</a>: 'a,

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/wide-0.7.4/src/u64x4_.rs`."><title>u64x4_.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wide/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/wide-0.7.9/src/u64x4_.rs`."><title>u64x4_.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wide/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -310,97 +310,6 @@
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
-<a href="#345" id="345">345</a>
-<a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a>
-<a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
-<a href="#357" id="357">357</a>
-<a href="#358" id="358">358</a>
-<a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-<a href="#373" id="373">373</a>
-<a href="#374" id="374">374</a>
-<a href="#375" id="375">375</a>
-<a href="#376" id="376">376</a>
-<a href="#377" id="377">377</a>
-<a href="#378" id="378">378</a>
-<a href="#379" id="379">379</a>
-<a href="#380" id="380">380</a>
-<a href="#381" id="381">381</a>
-<a href="#382" id="382">382</a>
-<a href="#383" id="383">383</a>
-<a href="#384" id="384">384</a>
-<a href="#385" id="385">385</a>
-<a href="#386" id="386">386</a>
-<a href="#387" id="387">387</a>
-<a href="#388" id="388">388</a>
-<a href="#389" id="389">389</a>
-<a href="#390" id="390">390</a>
-<a href="#391" id="391">391</a>
-<a href="#392" id="392">392</a>
-<a href="#393" id="393">393</a>
-<a href="#394" id="394">394</a>
-<a href="#395" id="395">395</a>
-<a href="#396" id="396">396</a>
-<a href="#397" id="397">397</a>
-<a href="#398" id="398">398</a>
-<a href="#399" id="399">399</a>
-<a href="#400" id="400">400</a>
-<a href="#401" id="401">401</a>
-<a href="#402" id="402">402</a>
-<a href="#403" id="403">403</a>
 </pre><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
 <span class="macro">pick! </span>{
@@ -408,34 +317,10 @@
     <span class="attr">#[derive(Default, Clone, Copy, PartialEq, Eq)]
     #[repr(C, align(<span class="number">32</span>))]
     </span><span class="kw">pub struct </span>u64x4 { avx2: m256i }
-  } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-    <span class="attr">#[derive(Default, Clone, Copy, PartialEq, Eq)]
-    #[repr(C, align(<span class="number">32</span>))]
-    </span><span class="kw">pub struct </span>u64x4 { sse0: m128i, sse1: m128i }
-  } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-    <span class="kw">use </span>core::arch::wasm32::<span class="kw-2">*</span>;
-
-    <span class="attr">#[derive(Clone, Copy)]
-    #[repr(C, align(<span class="number">32</span>))]
-    </span><span class="kw">pub struct </span>u64x4 { simd0: v128, simd1: v128 }
-
-    <span class="kw">impl </span>Default <span class="kw">for </span>u64x4 {
-      <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::splat(<span class="number">0</span>)
-      }
-    }
-
-    <span class="kw">impl </span>PartialEq <span class="kw">for </span>u64x4 {
-      <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-        !v128_any_true(v128_or(v128_xor(<span class="self">self</span>.simd0, other.simd0), v128_xor(<span class="self">self</span>.simd1, other.simd1)))
-      }
-    }
-
-    <span class="kw">impl </span>Eq <span class="kw">for </span>u64x4 { }
   } <span class="kw">else </span>{
     <span class="attr">#[derive(Default, Clone, Copy, PartialEq, Eq)]
     #[repr(C, align(<span class="number">32</span>))]
-    </span><span class="kw">pub struct </span>u64x4 { arr: [u64;<span class="number">4</span>] }
+    </span><span class="kw">pub struct </span>u64x4 { a : u64x2, b : u64x2 }
   }
 }
 
@@ -452,17 +337,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: add_i64_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: add_i64_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: add_i64_m128i(<span class="self">self</span>.sse1, rhs.sse1) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: u64x2_add(<span class="self">self</span>.simd0, rhs.simd0), simd1: u64x2_add(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].wrapping_add(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].wrapping_add(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].wrapping_add(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].wrapping_add(rhs.arr[<span class="number">3</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.add(rhs.a),
+          b : <span class="self">self</span>.b.add(rhs.b),
+        }
       }
     }
   }
@@ -476,17 +355,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: sub_i64_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: sub_i64_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: sub_i64_m128i(<span class="self">self</span>.sse1, rhs.sse1) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: u64x2_sub(<span class="self">self</span>.simd0, rhs.simd0), simd1: u64x2_sub(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].wrapping_sub(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].wrapping_sub(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].wrapping_sub(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].wrapping_sub(rhs.arr[<span class="number">3</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.sub(rhs.a),
+          b : <span class="self">self</span>.b.sub(rhs.b),
+        }
       }
     }
   }
@@ -498,17 +371,17 @@
   #[must_use]
   </span><span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
     <span class="macro">pick! </span>{
-      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: u64x2_mul(<span class="self">self</span>.simd0, rhs.simd0), simd1: u64x2_mul(<span class="self">self</span>.simd1, rhs.simd1) }
-      } <span class="kw">else </span>{
-        <span class="kw">let </span>arr1: [u64; <span class="number">4</span>] = cast(<span class="self">self</span>);
-        <span class="kw">let </span>arr2: [u64; <span class="number">4</span>] = cast(rhs);
+      <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
+        <span class="kw">let </span>arr1: [i64; <span class="number">4</span>] = cast(<span class="self">self</span>);
+        <span class="kw">let </span>arr2: [i64; <span class="number">4</span>] = cast(rhs);
         cast([
           arr1[<span class="number">0</span>].wrapping_mul(arr2[<span class="number">0</span>]),
           arr1[<span class="number">1</span>].wrapping_mul(arr2[<span class="number">1</span>]),
           arr1[<span class="number">2</span>].wrapping_mul(arr2[<span class="number">2</span>]),
           arr1[<span class="number">3</span>].wrapping_mul(arr2[<span class="number">3</span>]),
         ])
+      } <span class="kw">else </span>{
+        <span class="self">Self </span>{ a: <span class="self">self</span>.a.mul(rhs.a), b: <span class="self">self</span>.b.mul(rhs.b) }
       }
     }
   }
@@ -576,17 +449,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: bitand_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: bitand_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: bitand_m128i(<span class="self">self</span>.sse1, rhs.sse1) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_and(<span class="self">self</span>.simd0, rhs.simd0), simd1: v128_and(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].bitand(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].bitand(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].bitand(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].bitand(rhs.arr[<span class="number">3</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.bitand(rhs.a),
+          b : <span class="self">self</span>.b.bitand(rhs.b),
+        }
       }
     }
   }
@@ -600,17 +467,11 @@
     <span class="macro">pick! </span>{
     <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: bitor_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else  if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: bitor_m128i(<span class="self">self</span>.sse0, rhs.sse0) , sse1: bitor_m128i(<span class="self">self</span>.sse1, rhs.sse1)}
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_or(<span class="self">self</span>.simd0, rhs.simd0), simd1: v128_or(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].bitor(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].bitor(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].bitor(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].bitor(rhs.arr[<span class="number">3</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.bitor(rhs.a),
+          b : <span class="self">self</span>.b.bitor(rhs.b),
+        }
       }
     }
   }
@@ -624,17 +485,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: bitxor_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: bitxor_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: bitxor_m128i(<span class="self">self</span>.sse1, rhs.sse1) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_xor(<span class="self">self</span>.simd0, rhs.simd0), simd1: v128_xor(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          <span class="self">self</span>.arr[<span class="number">0</span>].bitxor(rhs.arr[<span class="number">0</span>]),
-          <span class="self">self</span>.arr[<span class="number">1</span>].bitxor(rhs.arr[<span class="number">1</span>]),
-          <span class="self">self</span>.arr[<span class="number">2</span>].bitxor(rhs.arr[<span class="number">2</span>]),
-          <span class="self">self</span>.arr[<span class="number">3</span>].bitxor(rhs.arr[<span class="number">3</span>]),
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.bitxor(rhs.a),
+          b : <span class="self">self</span>.b.bitxor(rhs.b),
+        }
       }
     }
   }
@@ -652,20 +507,11 @@
           <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
             <span class="kw">let </span>shift = cast([rhs <span class="kw">as </span>u64, <span class="number">0</span>]);
             <span class="self">Self </span>{ avx2: shl_all_u64_m256i(<span class="self">self</span>.avx2, shift) }
-          } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-            <span class="kw">let </span>shift = cast([rhs <span class="kw">as </span>u64, <span class="number">0</span>]);
-            <span class="self">Self </span>{ sse0: shl_all_u64_m128i(<span class="self">self</span>.sse0, shift), sse1: shl_all_u64_m128i(<span class="self">self</span>.sse1, shift) }
-          } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-            <span class="kw">let </span>u = rhs <span class="kw">as </span>u32;
-            <span class="self">Self </span>{ simd0: u64x2_shl(<span class="self">self</span>.simd0, u), simd1: u64x2_shl(<span class="self">self</span>.simd1, u) }
           } <span class="kw">else </span>{
-            <span class="kw">let </span>u = rhs <span class="kw">as </span>u64;
-            <span class="self">Self </span>{ arr: [
-              <span class="self">self</span>.arr[<span class="number">0</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">1</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">2</span>] &lt;&lt; u,
-              <span class="self">self</span>.arr[<span class="number">3</span>] &lt;&lt; u,
-            ]}
+            <span class="self">Self </span>{
+              a : <span class="self">self</span>.a.shl(rhs),
+              b : <span class="self">self</span>.b.shl(rhs),
+            }
           }
         }
       }
@@ -686,20 +532,11 @@
           <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
             <span class="kw">let </span>shift = cast([rhs <span class="kw">as </span>u64, <span class="number">0</span>]);
             <span class="self">Self </span>{ avx2: shr_all_u64_m256i(<span class="self">self</span>.avx2, shift) }
-          } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-            <span class="kw">let </span>shift = cast([rhs <span class="kw">as </span>u64, <span class="number">0</span>]);
-            <span class="self">Self </span>{ sse0: shr_all_u64_m128i(<span class="self">self</span>.sse0, shift), sse1: shr_all_u64_m128i(<span class="self">self</span>.sse1, shift) }
-          } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-            <span class="kw">let </span>u = rhs <span class="kw">as </span>u32;
-            <span class="self">Self </span>{ simd0: u64x2_shr(<span class="self">self</span>.simd0, u), simd1: u64x2_shr(<span class="self">self</span>.simd1, u) }
           } <span class="kw">else </span>{
-            <span class="kw">let </span>u = rhs <span class="kw">as </span>u64;
-            <span class="self">Self </span>{ arr: [
-              <span class="self">self</span>.arr[<span class="number">0</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">1</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">2</span>] &gt;&gt; u,
-              <span class="self">self</span>.arr[<span class="number">3</span>] &gt;&gt; u,
-            ]}
+            <span class="self">Self </span>{
+              a : <span class="self">self</span>.a.shr(rhs),
+              b : <span class="self">self</span>.b.shr(rhs),
+            }
           }
         }
       }
@@ -720,19 +557,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: cmp_eq_mask_i64_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse4.1&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: cmp_eq_mask_i64_m128i(<span class="self">self</span>.sse0, rhs.sse0),sse1: cmp_eq_mask_i64_m128i(<span class="self">self</span>.sse1, rhs.sse1) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: u64x2_eq(<span class="self">self</span>.simd0, rhs.simd0), simd1: u64x2_eq(<span class="self">self</span>.simd1, rhs.simd1) }
       } <span class="kw">else </span>{
-        <span class="kw">let </span>s: [i64;<span class="number">4</span>] = cast(<span class="self">self</span>);
-        <span class="kw">let </span>r: [i64;<span class="number">4</span>] = cast(rhs);
-        cast([
-          <span class="kw">if </span>s[<span class="number">0</span>] == r[<span class="number">0</span>] { -<span class="number">1_i64 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span>s[<span class="number">1</span>] == r[<span class="number">1</span>] { -<span class="number">1_i64 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span>s[<span class="number">2</span>] == r[<span class="number">2</span>] { -<span class="number">1_i64 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span>s[<span class="number">3</span>] == r[<span class="number">3</span>] { -<span class="number">1_i64 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-        ])
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.cmp_eq(rhs.a),
+          b : <span class="self">self</span>.b.cmp_eq(rhs.b),
+        }
       }
     }
   }
@@ -742,18 +571,11 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: cmp_gt_mask_i64_m256i(<span class="self">self</span>.avx2, rhs.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse4.2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: cmp_gt_mask_i64_m128i(<span class="self">self</span>.sse0, rhs.sse0), sse1: cmp_gt_mask_i64_m128i(<span class="self">self</span>.sse1, rhs.sse1) }
       } <span class="kw">else </span>{
-        <span class="comment">// u64x2_gt on WASM is not a thing. https://github.com/WebAssembly/simd/pull/414
-        </span><span class="kw">let </span>s: [u64;<span class="number">4</span>] = cast(<span class="self">self</span>);
-        <span class="kw">let </span>r: [u64;<span class="number">4</span>] = cast(rhs);
-        cast([
-          <span class="kw">if </span>s[<span class="number">0</span>] &gt; r[<span class="number">0</span>] { -<span class="number">1_i64 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span>s[<span class="number">1</span>] &gt; r[<span class="number">1</span>] { -<span class="number">1_i64 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span>s[<span class="number">2</span>] &gt; r[<span class="number">2</span>] { -<span class="number">1_i64 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-          <span class="kw">if </span>s[<span class="number">3</span>] &gt; r[<span class="number">3</span>] { -<span class="number">1_i64 </span>} <span class="kw">else </span>{ <span class="number">0 </span>},
-        ])
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.cmp_gt(rhs.a),
+          b : <span class="self">self</span>.b.cmp_gt(rhs.b),
+        }
       }
     }
   }
@@ -764,42 +586,38 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: blend_varying_i8_m256i(f.avx2,t.avx2,<span class="self">self</span>.avx2) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse4.1&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: blend_varying_i8_m128i(f.sse0, t.sse0, <span class="self">self</span>.sse0), sse1: blend_varying_i8_m128i(f.sse1, t.sse1, <span class="self">self</span>.sse1) }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_bitselect(t.simd0, f.simd0, <span class="self">self</span>.simd0), simd1: v128_bitselect(t.simd1, f.simd1, <span class="self">self</span>.simd1) }
       } <span class="kw">else </span>{
-        generic_bit_blend(<span class="self">self</span>, t, f)
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.blend(t.a, f.a),
+          b : <span class="self">self</span>.b.blend(t.b, f.b),
+        }
       }
     }
   }
 
-  <span class="kw">pub fn </span>to_array(<span class="self">self</span>) -&gt; [u64; <span class="number">4</span>] {
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>to_array(<span class="self">self</span>) -&gt; [u64; <span class="number">4</span>] {
     cast(<span class="self">self</span>)
   }
 
-  <span class="kw">pub fn </span>as_array_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u64; <span class="number">4</span>] {
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>as_array_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u64; <span class="number">4</span>] {
     cast_ref(<span class="self">self</span>)
   }
 }
 
 <span class="kw">impl </span>Not <span class="kw">for </span>u64x4 {
   <span class="kw">type </span>Output = <span class="self">Self</span>;
-  <span class="kw">fn </span>not(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+  <span class="attr">#[inline]
+  </span><span class="kw">fn </span>not(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;avx2&quot;</span>)] </span>{
         <span class="self">Self </span>{ avx2: <span class="self">self</span>.avx2.not()  }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;sse2&quot;</span>)] </span>{
-        <span class="self">Self </span>{ sse0: <span class="self">self</span>.sse0.not() , sse1: <span class="self">self</span>.sse1.not() }
-      } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
-        <span class="self">Self </span>{ simd0: v128_not(<span class="self">self</span>.simd0) , simd1: v128_not(<span class="self">self</span>.simd1) }
       } <span class="kw">else </span>{
-        <span class="self">Self </span>{ arr: [
-          !<span class="self">self</span>.arr[<span class="number">0</span>],
-          !<span class="self">self</span>.arr[<span class="number">1</span>],
-          !<span class="self">self</span>.arr[<span class="number">2</span>],
-          !<span class="self">self</span>.arr[<span class="number">3</span>],
-        ]}
+        <span class="self">Self </span>{
+          a : <span class="self">self</span>.a.not(),
+          b : <span class="self">self</span>.b.not(),
+        }
       }
     }
   }

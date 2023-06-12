@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.31.1/src/base/conversion.rs`."><title>conversion.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.32.2/src/base/conversion.rs`."><title>conversion.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -632,15 +632,6 @@
 <a href="#632" id="632">632</a>
 <a href="#633" id="633">633</a>
 <a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
-<a href="#637" id="637">637</a>
-<a href="#638" id="638">638</a>
-<a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
 </pre><pre class="rust"><code><span class="attr">#[cfg(all(feature = <span class="string">&quot;alloc&quot;</span>, not(feature = <span class="string">&quot;std&quot;</span>)))]
 </span><span class="kw">use </span>alloc::vec::Vec;
 <span class="kw">use </span>simba::scalar::{SubsetOf, SupersetOf};
@@ -652,21 +643,21 @@
 <span class="kw">use </span><span class="kw">crate</span>::base::allocator::{Allocator, SameShapeAllocator};
 <span class="kw">use </span><span class="kw">crate</span>::base::constraint::{SameNumberOfColumns, SameNumberOfRows, ShapeConstraint};
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">use </span><span class="kw">crate</span>::base::dimension::Dynamic;
+</span><span class="kw">use </span><span class="kw">crate</span>::base::dimension::Dyn;
 <span class="kw">use </span><span class="kw">crate</span>::base::dimension::{
     Const, Dim, DimName, U1, U10, U11, U12, U13, U14, U15, U16, U2, U3, U4, U5, U6, U7, U8, U9,
 };
 <span class="kw">use </span><span class="kw">crate</span>::base::iter::{MatrixIter, MatrixIterMut};
 <span class="kw">use </span><span class="kw">crate</span>::base::storage::{IsContiguous, RawStorage, RawStorageMut};
 <span class="kw">use </span><span class="kw">crate</span>::base::{
-    ArrayStorage, DVectorSlice, DVectorSliceMut, DefaultAllocator, Matrix, MatrixSlice,
-    MatrixSliceMut, OMatrix, Scalar,
+    ArrayStorage, DVectorView, DVectorViewMut, DefaultAllocator, Matrix, MatrixView, MatrixViewMut,
+    OMatrix, Scalar,
 };
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
 </span><span class="kw">use </span><span class="kw">crate</span>::base::{DVector, RowDVector, VecStorage};
-<span class="kw">use </span><span class="kw">crate</span>::base::{SliceStorage, SliceStorageMut};
+<span class="kw">use </span><span class="kw">crate</span>::base::{ViewStorage, ViewStorageMut};
 <span class="kw">use </span><span class="kw">crate</span>::constraint::DimEq;
-<span class="kw">use crate</span>::{IsNotStaticOne, RowSVector, SMatrix, SVector, VectorSlice, VectorSliceMut};
+<span class="kw">use crate</span>::{IsNotStaticOne, RowSVector, SMatrix, SVector, VectorView, VectorViewMut};
 <span class="kw">use </span>std::mem::MaybeUninit;
 
 <span class="comment">// TODO: too bad this won&#39;t work for slice conversions.
@@ -769,19 +760,19 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar, RStride: Dim, CStride: Dim, <span class="kw">const </span>D: usize&gt;
-    From&lt;VectorSlice&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;D&gt;, RStride, CStride&gt;&gt; <span class="kw">for </span>[T; D]
+    From&lt;VectorView&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;D&gt;, RStride, CStride&gt;&gt; <span class="kw">for </span>[T; D]
 {
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>from(vec: VectorSlice&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;D&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">fn </span>from(vec: VectorView&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;D&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
         vec.into_owned().into()
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar, RStride: Dim, CStride: Dim, <span class="kw">const </span>D: usize&gt;
-    From&lt;VectorSliceMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;D&gt;, RStride, CStride&gt;&gt; <span class="kw">for </span>[T; D]
+    From&lt;VectorViewMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;D&gt;, RStride, CStride&gt;&gt; <span class="kw">for </span>[T; D]
 {
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>from(vec: VectorSliceMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;D&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">fn </span>from(vec: VectorViewMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;D&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
         vec.into_owned().into()
     }
 }
@@ -864,19 +855,19 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar, RStride: Dim, CStride: Dim, <span class="kw">const </span>R: usize, <span class="kw">const </span>C: usize&gt;
-    From&lt;MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;&gt; <span class="kw">for </span>[[T; R]; C]
+    From&lt;MatrixView&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;&gt; <span class="kw">for </span>[[T; R]; C]
 {
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>from(mat: MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">fn </span>from(mat: MatrixView&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
         mat.into_owned().into()
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar, RStride: Dim, CStride: Dim, <span class="kw">const </span>R: usize, <span class="kw">const </span>C: usize&gt;
-    From&lt;MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;&gt; <span class="kw">for </span>[[T; R]; C]
+    From&lt;MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;&gt; <span class="kw">for </span>[[T; R]; C]
 {
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>from(mat: MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">fn </span>from(mat: MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
         mat.into_owned().into()
     }
 }
@@ -932,192 +923,183 @@
 );
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, RStride, CStride, <span class="kw">const </span>R: usize, <span class="kw">const </span>C: usize&gt;
-    From&lt;MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;&gt;
+    From&lt;MatrixView&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;&gt;
     <span class="kw">for </span>Matrix&lt;T, Const&lt;R&gt;, Const&lt;C&gt;, ArrayStorage&lt;T, R, C&gt;&gt;
 <span class="kw">where
     </span>T: Scalar,
     RStride: Dim,
     CStride: Dim,
 {
-    <span class="kw">fn </span>from(matrix_slice: MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
-        matrix_slice.into_owned()
+    <span class="kw">fn </span>from(matrix_view: MatrixView&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+        matrix_view.into_owned()
     }
 }
 
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, C, RStride, CStride&gt; From&lt;MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, Dynamic, C, RStride, CStride&gt;&gt;
-    <span class="kw">for </span>Matrix&lt;T, Dynamic, C, VecStorage&lt;T, Dynamic, C&gt;&gt;
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, C, RStride, CStride&gt; From&lt;MatrixView&lt;<span class="lifetime">&#39;a</span>, T, Dyn, C, RStride, CStride&gt;&gt;
+    <span class="kw">for </span>Matrix&lt;T, Dyn, C, VecStorage&lt;T, Dyn, C&gt;&gt;
 <span class="kw">where
     </span>T: Scalar,
     C: Dim,
     RStride: Dim,
     CStride: Dim,
 {
-    <span class="kw">fn </span>from(matrix_slice: MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, Dynamic, C, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
-        matrix_slice.into_owned()
+    <span class="kw">fn </span>from(matrix_view: MatrixView&lt;<span class="lifetime">&#39;a</span>, T, Dyn, C, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+        matrix_view.into_owned()
     }
 }
 
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, RStride, CStride&gt; From&lt;MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, R, Dynamic, RStride, CStride&gt;&gt;
-    <span class="kw">for </span>Matrix&lt;T, R, Dynamic, VecStorage&lt;T, R, Dynamic&gt;&gt;
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, RStride, CStride&gt; From&lt;MatrixView&lt;<span class="lifetime">&#39;a</span>, T, R, Dyn, RStride, CStride&gt;&gt;
+    <span class="kw">for </span>Matrix&lt;T, R, Dyn, VecStorage&lt;T, R, Dyn&gt;&gt;
 <span class="kw">where
     </span>T: Scalar,
     R: DimName,
     RStride: Dim,
     CStride: Dim,
 {
-    <span class="kw">fn </span>from(matrix_slice: MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, R, Dynamic, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
-        matrix_slice.into_owned()
+    <span class="kw">fn </span>from(matrix_view: MatrixView&lt;<span class="lifetime">&#39;a</span>, T, R, Dyn, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+        matrix_view.into_owned()
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, RStride, CStride, <span class="kw">const </span>R: usize, <span class="kw">const </span>C: usize&gt;
-    From&lt;MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;&gt;
+    From&lt;MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;&gt;
     <span class="kw">for </span>Matrix&lt;T, Const&lt;R&gt;, Const&lt;C&gt;, ArrayStorage&lt;T, R, C&gt;&gt;
 <span class="kw">where
     </span>T: Scalar,
     RStride: Dim,
     CStride: Dim,
 {
-    <span class="kw">fn </span>from(matrix_slice: MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
-        matrix_slice.into_owned()
+    <span class="kw">fn </span>from(matrix_view: MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, Const&lt;R&gt;, Const&lt;C&gt;, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+        matrix_view.into_owned()
     }
 }
 
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, C, RStride, CStride&gt; From&lt;MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, Dynamic, C, RStride, CStride&gt;&gt;
-    <span class="kw">for </span>Matrix&lt;T, Dynamic, C, VecStorage&lt;T, Dynamic, C&gt;&gt;
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, C, RStride, CStride&gt; From&lt;MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, Dyn, C, RStride, CStride&gt;&gt;
+    <span class="kw">for </span>Matrix&lt;T, Dyn, C, VecStorage&lt;T, Dyn, C&gt;&gt;
 <span class="kw">where
     </span>T: Scalar,
     C: Dim,
     RStride: Dim,
     CStride: Dim,
 {
-    <span class="kw">fn </span>from(matrix_slice: MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, Dynamic, C, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
-        matrix_slice.into_owned()
+    <span class="kw">fn </span>from(matrix_view: MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, Dyn, C, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+        matrix_view.into_owned()
     }
 }
 
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, feature = <span class="string">&quot;alloc&quot;</span>))]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, RStride, CStride&gt; From&lt;MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, R, Dynamic, RStride, CStride&gt;&gt;
-    <span class="kw">for </span>Matrix&lt;T, R, Dynamic, VecStorage&lt;T, R, Dynamic&gt;&gt;
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, RStride, CStride&gt; From&lt;MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, R, Dyn, RStride, CStride&gt;&gt;
+    <span class="kw">for </span>Matrix&lt;T, R, Dyn, VecStorage&lt;T, R, Dyn&gt;&gt;
 <span class="kw">where
     </span>T: Scalar,
     R: DimName,
     RStride: Dim,
     CStride: Dim,
 {
-    <span class="kw">fn </span>from(matrix_slice: MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, R, Dynamic, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
-        matrix_slice.into_owned()
+    <span class="kw">fn </span>from(matrix_view: MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, R, Dyn, RStride, CStride&gt;) -&gt; <span class="self">Self </span>{
+        matrix_view.into_owned()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, C, RSlice, CSlice, RStride, CStride, S&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Matrix&lt;T, R, C, S&gt;&gt;
-    <span class="kw">for </span>MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, RSlice, CSlice, RStride, CStride&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, C, RView, CView, RStride, CStride, S&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Matrix&lt;T, R, C, S&gt;&gt;
+    <span class="kw">for </span>MatrixView&lt;<span class="lifetime">&#39;a</span>, T, RView, CView, RStride, CStride&gt;
 <span class="kw">where
-    </span>T: Scalar,
-    R: Dim,
+    </span>R: Dim,
     C: Dim,
-    RSlice: Dim,
-    CSlice: Dim,
+    RView: Dim,
+    CView: Dim,
     RStride: Dim,
     CStride: Dim,
     S: RawStorage&lt;T, R, C&gt;,
-    ShapeConstraint: DimEq&lt;R, RSlice&gt;
-        + DimEq&lt;C, CSlice&gt;
-        + DimEq&lt;RStride, S::RStride&gt;
-        + DimEq&lt;CStride, S::CStride&gt;,
+    ShapeConstraint:
+        DimEq&lt;R, RView&gt; + DimEq&lt;C, CView&gt; + DimEq&lt;RStride, S::RStride&gt; + DimEq&lt;CStride, S::CStride&gt;,
 {
     <span class="kw">fn </span>from(m: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Matrix&lt;T, R, C, S&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>(row, col) = m.shape_generic();
-        <span class="kw">let </span>row_slice = RSlice::from_usize(row.value());
-        <span class="kw">let </span>col_slice = CSlice::from_usize(col.value());
+        <span class="kw">let </span>rows_result = RView::from_usize(row.value());
+        <span class="kw">let </span>cols_result = CView::from_usize(col.value());
 
         <span class="kw">let </span>(rstride, cstride) = m.strides();
 
-        <span class="kw">let </span>rstride_slice = RStride::from_usize(rstride);
-        <span class="kw">let </span>cstride_slice = CStride::from_usize(cstride);
+        <span class="kw">let </span>rstride_result = RStride::from_usize(rstride);
+        <span class="kw">let </span>cstride_result = CStride::from_usize(cstride);
 
         <span class="kw">unsafe </span>{
-            <span class="kw">let </span>data = SliceStorage::from_raw_parts(
+            <span class="kw">let </span>data = ViewStorage::from_raw_parts(
                 m.data.ptr(),
-                (row_slice, col_slice),
-                (rstride_slice, cstride_slice),
+                (rows_result, cols_result),
+                (rstride_result, cstride_result),
             );
             Matrix::from_data_statically_unchecked(data)
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, C, RSlice, CSlice, RStride, CStride, S&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Matrix&lt;T, R, C, S&gt;&gt;
-    <span class="kw">for </span>MatrixSlice&lt;<span class="lifetime">&#39;a</span>, T, RSlice, CSlice, RStride, CStride&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, C, RView, CView, RStride, CStride, S&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Matrix&lt;T, R, C, S&gt;&gt;
+    <span class="kw">for </span>MatrixView&lt;<span class="lifetime">&#39;a</span>, T, RView, CView, RStride, CStride&gt;
 <span class="kw">where
-    </span>T: Scalar,
-    R: Dim,
+    </span>R: Dim,
     C: Dim,
-    RSlice: Dim,
-    CSlice: Dim,
+    RView: Dim,
+    CView: Dim,
     RStride: Dim,
     CStride: Dim,
     S: RawStorage&lt;T, R, C&gt;,
-    ShapeConstraint: DimEq&lt;R, RSlice&gt;
-        + DimEq&lt;C, CSlice&gt;
-        + DimEq&lt;RStride, S::RStride&gt;
-        + DimEq&lt;CStride, S::CStride&gt;,
+    ShapeConstraint:
+        DimEq&lt;R, RView&gt; + DimEq&lt;C, CView&gt; + DimEq&lt;RStride, S::RStride&gt; + DimEq&lt;CStride, S::CStride&gt;,
 {
     <span class="kw">fn </span>from(m: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Matrix&lt;T, R, C, S&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>(row, col) = m.shape_generic();
-        <span class="kw">let </span>row_slice = RSlice::from_usize(row.value());
-        <span class="kw">let </span>col_slice = CSlice::from_usize(col.value());
+        <span class="kw">let </span>rows_result = RView::from_usize(row.value());
+        <span class="kw">let </span>cols_result = CView::from_usize(col.value());
 
         <span class="kw">let </span>(rstride, cstride) = m.strides();
 
-        <span class="kw">let </span>rstride_slice = RStride::from_usize(rstride);
-        <span class="kw">let </span>cstride_slice = CStride::from_usize(cstride);
+        <span class="kw">let </span>rstride_result = RStride::from_usize(rstride);
+        <span class="kw">let </span>cstride_result = CStride::from_usize(cstride);
 
         <span class="kw">unsafe </span>{
-            <span class="kw">let </span>data = SliceStorage::from_raw_parts(
+            <span class="kw">let </span>data = ViewStorage::from_raw_parts(
                 m.data.ptr(),
-                (row_slice, col_slice),
-                (rstride_slice, cstride_slice),
+                (rows_result, cols_result),
+                (rstride_result, cstride_result),
             );
             Matrix::from_data_statically_unchecked(data)
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, C, RSlice, CSlice, RStride, CStride, S&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Matrix&lt;T, R, C, S&gt;&gt;
-    <span class="kw">for </span>MatrixSliceMut&lt;<span class="lifetime">&#39;a</span>, T, RSlice, CSlice, RStride, CStride&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, R, C, RView, CView, RStride, CStride, S&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Matrix&lt;T, R, C, S&gt;&gt;
+    <span class="kw">for </span>MatrixViewMut&lt;<span class="lifetime">&#39;a</span>, T, RView, CView, RStride, CStride&gt;
 <span class="kw">where
-    </span>T: Scalar,
-    R: Dim,
+    </span>R: Dim,
     C: Dim,
-    RSlice: Dim,
-    CSlice: Dim,
+    RView: Dim,
+    CView: Dim,
     RStride: Dim,
     CStride: Dim,
     S: RawStorageMut&lt;T, R, C&gt;,
-    ShapeConstraint: DimEq&lt;R, RSlice&gt;
-        + DimEq&lt;C, CSlice&gt;
-        + DimEq&lt;RStride, S::RStride&gt;
-        + DimEq&lt;CStride, S::CStride&gt;,
+    ShapeConstraint:
+        DimEq&lt;R, RView&gt; + DimEq&lt;C, CView&gt; + DimEq&lt;RStride, S::RStride&gt; + DimEq&lt;CStride, S::CStride&gt;,
 {
     <span class="kw">fn </span>from(m: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Matrix&lt;T, R, C, S&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>(row, col) = m.shape_generic();
-        <span class="kw">let </span>row_slice = RSlice::from_usize(row.value());
-        <span class="kw">let </span>col_slice = CSlice::from_usize(col.value());
+        <span class="kw">let </span>rows_result = RView::from_usize(row.value());
+        <span class="kw">let </span>cols_result = CView::from_usize(col.value());
 
         <span class="kw">let </span>(rstride, cstride) = m.strides();
 
-        <span class="kw">let </span>rstride_slice = RStride::from_usize(rstride);
-        <span class="kw">let </span>cstride_slice = CStride::from_usize(cstride);
+        <span class="kw">let </span>rstride_result = RStride::from_usize(rstride);
+        <span class="kw">let </span>cstride_result = CStride::from_usize(cstride);
 
         <span class="kw">unsafe </span>{
-            <span class="kw">let </span>data = SliceStorageMut::from_raw_parts(
+            <span class="kw">let </span>data = ViewStorageMut::from_raw_parts(
                 m.data.ptr_mut(),
-                (row_slice, col_slice),
-                (rstride_slice, cstride_slice),
+                (rows_result, cols_result),
+                (rstride_result, cstride_result),
             );
             Matrix::from_data_statically_unchecked(data)
         }
@@ -1158,28 +1140,28 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar + Copy&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]&gt; <span class="kw">for </span>DVectorSlice&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar + Copy&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]&gt; <span class="kw">for </span>DVectorView&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(slice: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_slice(slice, slice.len())
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar&gt; From&lt;DVectorSlice&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T] {
-    <span class="kw">fn </span>from(vec: DVectorSlice&lt;<span class="lifetime">&#39;a</span>, T&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T] {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar&gt; From&lt;DVectorView&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T] {
+    <span class="kw">fn </span>from(vec: DVectorView&lt;<span class="lifetime">&#39;a</span>, T&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T] {
         vec.data.into_slice()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar + Copy&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>[T]&gt; <span class="kw">for </span>DVectorSliceMut&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar + Copy&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>[T]&gt; <span class="kw">for </span>DVectorViewMut&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(slice: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_slice(slice, slice.len())
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar&gt; From&lt;DVectorSliceMut&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>[T] {
-    <span class="kw">fn </span>from(vec: DVectorSliceMut&lt;<span class="lifetime">&#39;a</span>, T&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>[T] {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: Scalar&gt; From&lt;DVectorViewMut&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>[T] {
+    <span class="kw">fn </span>from(vec: DVectorViewMut&lt;<span class="lifetime">&#39;a</span>, T&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>[T] {
         vec.data.into_slice_mut()
     }
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/flexi_logger-0.24.0/src/logger.rs`."><title>logger.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/flexi_logger-0.25.5/src/logger.rs`."><title>logger.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -993,6 +993,18 @@
 <a href="#993" id="993">993</a>
 <a href="#994" id="994">994</a>
 <a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
     filter::LogLineFilter,
     flexi_logger::FlexiLogger,
@@ -1012,15 +1024,17 @@
     time::Duration,
 };
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;atty&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">&quot;is-terminal&quot;</span>)]
 </span><span class="kw">use </span><span class="kw">crate</span>::formats::AdaptiveFormat;
+<span class="attr">#[cfg(feature = <span class="string">&quot;is-terminal&quot;</span>)]
+</span><span class="kw">use </span>is_terminal::IsTerminal;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;specfile_without_notification&quot;</span>)]
 </span><span class="kw">use </span>{<span class="kw">crate</span>::logger_handle::LogSpecSubscriber, std::io::Read, std::path::Path};
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;specfile&quot;</span>)]
 </span><span class="kw">use </span>{
-    <span class="kw">crate</span>::util::{eprint_err, ERRCODE},
+    <span class="kw">crate</span>::util::{eprint_err, ErrorCode},
     notify_debouncer_mini::{
         new_debouncer,
         notify::{RecommendedWatcher, RecursiveMode},
@@ -1117,7 +1131,7 @@
         <span class="attr">#[cfg(feature = <span class="string">&quot;colors&quot;</span>)]
         #[cfg(windows)]
         </span>{
-            ansi_term::enable_ansi_support().ok();
+            nu_ansi_term::enable_ansi_support().ok();
         }
 
         <span class="self">Self </span>{
@@ -1128,17 +1142,21 @@
             format_for_file: default_format,
 
             <span class="attr">#[cfg(feature = <span class="string">&quot;colors&quot;</span>)]
-            </span>format_for_stdout: AdaptiveFormat::Default.format_function(<span class="kw">if </span><span class="macro">cfg!</span>(feature = <span class="string">&quot;atty&quot;</span>) {
-                atty::is(atty::Stream::Stdout)
-            } <span class="kw">else </span>{
-                <span class="bool-val">false
-            </span>}),
+            </span>format_for_stdout: AdaptiveFormat::Default.format_function(
+                <span class="kw">if </span><span class="macro">cfg!</span>(feature = <span class="string">&quot;is-terminal&quot;</span>) {
+                    std::io::stdout().is_terminal()
+                } <span class="kw">else </span>{
+                    <span class="bool-val">false
+                </span>},
+            ),
             <span class="attr">#[cfg(feature = <span class="string">&quot;colors&quot;</span>)]
-            </span>format_for_stderr: AdaptiveFormat::Default.format_function(<span class="kw">if </span><span class="macro">cfg!</span>(feature = <span class="string">&quot;atty&quot;</span>) {
-                atty::is(atty::Stream::Stderr)
-            } <span class="kw">else </span>{
-                <span class="bool-val">false
-            </span>}),
+            </span>format_for_stderr: AdaptiveFormat::Default.format_function(
+                <span class="kw">if </span><span class="macro">cfg!</span>(feature = <span class="string">&quot;is-terminal&quot;</span>) {
+                    std::io::stderr().is_terminal()
+                } <span class="kw">else </span>{
+                    <span class="bool-val">false
+                </span>},
+            ),
 
             <span class="attr">#[cfg(not(feature = <span class="string">&quot;colors&quot;</span>))]
             </span>format_for_stdout: default_format,
@@ -1301,11 +1319,11 @@
     /// Coloring is used if `stderr` is a tty.
     ///
     /// Regarding the default, see [`Logger::format`].
-    </span><span class="attr">#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;atty&quot;</span>)))]
-    #[cfg(feature = <span class="string">&quot;atty&quot;</span>)]
+    </span><span class="attr">#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;is-terminal&quot;</span>)))]
+    #[cfg(feature = <span class="string">&quot;is-terminal&quot;</span>)]
     #[must_use]
     </span><span class="kw">pub fn </span>adaptive_format_for_stderr(<span class="kw-2">mut </span><span class="self">self</span>, adaptive_format: AdaptiveFormat) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.format_for_stderr = adaptive_format.format_function(atty::is(atty::Stream::Stderr));
+        <span class="self">self</span>.format_for_stderr = adaptive_format.format_function(std::io::stderr().is_terminal());
         <span class="self">self
     </span>}
 
@@ -1323,11 +1341,11 @@
     /// Coloring is used if `stdout` is a tty.
     ///
     /// Regarding the default, see [`Logger::format`].
-    </span><span class="attr">#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;atty&quot;</span>)))]
-    #[cfg(feature = <span class="string">&quot;atty&quot;</span>)]
+    </span><span class="attr">#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;is-terminal&quot;</span>)))]
+    #[cfg(feature = <span class="string">&quot;is-terminal&quot;</span>)]
     #[must_use]
     </span><span class="kw">pub fn </span>adaptive_format_for_stdout(<span class="kw-2">mut </span><span class="self">self</span>, adaptive_format: AdaptiveFormat) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.format_for_stdout = adaptive_format.format_function(atty::is(atty::Stream::Stdout));
+        <span class="self">self</span>.format_for_stdout = adaptive_format.format_function(std::io::stdout().is_terminal());
         <span class="self">self
     </span>}
 
@@ -1545,9 +1563,10 @@
 /// so under normal circumstances no single message shuld appear.
 ///
 /// By default these error messages are printed to `stderr`.
-</span><span class="attr">#[derive(Debug)]
+</span><span class="attr">#[derive(Debug, Default)]
 </span><span class="kw">pub enum </span>ErrorChannel {
     <span class="doccomment">/// Write `flexi_logger`&#39;s own error messages to `stderr`.
+    </span><span class="attr">#[default]
     </span>StdErr,
     <span class="doccomment">/// Write `flexi_logger`&#39;s own error messages to `stdout`.
     </span>StdOut,
@@ -1555,11 +1574,6 @@
     </span>File(PathBuf),
     <span class="doccomment">/// Don&#39;t write `flexi_logger`&#39;s own error messages.
     </span>DevNull,
-}
-<span class="kw">impl </span>Default <span class="kw">for </span>ErrorChannel {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        ErrorChannel::StdErr
-    }
 }
 
 <span class="doccomment">/// Alternative set of methods to control the behavior of the Logger.
@@ -1674,14 +1688,23 @@
 
         <span class="kw">let </span>a_primary_writer = Arc::new(<span class="kw">match </span><span class="self">self</span>.log_target {
             LogTarget::StdOut =&gt; {
-                PrimaryWriter::stdout(<span class="self">self</span>.format_for_stdout, <span class="self">self</span>.flwb.get_write_mode())
+                <span class="kw">if let </span>WriteMode::SupportCapture = <span class="self">self</span>.flwb.get_write_mode() {
+                    PrimaryWriter::test(<span class="bool-val">true</span>, <span class="self">self</span>.format_for_stdout)
+                } <span class="kw">else </span>{
+                    PrimaryWriter::stdout(<span class="self">self</span>.format_for_stdout, <span class="self">self</span>.flwb.get_write_mode())
+                }
             }
             LogTarget::StdErr =&gt; {
-                PrimaryWriter::stderr(<span class="self">self</span>.format_for_stderr, <span class="self">self</span>.flwb.get_write_mode())
+                <span class="kw">if let </span>WriteMode::SupportCapture = <span class="self">self</span>.flwb.get_write_mode() {
+                    PrimaryWriter::test(<span class="bool-val">false</span>, <span class="self">self</span>.format_for_stderr)
+                } <span class="kw">else </span>{
+                    PrimaryWriter::stderr(<span class="self">self</span>.format_for_stderr, <span class="self">self</span>.flwb.get_write_mode())
+                }
             }
             LogTarget::Multi(use_file, <span class="kw-2">mut </span>o_writer) =&gt; PrimaryWriter::multi(
                 <span class="self">self</span>.duplicate_err,
                 <span class="self">self</span>.duplicate_out,
+                WriteMode::SupportCapture == <span class="kw-2">*</span><span class="self">self</span>.flwb.get_write_mode(),
                 <span class="self">self</span>.format_for_stderr,
                 <span class="self">self</span>.format_for_stdout,
                 <span class="kw">if </span>use_file {
@@ -1797,7 +1820,7 @@
     /// # Errors
     ///
     /// Several variants of [`FlexiLoggerError`] can occur.
-    </span><span class="attr">#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;specfile_without_notification&quot;</span>)))]
+    </span><span class="attr">#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;specfile&quot;</span>)))]
     #[cfg(feature = <span class="string">&quot;specfile_without_notification&quot;</span>)]
     </span><span class="kw">pub fn </span>start_with_specfile&lt;P: AsRef&lt;Path&gt;&gt;(
         <span class="self">self</span>,
@@ -1817,7 +1840,8 @@
     /// # Errors
     ///
     /// Several variants of [`FlexiLoggerError`] can occur.
-    </span><span class="attr">#[cfg(feature = <span class="string">&quot;specfile_without_notification&quot;</span>)]
+    </span><span class="attr">#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;specfile&quot;</span>)))]
+    #[cfg(feature = <span class="string">&quot;specfile_without_notification&quot;</span>)]
     </span><span class="kw">pub fn </span>build_with_specfile&lt;P: AsRef&lt;Path&gt;&gt;(
         <span class="self">self</span>,
         specfile: P,
@@ -1863,11 +1887,11 @@
                 {
                     log_spec_string_from_file(<span class="kw-2">&amp;</span>specfile)
                         .map_err(FlexiLoggerError::SpecfileIo)
-                        .and_then(|s| LogSpecification::from_toml(<span class="kw-2">&amp;</span>s))
+                        .and_then(LogSpecification::from_toml)
                         .and_then(|spec| subscriber.set_new_spec(spec))
                         .map_err(|e| {
                             eprint_err(
-                                ERRCODE::LogSpecFile,
+                                ErrorCode::LogSpecFile,
                                 <span class="string">&quot;continuing with previous log specification, because \
                                             rereading the log specification file failed&quot;</span>,
                                 <span class="kw-2">&amp;</span>e,
@@ -1878,7 +1902,7 @@
             }),
             <span class="prelude-val">Err</span>(errors) =&gt; errors.iter().for_each(|e| {
                 eprint_err(
-                    ERRCODE::LogSpecFile,
+                    ErrorCode::LogSpecFile,
                     <span class="string">&quot;error while watching the specfile&quot;</span>,
                     <span class="kw-2">&amp;</span>e,
                 );
@@ -1916,7 +1940,7 @@
 
     <span class="kw">if </span>Path::is_file(specfile) {
         <span class="kw">let </span>s = log_spec_string_from_file(specfile).map_err(FlexiLoggerError::SpecfileIo)<span class="question-mark">?</span>;
-        subscriber.set_new_spec(LogSpecification::from_toml(<span class="kw-2">&amp;</span>s)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+        subscriber.set_new_spec(LogSpecification::from_toml(s)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
     } <span class="kw">else </span>{
         <span class="kw">if let </span><span class="prelude-val">Some</span>(specfolder) = specfile.parent() {
             std::fs::DirBuilder::new()

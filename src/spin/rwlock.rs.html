@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/spin-0.9.4/src/rwlock.rs`."><title>rwlock.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../spin/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/spin-0.9.8/src/rwlock.rs`."><title>rwlock.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../spin/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1136,20 +1136,47 @@
 <a href="#1136" id="1136">1136</a>
 <a href="#1137" id="1137">1137</a>
 <a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
+<a href="#1144" id="1144">1144</a>
+<a href="#1145" id="1145">1145</a>
+<a href="#1146" id="1146">1146</a>
+<a href="#1147" id="1147">1147</a>
+<a href="#1148" id="1148">1148</a>
+<a href="#1149" id="1149">1149</a>
+<a href="#1150" id="1150">1150</a>
+<a href="#1151" id="1151">1151</a>
+<a href="#1152" id="1152">1152</a>
+<a href="#1153" id="1153">1153</a>
+<a href="#1154" id="1154">1154</a>
+<a href="#1155" id="1155">1155</a>
+<a href="#1156" id="1156">1156</a>
+<a href="#1157" id="1157">1157</a>
+<a href="#1158" id="1158">1158</a>
+<a href="#1159" id="1159">1159</a>
+<a href="#1160" id="1160">1160</a>
+<a href="#1161" id="1161">1161</a>
+<a href="#1162" id="1162">1162</a>
+<a href="#1163" id="1163">1163</a>
+<a href="#1164" id="1164">1164</a>
+<a href="#1165" id="1165">1165</a>
 </pre><pre class="rust"><code><span class="doccomment">//! A lock that provides data access to either one writer or many readers.
 
-</span><span class="kw">use </span>core::{
-    cell::UnsafeCell,
-    ops::{Deref, DerefMut},
-    marker::PhantomData,
-    fmt,
-    mem,
-};
-<span class="kw">use crate</span>::{
+</span><span class="kw">use crate</span>::{
     atomic::{AtomicUsize, Ordering},
-    RelaxStrategy, Spin
+    RelaxStrategy, Spin,
 };
-
+<span class="kw">use </span>core::{
+    cell::UnsafeCell,
+    fmt,
+    marker::PhantomData,
+    mem,
+    mem::ManuallyDrop,
+    ops::{Deref, DerefMut},
+};
 
 <span class="doccomment">/// A lock that provides data access to either one writer or many readers.
 ///
@@ -1220,7 +1247,7 @@
 /// potentially releasing the lock.
 </span><span class="kw">pub struct </span>RwLockReadGuard&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a </span>+ <span class="question-mark">?</span>Sized&gt; {
     lock: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AtomicUsize,
-    data: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
+    data: <span class="kw-2">*const </span>T,
 }
 
 <span class="doccomment">/// A guard that provides mutable data access.
@@ -1229,7 +1256,7 @@
 </span><span class="kw">pub struct </span>RwLockWriteGuard&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a </span>+ <span class="question-mark">?</span>Sized, R = Spin&gt; {
     phantom: PhantomData&lt;R&gt;,
     inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>RwLock&lt;T, R&gt;,
-    data: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T,
+    data: <span class="kw-2">*mut </span>T,
 }
 
 <span class="doccomment">/// A guard that provides immutable data access but can be upgraded to [`RwLockWriteGuard`].
@@ -1242,12 +1269,21 @@
 </span><span class="kw">pub struct </span>RwLockUpgradableGuard&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a </span>+ <span class="question-mark">?</span>Sized, R = Spin&gt; {
     phantom: PhantomData&lt;R&gt;,
     inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>RwLock&lt;T, R&gt;,
-    data: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
+    data: <span class="kw-2">*const </span>T,
 }
 
 <span class="comment">// Same unsafe impls as `std::sync::RwLock`
 </span><span class="kw">unsafe impl</span>&lt;T: <span class="question-mark">?</span>Sized + Send, R&gt; Send <span class="kw">for </span>RwLock&lt;T, R&gt; {}
 <span class="kw">unsafe impl</span>&lt;T: <span class="question-mark">?</span>Sized + Send + Sync, R&gt; Sync <span class="kw">for </span>RwLock&lt;T, R&gt; {}
+
+<span class="kw">unsafe impl</span>&lt;T: <span class="question-mark">?</span>Sized + Send + Sync, R&gt; Send <span class="kw">for </span>RwLockWriteGuard&lt;<span class="lifetime">&#39;_</span>, T, R&gt; {}
+<span class="kw">unsafe impl</span>&lt;T: <span class="question-mark">?</span>Sized + Send + Sync, R&gt; Sync <span class="kw">for </span>RwLockWriteGuard&lt;<span class="lifetime">&#39;_</span>, T, R&gt; {}
+
+<span class="kw">unsafe impl</span>&lt;T: <span class="question-mark">?</span>Sized + Sync&gt; Send <span class="kw">for </span>RwLockReadGuard&lt;<span class="lifetime">&#39;_</span>, T&gt; {}
+<span class="kw">unsafe impl</span>&lt;T: <span class="question-mark">?</span>Sized + Sync&gt; Sync <span class="kw">for </span>RwLockReadGuard&lt;<span class="lifetime">&#39;_</span>, T&gt; {}
+
+<span class="kw">unsafe impl</span>&lt;T: <span class="question-mark">?</span>Sized + Send + Sync, R&gt; Send <span class="kw">for </span>RwLockUpgradableGuard&lt;<span class="lifetime">&#39;_</span>, T, R&gt; {}
+<span class="kw">unsafe impl</span>&lt;T: <span class="question-mark">?</span>Sized + Send + Sync, R&gt; Sync <span class="kw">for </span>RwLockUpgradableGuard&lt;<span class="lifetime">&#39;_</span>, T, R&gt; {}
 
 <span class="kw">impl</span>&lt;T, R&gt; RwLock&lt;T, R&gt; {
     <span class="doccomment">/// Creates a new spinlock wrapping the supplied data.
@@ -1389,7 +1425,7 @@
     <span class="comment">// Acquire a read lock, returning the new lock value.
     </span><span class="kw">fn </span>acquire_reader(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="comment">// An arbitrary cap that allows us to catch overflows long before they happen
-        </span><span class="kw">const </span>MAX_READERS: usize = usize::MAX / READER / <span class="number">2</span>;
+        </span><span class="kw">const </span>MAX_READERS: usize = core::usize::MAX / READER / <span class="number">2</span>;
 
         <span class="kw">let </span>value = <span class="self">self</span>.lock.fetch_add(READER, Ordering::Acquire);
 
@@ -1554,18 +1590,18 @@
         </span>}
     }
 
-   <span class="doccomment">/// Returns a mutable reference to the underlying data.
-   ///
-   /// Since this call borrows the `RwLock` mutably, no actual locking needs to
-   /// take place -- the mutable borrow statically guarantees no locks exist.
-   ///
-   /// # Examples
-   ///
-   /// ```
-   /// let mut lock = spin::RwLock::new(0);
-   /// *lock.get_mut() = 10;
-   /// assert_eq!(*lock.read(), 10);
-   /// ```
+    <span class="doccomment">/// Returns a mutable reference to the underlying data.
+    ///
+    /// Since this call borrows the `RwLock` mutably, no actual locking needs to
+    /// take place -- the mutable borrow statically guarantees no locks exist.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut lock = spin::RwLock::new(0);
+    /// *lock.get_mut() = 10;
+    /// assert_eq!(*lock.read(), 10);
+    /// ```
     </span><span class="kw">pub fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>T {
         <span class="comment">// We know statically that there are no other references to `self`, so
         // there&#39;s no need to lock the inner lock.
@@ -1610,8 +1646,9 @@
     /// ```
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>leak(this: <span class="self">Self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;rwlock </span>T {
-        <span class="kw">let </span><span class="self">Self </span>{ data, .. } = this;
-        data
+        <span class="kw">let </span>this = ManuallyDrop::new(this);
+        <span class="comment">// Safety: We know statically that only we are referencing data
+        </span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span>this.data }
     }
 }
 
@@ -1736,8 +1773,9 @@
     /// ```
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>leak(this: <span class="self">Self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;rwlock </span>T {
-        <span class="kw">let </span><span class="self">Self </span>{ data, .. } = this;
-        data
+        <span class="kw">let </span>this = ManuallyDrop::new(this);
+        <span class="comment">// Safety: We know statically that only we are referencing data
+        </span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span>this.data }
     }
 }
 
@@ -1795,7 +1833,10 @@
     /// ```
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>downgrade_to_upgradeable(<span class="self">self</span>) -&gt; RwLockUpgradableGuard&lt;<span class="lifetime">&#39;rwlock</span>, T, R&gt; {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.inner.lock.load(Ordering::Acquire) &amp; (WRITER | UPGRADED), WRITER);
+        <span class="macro">debug_assert_eq!</span>(
+            <span class="self">self</span>.inner.lock.load(Ordering::Acquire) &amp; (WRITER | UPGRADED),
+            WRITER
+        );
 
         <span class="comment">// Reserve the read guard for ourselves
         </span><span class="self">self</span>.inner.lock.store(UPGRADED, Ordering::Release);
@@ -1826,9 +1867,9 @@
     /// ```
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>leak(this: <span class="self">Self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;rwlock </span><span class="kw-2">mut </span>T {
-        <span class="kw">let </span>data = this.data <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>; <span class="comment">// Keep it in pointer form temporarily to avoid double-aliasing
-        </span>core::mem::forget(this);
-        <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>data }
+        <span class="kw">let </span><span class="kw-2">mut </span>this = ManuallyDrop::new(this);
+        <span class="comment">// Safety: We know statically that only we are referencing data
+        </span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>this.data }
     }
 }
 
@@ -1848,7 +1889,8 @@
     <span class="kw">type </span>Target = T;
 
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>T {
-        <span class="self">self</span>.data
+        <span class="comment">// Safety: We know statically that only we are referencing data
+        </span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span><span class="self">self</span>.data }
     }
 }
 
@@ -1856,7 +1898,8 @@
     <span class="kw">type </span>Target = T;
 
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>T {
-        <span class="self">self</span>.data
+        <span class="comment">// Safety: We know statically that only we are referencing data
+        </span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span><span class="self">self</span>.data }
     }
 }
 
@@ -1864,13 +1907,15 @@
     <span class="kw">type </span>Target = T;
 
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>T {
-        <span class="self">self</span>.data
+        <span class="comment">// Safety: We know statically that only we are referencing data
+        </span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span><span class="self">self</span>.data }
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;rwlock</span>, T: <span class="question-mark">?</span>Sized, R&gt; DerefMut <span class="kw">for </span>RwLockWriteGuard&lt;<span class="lifetime">&#39;rwlock</span>, T, R&gt; {
     <span class="kw">fn </span>deref_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>T {
-        <span class="self">self</span>.data
+        <span class="comment">// Safety: We know statically that only we are referencing data
+        </span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><span class="self">self</span>.data }
     }
 }
 
@@ -1897,7 +1942,9 @@
 
         <span class="comment">// Writer is responsible for clearing both WRITER and UPGRADED bits.
         // The UPGRADED bit may be set if an upgradeable lock attempts an upgrade while this lock is held.
-        </span><span class="self">self</span>.inner.lock.fetch_and(!(WRITER | UPGRADED), Ordering::Release);
+        </span><span class="self">self</span>.inner
+            .lock
+            .fetch_and(!(WRITER | UPGRADED), Ordering::Release);
     }
 }
 
@@ -1981,7 +2028,9 @@
     <span class="attr">#[inline(always)]
     </span><span class="kw">fn </span>try_lock_upgradable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="comment">// Prevent guard destructor running
-        </span><span class="self">self</span>.try_upgradeable_read().map(|g| core::mem::forget(g)).is_some()
+        </span><span class="self">self</span>.try_upgradeable_read()
+            .map(|g| core::mem::forget(g))
+            .is_some()
     }
 
     <span class="attr">#[inline(always)]
@@ -2010,7 +2059,10 @@
             data: <span class="kw-2">&amp;</span>(),
             phantom: PhantomData,
         };
-        tmp_guard.try_upgrade().map(|g| core::mem::forget(g)).is_ok()
+        tmp_guard
+            .try_upgrade()
+            .map(|g| core::mem::forget(g))
+            .is_ok()
     }
 }
 
@@ -2103,7 +2155,7 @@
         <span class="kw">let </span>arc2 = arc.clone();
         <span class="kw">let </span>(tx, rx) = channel();
 
-        thread::spawn(<span class="kw">move </span>|| {
+        <span class="kw">let </span>t = thread::spawn(<span class="kw">move </span>|| {
             <span class="kw">let </span><span class="kw-2">mut </span>lock = arc2.write();
             <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">10 </span>{
                 <span class="kw">let </span>tmp = <span class="kw-2">*</span>lock;
@@ -2133,6 +2185,8 @@
         </span>rx.recv().unwrap();
         <span class="kw">let </span>lock = arc.read();
         <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>lock, <span class="number">10</span>);
+
+        <span class="macro">assert!</span>(t.join().is_ok());
     }
 
     <span class="attr">#[test]

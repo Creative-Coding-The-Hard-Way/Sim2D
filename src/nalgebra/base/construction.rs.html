@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.31.1/src/base/construction.rs`."><title>construction.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/nalgebra-0.32.2/src/base/construction.rs`."><title>construction.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://nalgebra.org/img/favicon.ico"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nalgebra/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1286,7 +1286,7 @@
 <span class="kw">use </span>simba::scalar::{ClosedAdd, ClosedMul};
 
 <span class="kw">use </span><span class="kw">crate</span>::base::allocator::Allocator;
-<span class="kw">use </span><span class="kw">crate</span>::base::dimension::{Dim, DimName, Dynamic, ToTypenum};
+<span class="kw">use </span><span class="kw">crate</span>::base::dimension::{Dim, DimName, Dyn, ToTypenum};
 <span class="kw">use </span><span class="kw">crate</span>::base::storage::RawStorage;
 <span class="kw">use </span><span class="kw">crate</span>::base::{
     ArrayStorage, Const, DefaultAllocator, Matrix, OMatrix, OVector, Scalar, Unit, Vector,
@@ -1584,12 +1584,12 @@
     ///
     /// # Example
     /// ```
-    /// # use nalgebra::{Dynamic, DMatrix, Matrix, Const};
+    /// # use nalgebra::{Dyn, DMatrix, Matrix, Const};
     ///
     /// let vec = vec![0, 1, 2, 3, 4, 5];
     /// let vec_ptr = vec.as_ptr();
     ///
-    /// let matrix = Matrix::from_vec_generic(Dynamic::new(vec.len()), Const::&lt;1&gt;, vec);
+    /// let matrix = Matrix::from_vec_generic(Dyn(vec.len()), Const::&lt;1&gt;, vec);
     /// let matrix_storage_ptr = matrix.data.as_vec().as_ptr();
     ///
     /// // `matrix` is backed by exactly the same `Vec` as it was constructed from.
@@ -1923,35 +1923,35 @@
 </span>}
 
 <span class="doccomment">/// # Constructors of matrices with a dynamic number of columns
-</span><span class="kw">impl</span>&lt;T: Scalar, R: DimName&gt; OMatrix&lt;T, R, Dynamic&gt;
+</span><span class="kw">impl</span>&lt;T: Scalar, R: DimName&gt; OMatrix&lt;T, R, Dyn&gt;
 <span class="kw">where
-    </span>DefaultAllocator: Allocator&lt;T, R, Dynamic&gt;,
+    </span>DefaultAllocator: Allocator&lt;T, R, Dyn&gt;,
 {
-    <span class="macro">impl_constructors!</span>(R, Dynamic;
+    <span class="macro">impl_constructors!</span>(R, Dyn;
                    =&gt; R: DimName;
-                   R::name(), Dynamic::new(ncols);
+                   R::name(), Dyn(ncols);
                    ncols);
 }
 
 <span class="doccomment">/// # Constructors of dynamic vectors and matrices with a dynamic number of rows
-</span><span class="kw">impl</span>&lt;T: Scalar, C: DimName&gt; OMatrix&lt;T, Dynamic, C&gt;
+</span><span class="kw">impl</span>&lt;T: Scalar, C: DimName&gt; OMatrix&lt;T, Dyn, C&gt;
 <span class="kw">where
-    </span>DefaultAllocator: Allocator&lt;T, Dynamic, C&gt;,
+    </span>DefaultAllocator: Allocator&lt;T, Dyn, C&gt;,
 {
-    <span class="macro">impl_constructors!</span>(Dynamic, C;
+    <span class="macro">impl_constructors!</span>(Dyn, C;
                    =&gt; C: DimName;
-                   Dynamic::new(nrows), C::name();
+                   Dyn(nrows), C::name();
                    nrows);
 }
 
 <span class="doccomment">/// # Constructors of fully dynamic matrices
-</span><span class="kw">impl</span>&lt;T: Scalar&gt; OMatrix&lt;T, Dynamic, Dynamic&gt;
+</span><span class="kw">impl</span>&lt;T: Scalar&gt; OMatrix&lt;T, Dyn, Dyn&gt;
 <span class="kw">where
-    </span>DefaultAllocator: Allocator&lt;T, Dynamic, Dynamic&gt;,
+    </span>DefaultAllocator: Allocator&lt;T, Dyn, Dyn&gt;,
 {
-    <span class="macro">impl_constructors!</span>(Dynamic, Dynamic;
+    <span class="macro">impl_constructors!</span>(Dyn, Dyn;
                    ;
-                   Dynamic::new(nrows), Dynamic::new(ncols);
+                   Dyn(nrows), Dyn(ncols);
                    nrows, ncols);
 }
 
@@ -2057,19 +2057,19 @@
 </span>R::name(), C::name();         <span class="comment">// Arguments for `_generic` constructors.
 </span>); <span class="comment">// Arguments for non-generic constructors.
 
-</span><span class="macro">impl_constructors_from_data!</span>(data; R, Dynamic;
+</span><span class="macro">impl_constructors_from_data!</span>(data; R, Dyn;
 =&gt; R: DimName;
-R::name(), Dynamic::new(data.len() / R::dim());
+R::name(), Dyn(data.len() / R::dim());
 );
 
-<span class="macro">impl_constructors_from_data!</span>(data; Dynamic, C;
+<span class="macro">impl_constructors_from_data!</span>(data; Dyn, C;
 =&gt; C: DimName;
-Dynamic::new(data.len() / C::dim()), C::name();
+Dyn(data.len() / C::dim()), C::name();
 );
 
-<span class="macro">impl_constructors_from_data!</span>(data; Dynamic, Dynamic;
+<span class="macro">impl_constructors_from_data!</span>(data; Dyn, Dyn;
                             ;
-                            Dynamic::new(nrows), Dynamic::new(ncols);
+                            Dyn(nrows), Dyn(ncols);
                             nrows, ncols);
 
 <span class="comment">/*

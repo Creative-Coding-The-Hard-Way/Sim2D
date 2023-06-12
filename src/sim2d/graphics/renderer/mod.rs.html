@@ -172,63 +172,29 @@
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-</pre><pre class="rust"><code><span class="kw">mod </span>assets;
-<span class="kw">mod </span>texture;
-
-<span class="kw">use </span>{
+</pre><pre class="rust"><code><span class="kw">use </span>{
     <span class="kw">crate</span>::{
         graphics::{
             vulkan_api::{
                 BindlessSprites, ColorPass, FrameStatus, FramesInFlight,
-                RenderDevice,
+                RenderDevice, Texture2D,
             },
             GraphicsError, G2D,
         },
         math::Mat4,
     },
     ash::vk,
-    image::Pixel,
     std::sync::Arc,
-};
-
-<span class="kw">pub use </span><span class="self">self</span>::{
-    assets::{AssetLoader, Image, NewAssetsCommand},
-    texture::{TextureAtlas, TextureId},
 };
 
 <span class="doccomment">/// The Sim2D Rendering backend.
 </span><span class="kw">pub struct </span>Renderer {
     projection: Mat4,
-    texture_atlas: TextureAtlas,
     frames_in_flight: FramesInFlight,
     color_pass: ColorPass,
     bindless_sprites: BindlessSprites,
     image_acquire_barriers: Vec&lt;vk::ImageMemoryBarrier2&gt;,
+    textures: Vec&lt;Arc&lt;Texture2D&gt;&gt;,
     render_device: Arc&lt;RenderDevice&gt;,
 }
 
@@ -236,6 +202,8 @@
     <span class="kw">pub fn </span>new(
         render_device: Arc&lt;RenderDevice&gt;,
         framebuffer_size: (i32, i32),
+        textures: <span class="kw-2">&amp;</span>[Arc&lt;Texture2D&gt;],
+        image_acquire_barriers: <span class="kw-2">&amp;</span>[vk::ImageMemoryBarrier2],
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, GraphicsError&gt; {
         <span class="kw">let </span>frames_in_flight = <span class="kw">unsafe </span>{
             FramesInFlight::new(render_device.clone(), framebuffer_size, <span class="number">3</span>)<span class="question-mark">?
@@ -245,21 +213,6 @@
             ColorPass::new(render_device.clone(), frames_in_flight.swapchain())<span class="question-mark">?
         </span>};
 
-        <span class="kw">let </span><span class="kw-2">mut </span>texture_atlas =
-            <span class="kw">unsafe </span>{ TextureAtlas::new(render_device.clone())<span class="question-mark">? </span>};
-        <span class="kw">let </span><span class="kw-2">mut </span>loader = texture_atlas.take_asset_loader();
-        <span class="kw">let </span>_loading_id = {
-            <span class="kw">let </span><span class="kw-2">mut </span>img = image::RgbaImage::new(<span class="number">1</span>, <span class="number">1</span>);
-            img.put_pixel(
-                <span class="number">0</span>,
-                <span class="number">0</span>,
-                image::Rgba::&lt;u8&gt;::from_slice(<span class="kw-2">&amp;</span>[<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>]).to_owned(),
-            );
-            loader.load_image(img)
-        };
-        <span class="kw">let </span>new_assets_cmd = NewAssetsCommand::new(loader)<span class="question-mark">?</span>;
-        texture_atlas.load_assets(<span class="kw-2">&amp;</span>new_assets_cmd);
-
         <span class="kw">let </span>projection = <span class="self">Self</span>::fullscreen_ortho_projection(framebuffer_size);
 
         <span class="kw">let </span><span class="kw-2">mut </span>bindless_sprites = <span class="kw">unsafe </span>{
@@ -267,7 +220,7 @@
                 render_device.clone(),
                 color_pass.render_pass(),
                 <span class="kw-2">&amp;</span>frames_in_flight,
-                texture_atlas.textures(),
+                textures,
             )<span class="question-mark">?
         </span>};
         bindless_sprites.set_projection(<span class="kw-2">&amp;</span>projection);
@@ -278,23 +231,20 @@
 
             bindless_sprites,
             color_pass,
-            texture_atlas,
 
-            image_acquire_barriers: new_assets_cmd.image_acquire_barriers,
+            image_acquire_barriers: image_acquire_barriers.to_owned(),
+            textures: textures.to_owned(),
 
             render_device,
         })
     }
 
-    <span class="kw">pub fn </span>new_asset_loader(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; AssetLoader {
-        <span class="self">self</span>.texture_atlas.take_asset_loader()
-    }
-
-    <span class="kw">pub fn </span>load_assets(
+    <span class="kw">pub fn </span>update_textures(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        new_assets_cmd: NewAssetsCommand,
+        textures: <span class="kw-2">&amp;</span>[Arc&lt;Texture2D&gt;],
+        image_acquire_barriers: <span class="kw-2">&amp;</span>[vk::ImageMemoryBarrier2],
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), GraphicsError&gt; {
-        <span class="self">self</span>.texture_atlas.load_assets(<span class="kw-2">&amp;</span>new_assets_cmd);
+        <span class="self">self</span>.textures = textures.to_owned();
 
         <span class="self">self</span>.bindless_sprites = <span class="kw">unsafe </span>{
             <span class="self">self</span>.frames_in_flight.wait_for_all_frames_to_complete()<span class="question-mark">?</span>;
@@ -302,13 +252,13 @@
                 <span class="self">self</span>.render_device.clone(),
                 <span class="self">self</span>.color_pass.render_pass(),
                 <span class="kw-2">&amp;</span><span class="self">self</span>.frames_in_flight,
-                <span class="self">self</span>.texture_atlas.textures(),
+                <span class="kw-2">&amp;</span><span class="self">self</span>.textures,
             )<span class="question-mark">?
         </span>};
         <span class="self">self</span>.bindless_sprites.set_projection(<span class="kw-2">&amp;</span><span class="self">self</span>.projection);
 
         <span class="self">self</span>.image_acquire_barriers
-            .extend_from_slice(<span class="kw-2">&amp;</span>new_assets_cmd.image_acquire_barriers);
+            .extend_from_slice(image_acquire_barriers);
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -381,7 +331,7 @@
                 <span class="self">self</span>.render_device.clone(),
                 <span class="self">self</span>.color_pass.render_pass(),
                 <span class="kw-2">&amp;</span><span class="self">self</span>.frames_in_flight,
-                <span class="self">self</span>.texture_atlas.textures(),
+                <span class="kw-2">&amp;</span><span class="self">self</span>.textures,
             )<span class="question-mark">?</span>;
             <span class="self">self</span>.bindless_sprites.set_projection(<span class="kw-2">&amp;</span><span class="self">self</span>.projection);
         };

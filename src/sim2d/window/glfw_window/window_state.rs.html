@@ -334,7 +334,7 @@
             (window_state.window_x, window_state.window_y) = <span class="self">self</span>.get_pos();
 
             <span class="kw">let </span><span class="kw-2">mut </span>glfw = <span class="self">self</span>.glfw.clone();
-            glfw.with_primary_monitor_mut(|<span class="kw">_</span>, monitor_opt| -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+            glfw.with_primary_monitor(|<span class="kw">_</span>, monitor_opt| -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
                 <span class="kw">let </span>monitor = monitor_opt
                     .context(<span class="string">&quot;Unable to determine the primary monitor!&quot;</span>)<span class="question-mark">?</span>;
                 <span class="kw">let </span>video_mode = monitor

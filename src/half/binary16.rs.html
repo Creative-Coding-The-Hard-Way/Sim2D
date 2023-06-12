@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/half-1.8.2/src/binary16.rs`."><title>binary16.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../half/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/half-2.2.1/src/binary16.rs`."><title>binary16.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../half/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1709,16 +1709,221 @@
 <a href="#1709" id="1709">1709</a>
 <a href="#1710" id="1710">1710</a>
 <a href="#1711" id="1711">1711</a>
+<a href="#1712" id="1712">1712</a>
+<a href="#1713" id="1713">1713</a>
+<a href="#1714" id="1714">1714</a>
+<a href="#1715" id="1715">1715</a>
+<a href="#1716" id="1716">1716</a>
+<a href="#1717" id="1717">1717</a>
+<a href="#1718" id="1718">1718</a>
+<a href="#1719" id="1719">1719</a>
+<a href="#1720" id="1720">1720</a>
+<a href="#1721" id="1721">1721</a>
+<a href="#1722" id="1722">1722</a>
+<a href="#1723" id="1723">1723</a>
+<a href="#1724" id="1724">1724</a>
+<a href="#1725" id="1725">1725</a>
+<a href="#1726" id="1726">1726</a>
+<a href="#1727" id="1727">1727</a>
+<a href="#1728" id="1728">1728</a>
+<a href="#1729" id="1729">1729</a>
+<a href="#1730" id="1730">1730</a>
+<a href="#1731" id="1731">1731</a>
+<a href="#1732" id="1732">1732</a>
+<a href="#1733" id="1733">1733</a>
+<a href="#1734" id="1734">1734</a>
+<a href="#1735" id="1735">1735</a>
+<a href="#1736" id="1736">1736</a>
+<a href="#1737" id="1737">1737</a>
+<a href="#1738" id="1738">1738</a>
+<a href="#1739" id="1739">1739</a>
+<a href="#1740" id="1740">1740</a>
+<a href="#1741" id="1741">1741</a>
+<a href="#1742" id="1742">1742</a>
+<a href="#1743" id="1743">1743</a>
+<a href="#1744" id="1744">1744</a>
+<a href="#1745" id="1745">1745</a>
+<a href="#1746" id="1746">1746</a>
+<a href="#1747" id="1747">1747</a>
+<a href="#1748" id="1748">1748</a>
+<a href="#1749" id="1749">1749</a>
+<a href="#1750" id="1750">1750</a>
+<a href="#1751" id="1751">1751</a>
+<a href="#1752" id="1752">1752</a>
+<a href="#1753" id="1753">1753</a>
+<a href="#1754" id="1754">1754</a>
+<a href="#1755" id="1755">1755</a>
+<a href="#1756" id="1756">1756</a>
+<a href="#1757" id="1757">1757</a>
+<a href="#1758" id="1758">1758</a>
+<a href="#1759" id="1759">1759</a>
+<a href="#1760" id="1760">1760</a>
+<a href="#1761" id="1761">1761</a>
+<a href="#1762" id="1762">1762</a>
+<a href="#1763" id="1763">1763</a>
+<a href="#1764" id="1764">1764</a>
+<a href="#1765" id="1765">1765</a>
+<a href="#1766" id="1766">1766</a>
+<a href="#1767" id="1767">1767</a>
+<a href="#1768" id="1768">1768</a>
+<a href="#1769" id="1769">1769</a>
+<a href="#1770" id="1770">1770</a>
+<a href="#1771" id="1771">1771</a>
+<a href="#1772" id="1772">1772</a>
+<a href="#1773" id="1773">1773</a>
+<a href="#1774" id="1774">1774</a>
+<a href="#1775" id="1775">1775</a>
+<a href="#1776" id="1776">1776</a>
+<a href="#1777" id="1777">1777</a>
+<a href="#1778" id="1778">1778</a>
+<a href="#1779" id="1779">1779</a>
+<a href="#1780" id="1780">1780</a>
+<a href="#1781" id="1781">1781</a>
+<a href="#1782" id="1782">1782</a>
+<a href="#1783" id="1783">1783</a>
+<a href="#1784" id="1784">1784</a>
+<a href="#1785" id="1785">1785</a>
+<a href="#1786" id="1786">1786</a>
+<a href="#1787" id="1787">1787</a>
+<a href="#1788" id="1788">1788</a>
+<a href="#1789" id="1789">1789</a>
+<a href="#1790" id="1790">1790</a>
+<a href="#1791" id="1791">1791</a>
+<a href="#1792" id="1792">1792</a>
+<a href="#1793" id="1793">1793</a>
+<a href="#1794" id="1794">1794</a>
+<a href="#1795" id="1795">1795</a>
+<a href="#1796" id="1796">1796</a>
+<a href="#1797" id="1797">1797</a>
+<a href="#1798" id="1798">1798</a>
+<a href="#1799" id="1799">1799</a>
+<a href="#1800" id="1800">1800</a>
+<a href="#1801" id="1801">1801</a>
+<a href="#1802" id="1802">1802</a>
+<a href="#1803" id="1803">1803</a>
+<a href="#1804" id="1804">1804</a>
+<a href="#1805" id="1805">1805</a>
+<a href="#1806" id="1806">1806</a>
+<a href="#1807" id="1807">1807</a>
+<a href="#1808" id="1808">1808</a>
+<a href="#1809" id="1809">1809</a>
+<a href="#1810" id="1810">1810</a>
+<a href="#1811" id="1811">1811</a>
+<a href="#1812" id="1812">1812</a>
+<a href="#1813" id="1813">1813</a>
+<a href="#1814" id="1814">1814</a>
+<a href="#1815" id="1815">1815</a>
+<a href="#1816" id="1816">1816</a>
+<a href="#1817" id="1817">1817</a>
+<a href="#1818" id="1818">1818</a>
+<a href="#1819" id="1819">1819</a>
+<a href="#1820" id="1820">1820</a>
+<a href="#1821" id="1821">1821</a>
+<a href="#1822" id="1822">1822</a>
+<a href="#1823" id="1823">1823</a>
+<a href="#1824" id="1824">1824</a>
+<a href="#1825" id="1825">1825</a>
+<a href="#1826" id="1826">1826</a>
+<a href="#1827" id="1827">1827</a>
+<a href="#1828" id="1828">1828</a>
+<a href="#1829" id="1829">1829</a>
+<a href="#1830" id="1830">1830</a>
+<a href="#1831" id="1831">1831</a>
+<a href="#1832" id="1832">1832</a>
+<a href="#1833" id="1833">1833</a>
+<a href="#1834" id="1834">1834</a>
+<a href="#1835" id="1835">1835</a>
+<a href="#1836" id="1836">1836</a>
+<a href="#1837" id="1837">1837</a>
+<a href="#1838" id="1838">1838</a>
+<a href="#1839" id="1839">1839</a>
+<a href="#1840" id="1840">1840</a>
+<a href="#1841" id="1841">1841</a>
+<a href="#1842" id="1842">1842</a>
+<a href="#1843" id="1843">1843</a>
+<a href="#1844" id="1844">1844</a>
+<a href="#1845" id="1845">1845</a>
+<a href="#1846" id="1846">1846</a>
+<a href="#1847" id="1847">1847</a>
+<a href="#1848" id="1848">1848</a>
+<a href="#1849" id="1849">1849</a>
+<a href="#1850" id="1850">1850</a>
+<a href="#1851" id="1851">1851</a>
+<a href="#1852" id="1852">1852</a>
+<a href="#1853" id="1853">1853</a>
+<a href="#1854" id="1854">1854</a>
+<a href="#1855" id="1855">1855</a>
+<a href="#1856" id="1856">1856</a>
+<a href="#1857" id="1857">1857</a>
+<a href="#1858" id="1858">1858</a>
+<a href="#1859" id="1859">1859</a>
+<a href="#1860" id="1860">1860</a>
+<a href="#1861" id="1861">1861</a>
+<a href="#1862" id="1862">1862</a>
+<a href="#1863" id="1863">1863</a>
+<a href="#1864" id="1864">1864</a>
+<a href="#1865" id="1865">1865</a>
+<a href="#1866" id="1866">1866</a>
+<a href="#1867" id="1867">1867</a>
+<a href="#1868" id="1868">1868</a>
+<a href="#1869" id="1869">1869</a>
+<a href="#1870" id="1870">1870</a>
+<a href="#1871" id="1871">1871</a>
+<a href="#1872" id="1872">1872</a>
+<a href="#1873" id="1873">1873</a>
+<a href="#1874" id="1874">1874</a>
+<a href="#1875" id="1875">1875</a>
+<a href="#1876" id="1876">1876</a>
+<a href="#1877" id="1877">1877</a>
+<a href="#1878" id="1878">1878</a>
+<a href="#1879" id="1879">1879</a>
+<a href="#1880" id="1880">1880</a>
+<a href="#1881" id="1881">1881</a>
+<a href="#1882" id="1882">1882</a>
+<a href="#1883" id="1883">1883</a>
+<a href="#1884" id="1884">1884</a>
+<a href="#1885" id="1885">1885</a>
+<a href="#1886" id="1886">1886</a>
+<a href="#1887" id="1887">1887</a>
+<a href="#1888" id="1888">1888</a>
+<a href="#1889" id="1889">1889</a>
+<a href="#1890" id="1890">1890</a>
+<a href="#1891" id="1891">1891</a>
+<a href="#1892" id="1892">1892</a>
+<a href="#1893" id="1893">1893</a>
+<a href="#1894" id="1894">1894</a>
+<a href="#1895" id="1895">1895</a>
+<a href="#1896" id="1896">1896</a>
+<a href="#1897" id="1897">1897</a>
+<a href="#1898" id="1898">1898</a>
+<a href="#1899" id="1899">1899</a>
+<a href="#1900" id="1900">1900</a>
+<a href="#1901" id="1901">1901</a>
+<a href="#1902" id="1902">1902</a>
+<a href="#1903" id="1903">1903</a>
+<a href="#1904" id="1904">1904</a>
+<a href="#1905" id="1905">1905</a>
+<a href="#1906" id="1906">1906</a>
+<a href="#1907" id="1907">1907</a>
+<a href="#1908" id="1908">1908</a>
+<a href="#1909" id="1909">1909</a>
+<a href="#1910" id="1910">1910</a>
+<a href="#1911" id="1911">1911</a>
+<a href="#1912" id="1912">1912</a>
 </pre><pre class="rust"><code><span class="attr">#[cfg(feature = <span class="string">&quot;bytemuck&quot;</span>)]
 </span><span class="kw">use </span>bytemuck::{Pod, Zeroable};
 <span class="kw">use </span>core::{
     cmp::Ordering,
+    iter::{Product, Sum},
+    num::FpCategory,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
+};
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">use </span>core::{
     fmt::{
         Binary, Debug, Display, Error, Formatter, LowerExp, LowerHex, Octal, UpperExp, UpperHex,
     },
-    iter::{Product, Sum},
-    num::{FpCategory, ParseFloatError},
-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
+    num::ParseFloatError,
     str::FromStr,
 };
 <span class="attr">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
@@ -1741,97 +1946,15 @@
 </span><span class="attr">#[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
 #[repr(transparent)]
-#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize))]
 #[cfg_attr(feature = <span class="string">&quot;bytemuck&quot;</span>, derive(Zeroable, Pod))]
 #[cfg_attr(feature = <span class="string">&quot;zerocopy&quot;</span>, derive(AsBytes, FromBytes))]
 </span><span class="kw">pub struct </span>f16(u16);
 
-<span class="attr">#[doc(hidden)]
-#[deprecated(
-    since = <span class="string">&quot;1.4.0&quot;</span>,
-    note = <span class="string">&quot;all constants moved to associated constants of `f16`&quot;
-</span>)]
-</span><span class="kw">pub mod </span>consts {
-    <span class="kw">use </span><span class="kw">super</span>::f16;
-
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::DIGITS`&quot;</span>)]
-    </span><span class="kw">pub const </span>DIGITS: u32 = f16::DIGITS;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::EPSILON`&quot;</span>)]
-    </span><span class="kw">pub const </span>EPSILON: f16 = f16::EPSILON;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::INFINITY`&quot;</span>)]
-    </span><span class="kw">pub const </span>INFINITY: f16 = f16::INFINITY;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MANTISSA_DIGITS`&quot;</span>)]
-    </span><span class="kw">pub const </span>MANTISSA_DIGITS: u32 = f16::MANTISSA_DIGITS;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MAX`&quot;</span>)]
-    </span><span class="kw">pub const </span>MAX: f16 = f16::MAX;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MAX_10_EXP`&quot;</span>)]
-    </span><span class="kw">pub const </span>MAX_10_EXP: i32 = f16::MAX_10_EXP;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MAX_EXP`&quot;</span>)]
-    </span><span class="kw">pub const </span>MAX_EXP: i32 = f16::MAX_EXP;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MIN`&quot;</span>)]
-    </span><span class="kw">pub const </span>MIN: f16 = f16::MIN;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MIN_10_EXP`&quot;</span>)]
-    </span><span class="kw">pub const </span>MIN_10_EXP: i32 = f16::MIN_10_EXP;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MIN_EXP`&quot;</span>)]
-    </span><span class="kw">pub const </span>MIN_EXP: i32 = f16::MIN_EXP;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MIN_POSITIVE`&quot;</span>)]
-    </span><span class="kw">pub const </span>MIN_POSITIVE: f16 = f16::MIN_POSITIVE;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::NAN`&quot;</span>)]
-    </span><span class="kw">pub const </span>NAN: f16 = f16::NAN;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::NEG_INFINITY`&quot;</span>)]
-    </span><span class="kw">pub const </span>NEG_INFINITY: f16 = f16::NEG_INFINITY;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::RADIX`&quot;</span>)]
-    </span><span class="kw">pub const </span>RADIX: u32 = f16::RADIX;
-
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MIN_POSITIVE_SUBNORMAL`&quot;</span>)]
-    </span><span class="kw">pub const </span>MIN_POSITIVE_SUBNORMAL: f16 = f16::MIN_POSITIVE_SUBNORMAL;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::MAX_SUBNORMAL`&quot;</span>)]
-    </span><span class="kw">pub const </span>MAX_SUBNORMAL: f16 = f16::MAX_SUBNORMAL;
-
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::ONE`&quot;</span>)]
-    </span><span class="kw">pub const </span>ONE: f16 = f16::ONE;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::ZERO`&quot;</span>)]
-    </span><span class="kw">pub const </span>ZERO: f16 = f16::ZERO;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::NEG_ZERO`&quot;</span>)]
-    </span><span class="kw">pub const </span>NEG_ZERO: f16 = f16::NEG_ZERO;
-
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::E`&quot;</span>)]
-    </span><span class="kw">pub const </span>E: f16 = f16::E;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::PI`&quot;</span>)]
-    </span><span class="kw">pub const </span>PI: f16 = f16::PI;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_1_PI`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_1_PI: f16 = f16::FRAC_1_PI;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_1_SQRT_2`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_1_SQRT_2: f16 = f16::FRAC_1_SQRT_2;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_2_PI`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_2_PI: f16 = f16::FRAC_2_PI;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_2_SQRT_PI`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_2_SQRT_PI: f16 = f16::FRAC_2_SQRT_PI;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_PI_2`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_PI_2: f16 = f16::FRAC_PI_2;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_PI_3`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_PI_3: f16 = f16::FRAC_PI_3;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_PI_4`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_PI_4: f16 = f16::FRAC_PI_4;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_PI_6`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_PI_6: f16 = f16::FRAC_PI_6;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::FRAC_PI_8`&quot;</span>)]
-    </span><span class="kw">pub const </span>FRAC_PI_8: f16 = f16::FRAC_PI_8;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::LN_10`&quot;</span>)]
-    </span><span class="kw">pub const </span>LN_10: f16 = f16::LN_10;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::LN_2`&quot;</span>)]
-    </span><span class="kw">pub const </span>LN_2: f16 = f16::LN_2;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::LOG10_E`&quot;</span>)]
-    </span><span class="kw">pub const </span>LOG10_E: f16 = f16::LOG10_E;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::LOG2_E`&quot;</span>)]
-    </span><span class="kw">pub const </span>LOG2_E: f16 = f16::LOG2_E;
-    <span class="attr">#[deprecated(since = <span class="string">&quot;1.4.0&quot;</span>, note = <span class="string">&quot;moved to `f16::SQRT_2`&quot;</span>)]
-    </span><span class="kw">pub const </span>SQRT_2: f16 = f16::SQRT_2;
-}
-
 <span class="kw">impl </span>f16 {
     <span class="doccomment">/// Constructs a 16-bit floating point value from the raw bits.
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>from_bits(bits: u16) -&gt; f16 {
         f16(bits)
     }
@@ -1844,8 +1967,26 @@
     /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
     /// value.
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub fn </span>from_f32(value: f32) -&gt; f16 {
         f16(convert::f32_to_f16(value))
+    }
+
+    <span class="doccomment">/// Constructs a 16-bit floating point value from a 32-bit floating point value.
+    ///
+    /// This function is identical to [`from_f32`][Self::from_f32] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`from_f32`][Self::from_f32] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// If the 32-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
+    /// preserved. 32-bit subnormal values are too tiny to be represented in 16-bits and result in
+    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
+    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
+    /// value.
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub const fn </span>from_f32_const(value: f32) -&gt; f16 {
+        f16(convert::f32_to_f16_fallback(value))
     }
 
     <span class="doccomment">/// Constructs a 16-bit floating point value from a 64-bit floating point value.
@@ -1856,12 +1997,31 @@
     /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
     /// value.
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub fn </span>from_f64(value: f64) -&gt; f16 {
         f16(convert::f64_to_f16(value))
     }
 
+    <span class="doccomment">/// Constructs a 16-bit floating point value from a 64-bit floating point value.
+    ///
+    /// This function is identical to [`from_f64`][Self::from_f64] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`from_f64`][Self::from_f64] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// If the 64-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
+    /// preserved. 64-bit subnormal values are too tiny to be represented in 16-bits and result in
+    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
+    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
+    /// value.
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub const fn </span>from_f64_const(value: f64) -&gt; f16 {
+        f16(convert::f64_to_f16_fallback(value))
+    }
+
     <span class="doccomment">/// Converts a [`f16`] into the underlying bit representation.
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>to_bits(<span class="self">self</span>) -&gt; u16 {
         <span class="self">self</span>.<span class="number">0
     </span>}
@@ -1877,6 +2037,7 @@
     /// assert_eq!(bytes, [0x40, 0x4A]);
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>to_le_bytes(<span class="self">self</span>) -&gt; [u8; <span class="number">2</span>] {
         <span class="self">self</span>.<span class="number">0</span>.to_le_bytes()
     }
@@ -1892,6 +2053,7 @@
     /// assert_eq!(bytes, [0x4A, 0x40]);
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>to_be_bytes(<span class="self">self</span>) -&gt; [u8; <span class="number">2</span>] {
         <span class="self">self</span>.<span class="number">0</span>.to_be_bytes()
     }
@@ -1915,6 +2077,7 @@
     /// });
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>to_ne_bytes(<span class="self">self</span>) -&gt; [u8; <span class="number">2</span>] {
         <span class="self">self</span>.<span class="number">0</span>.to_ne_bytes()
     }
@@ -1929,6 +2092,7 @@
     /// assert_eq!(value, f16::from_f32(12.5));
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>from_le_bytes(bytes: [u8; <span class="number">2</span>]) -&gt; f16 {
         f16::from_bits(u16::from_le_bytes(bytes))
     }
@@ -1943,6 +2107,7 @@
     /// assert_eq!(value, f16::from_f32(12.5));
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>from_be_bytes(bytes: [u8; <span class="number">2</span>]) -&gt; f16 {
         f16::from_bits(u16::from_be_bytes(bytes))
     }
@@ -1965,15 +2130,9 @@
     /// assert_eq!(value, f16::from_f32(12.5));
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>from_ne_bytes(bytes: [u8; <span class="number">2</span>]) -&gt; f16 {
         f16::from_bits(u16::from_ne_bytes(bytes))
-    }
-
-    <span class="attr">#[doc(hidden)]
-    #[deprecated(since = <span class="string">&quot;1.2.0&quot;</span>, note = <span class="string">&quot;renamed to `to_bits`&quot;</span>)]
-    #[inline]
-    </span><span class="kw">pub fn </span>as_bits(<span class="self">self</span>) -&gt; u16 {
-        <span class="self">self</span>.to_bits()
     }
 
     <span class="doccomment">/// Converts a [`f16`] value into a `f32` value.
@@ -1981,8 +2140,23 @@
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
     /// in 32-bit floating point.
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub fn </span>to_f32(<span class="self">self</span>) -&gt; f32 {
         convert::f16_to_f32(<span class="self">self</span>.<span class="number">0</span>)
+    }
+
+    <span class="doccomment">/// Converts a [`f16`] value into a `f32` value.
+    ///
+    /// This function is identical to [`to_f32`][Self::to_f32] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`to_f32`][Self::to_f32] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
+    /// in 32-bit floating point.
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub const fn </span>to_f32_const(<span class="self">self</span>) -&gt; f32 {
+        convert::f16_to_f32_fallback(<span class="self">self</span>.<span class="number">0</span>)
     }
 
     <span class="doccomment">/// Converts a [`f16`] value into a `f64` value.
@@ -1990,8 +2164,23 @@
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
     /// in 64-bit floating point.
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub fn </span>to_f64(<span class="self">self</span>) -&gt; f64 {
         convert::f16_to_f64(<span class="self">self</span>.<span class="number">0</span>)
+    }
+
+    <span class="doccomment">/// Converts a [`f16`] value into a `f64` value.
+    ///
+    /// This function is identical to [`to_f64`][Self::to_f64] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`to_f64`][Self::to_f64] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
+    /// in 64-bit floating point.
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub const fn </span>to_f64_const(<span class="self">self</span>) -&gt; f64 {
+        convert::f16_to_f64_fallback(<span class="self">self</span>.<span class="number">0</span>)
     }
 
     <span class="doccomment">/// Returns `true` if this value is `NaN` and `false` otherwise.
@@ -2008,6 +2197,7 @@
     /// assert!(!f.is_nan());
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>is_nan(<span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x7FFFu16 </span>&gt; <span class="number">0x7C00u16
     </span>}
@@ -2032,6 +2222,7 @@
     /// assert!(neg_inf.is_infinite());
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>is_infinite(<span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x7FFFu16 </span>== <span class="number">0x7C00u16
     </span>}
@@ -2055,6 +2246,7 @@
     /// assert!(!neg_inf.is_finite());
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>is_finite(<span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x7C00u16 </span>!= <span class="number">0x7C00u16
     </span>}
@@ -2081,6 +2273,7 @@
     /// assert!(!lower_than_min.is_normal());
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>is_normal(<span class="self">self</span>) -&gt; bool {
         <span class="kw">let </span>exp = <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x7C00u16</span>;
         exp != <span class="number">0x7C00u16 </span>&amp;&amp; exp != <span class="number">0
@@ -2103,6 +2296,7 @@
     /// assert_eq!(num.classify(), FpCategory::Normal);
     /// assert_eq!(inf.classify(), FpCategory::Infinite);
     /// ```
+    </span><span class="attr">#[must_use]
     </span><span class="kw">pub const fn </span>classify(<span class="self">self</span>) -&gt; FpCategory {
         <span class="kw">let </span>exp = <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x7C00u16</span>;
         <span class="kw">let </span>man = <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x03FFu16</span>;
@@ -2133,6 +2327,7 @@
     ///
     /// assert!(f16::NAN.signum().is_nan());
     /// ```
+    </span><span class="attr">#[must_use]
     </span><span class="kw">pub const fn </span>signum(<span class="self">self</span>) -&gt; f16 {
         <span class="kw">if </span><span class="self">self</span>.is_nan() {
             <span class="self">self
@@ -2161,6 +2356,7 @@
     /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>is_sign_positive(<span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x8000u16 </span>== <span class="number">0
     </span>}
@@ -2183,6 +2379,7 @@
     /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>is_sign_negative(<span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x8000u16 </span>!= <span class="number">0
     </span>}
@@ -2206,6 +2403,7 @@
     /// assert!(f16::NAN.copysign(f16::from_f32(1.0)).is_nan());
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub const fn </span>copysign(<span class="self">self</span>, sign: f16) -&gt; f16 {
         f16((sign.<span class="number">0 </span>&amp; <span class="number">0x8000u16</span>) | (<span class="self">self</span>.<span class="number">0 </span>&amp; <span class="number">0x7FFFu16</span>))
     }
@@ -2224,6 +2422,7 @@
     /// assert_eq!(x.max(y), y);
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub fn </span>max(<span class="self">self</span>, other: f16) -&gt; f16 {
         <span class="kw">if </span>other &gt; <span class="self">self </span>&amp;&amp; !other.is_nan() {
             other
@@ -2246,6 +2445,7 @@
     /// assert_eq!(x.min(y), x);
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub fn </span>min(<span class="self">self</span>, other: f16) -&gt; f16 {
         <span class="kw">if </span>other &lt; <span class="self">self </span>&amp;&amp; !other.is_nan() {
             other
@@ -2274,6 +2474,7 @@
     /// assert!(f16::NAN.clamp(f16::from_f32(-2.0), f16::from_f32(1.0)).is_nan());
     /// ```
     </span><span class="attr">#[inline]
+    #[must_use]
     </span><span class="kw">pub fn </span>clamp(<span class="self">self</span>, min: f16, max: f16) -&gt; f16 {
         <span class="macro">assert!</span>(min &lt;= max);
         <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="self">self</span>;
@@ -2284,6 +2485,137 @@
             x = max;
         }
         x
+    }
+
+    <span class="doccomment">/// Returns the ordering between `self` and `other`.
+    ///
+    /// Unlike the standard partial comparison between floating point numbers,
+    /// this comparison always produces an ordering in accordance to
+    /// the `totalOrder` predicate as defined in the IEEE 754 (2008 revision)
+    /// floating point standard. The values are ordered in the following sequence:
+    ///
+    /// - negative quiet NaN
+    /// - negative signaling NaN
+    /// - negative infinity
+    /// - negative numbers
+    /// - negative subnormal numbers
+    /// - negative zero
+    /// - positive zero
+    /// - positive subnormal numbers
+    /// - positive numbers
+    /// - positive infinity
+    /// - positive signaling NaN
+    /// - positive quiet NaN.
+    ///
+    /// The ordering established by this function does not always agree with the
+    /// [`PartialOrd`] and [`PartialEq`] implementations of `f16`. For example,
+    /// they consider negative and positive zero equal, while `total_cmp`
+    /// doesn&#39;t.
+    ///
+    /// The interpretation of the signaling NaN bit follows the definition in
+    /// the IEEE 754 standard, which may not match the interpretation by some of
+    /// the older, non-conformant (e.g. MIPS) hardware implementations.
+    ///
+    /// # Examples
+    /// ```
+    /// # use half::f16;
+    /// let mut v: Vec&lt;f16&gt; = vec![];
+    /// v.push(f16::ONE);
+    /// v.push(f16::INFINITY);
+    /// v.push(f16::NEG_INFINITY);
+    /// v.push(f16::NAN);
+    /// v.push(f16::MAX_SUBNORMAL);
+    /// v.push(-f16::MAX_SUBNORMAL);
+    /// v.push(f16::ZERO);
+    /// v.push(f16::NEG_ZERO);
+    /// v.push(f16::NEG_ONE);
+    /// v.push(f16::MIN_POSITIVE);
+    ///
+    /// v.sort_by(|a, b| a.total_cmp(&amp;b));
+    ///
+    /// assert!(v
+    ///     .into_iter()
+    ///     .zip(
+    ///         [
+    ///             f16::NEG_INFINITY,
+    ///             f16::NEG_ONE,
+    ///             -f16::MAX_SUBNORMAL,
+    ///             f16::NEG_ZERO,
+    ///             f16::ZERO,
+    ///             f16::MAX_SUBNORMAL,
+    ///             f16::MIN_POSITIVE,
+    ///             f16::ONE,
+    ///             f16::INFINITY,
+    ///             f16::NAN
+    ///         ]
+    ///         .iter()
+    ///     )
+    ///     .all(|(a, b)| a.to_bits() == b.to_bits()));
+    /// ```
+    </span><span class="comment">// Implementation based on: https://doc.rust-lang.org/std/primitive.f32.html#method.total_cmp
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub fn </span>total_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; Ordering {
+        <span class="kw">let </span><span class="kw-2">mut </span>left = <span class="self">self</span>.to_bits() <span class="kw">as </span>i16;
+        <span class="kw">let </span><span class="kw-2">mut </span>right = other.to_bits() <span class="kw">as </span>i16;
+        left ^= (((left &gt;&gt; <span class="number">15</span>) <span class="kw">as </span>u16) &gt;&gt; <span class="number">1</span>) <span class="kw">as </span>i16;
+        right ^= (((right &gt;&gt; <span class="number">15</span>) <span class="kw">as </span>u16) &gt;&gt; <span class="number">1</span>) <span class="kw">as </span>i16;
+        left.cmp(<span class="kw-2">&amp;</span>right)
+    }
+
+    <span class="doccomment">/// Alternate serialize adapter for serializing as a float.
+    ///
+    /// By default, [`f16`] serializes as a newtype of [`u16`]. This is an alternate serialize
+    /// implementation that serializes as an [`f32`] value. It is designed for use with
+    /// `serialize_with` serde attributes. Deserialization from `f32` values is already supported by
+    /// the default deserialize implementation.
+    ///
+    /// # Examples
+    ///
+    /// A demonstration on how to use this adapater:
+    ///
+    /// ```
+    /// use serde::{Serialize, Deserialize};
+    /// use half::f16;
+    ///
+    /// #[derive(Serialize, Deserialize)]
+    /// struct MyStruct {
+    ///     #[serde(serialize_with = &quot;f16::serialize_as_f32&quot;)]
+    ///     value: f16 // Will be serialized as f32 instead of u16
+    /// }
+    /// ```
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+    </span><span class="kw">pub fn </span>serialize_as_f32&lt;S: serde::Serializer&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt; {
+        serializer.serialize_f32(<span class="self">self</span>.to_f32())
+    }
+
+    <span class="doccomment">/// Alternate serialize adapter for serializing as a string.
+    ///
+    /// By default, [`f16`] serializes as a newtype of [`u16`]. This is an alternate serialize
+    /// implementation that serializes as a string value. It is designed for use with
+    /// `serialize_with` serde attributes. Deserialization from string values is already supported
+    /// by the default deserialize implementation.
+    ///
+    /// # Examples
+    ///
+    /// A demonstration on how to use this adapater:
+    ///
+    /// ```
+    /// use serde::{Serialize, Deserialize};
+    /// use half::f16;
+    ///
+    /// #[derive(Serialize, Deserialize)]
+    /// struct MyStruct {
+    ///     #[serde(serialize_with = &quot;f16::serialize_as_string&quot;)]
+    ///     value: f16 // Will be serialized as a string instead of u16
+    /// }
+    /// ```
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+    </span><span class="kw">pub fn </span>serialize_as_string&lt;S: serde::Serializer&gt;(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        serializer: S,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt; {
+        serializer.serialize_str(<span class="kw-2">&amp;</span><span class="self">self</span>.to_string())
     }
 
     <span class="doccomment">/// Approximate number of [`f16`] significant digits in base 10
@@ -2499,56 +2831,65 @@
     }
 }
 
-<span class="kw">impl </span>FromStr <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>FromStr <span class="kw">for </span>f16 {
     <span class="kw">type </span><span class="prelude-val">Err </span>= ParseFloatError;
     <span class="kw">fn </span>from_str(src: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;f16, ParseFloatError&gt; {
         f32::from_str(src).map(f16::from_f32)
     }
 }
 
-<span class="kw">impl </span>Debug <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>Debug <span class="kw">for </span>f16 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">write!</span>(f, <span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>.to_f32())
     }
 }
 
-<span class="kw">impl </span>Display <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>Display <span class="kw">for </span>f16 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.to_f32())
     }
 }
 
-<span class="kw">impl </span>LowerExp <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>LowerExp <span class="kw">for </span>f16 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">write!</span>(f, <span class="string">&quot;{:e}&quot;</span>, <span class="self">self</span>.to_f32())
     }
 }
 
-<span class="kw">impl </span>UpperExp <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>UpperExp <span class="kw">for </span>f16 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">write!</span>(f, <span class="string">&quot;{:E}&quot;</span>, <span class="self">self</span>.to_f32())
     }
 }
 
-<span class="kw">impl </span>Binary <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>Binary <span class="kw">for </span>f16 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">write!</span>(f, <span class="string">&quot;{:b}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
-<span class="kw">impl </span>Octal <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>Octal <span class="kw">for </span>f16 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">write!</span>(f, <span class="string">&quot;{:o}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
-<span class="kw">impl </span>LowerHex <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>LowerHex <span class="kw">for </span>f16 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">write!</span>(f, <span class="string">&quot;{:x}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
-<span class="kw">impl </span>UpperHex <span class="kw">for </span>f16 {
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;spirv&quot;</span>))]
+</span><span class="kw">impl </span>UpperHex <span class="kw">for </span>f16 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">write!</span>(f, <span class="string">&quot;{:X}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
@@ -2560,6 +2901,15 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self</span>(<span class="self">self</span>.<span class="number">0 </span>^ <span class="number">0x8000</span>)
+    }
+}
+
+<span class="kw">impl </span>Neg <span class="kw">for </span><span class="kw-2">&amp;</span>f16 {
+    <span class="kw">type </span>Output = &lt;f16 <span class="kw">as </span>Neg&gt;::Output;
+
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
+        Neg::neg(<span class="kw-2">*</span><span class="self">self</span>)
     }
 }
 
@@ -2838,6 +3188,58 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>sum&lt;I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>f16&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
         f16::from_f32(iter.map(|f| f.to_f32()).product())
+    }
+}
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+</span><span class="kw">struct </span>Visitor;
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>f16 {
+    <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;f16, D::Error&gt;
+    <span class="kw">where
+        </span>D: serde::de::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+    {
+        deserializer.deserialize_newtype_struct(<span class="string">&quot;f16&quot;</span>, Visitor)
+    }
+}
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; serde::de::Visitor&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>Visitor {
+    <span class="kw">type </span>Value = f16;
+
+    <span class="kw">fn </span>expecting(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>alloc::fmt::Formatter) -&gt; alloc::fmt::Result {
+        <span class="macro">write!</span>(formatter, <span class="string">&quot;tuple struct f16&quot;</span>)
+    }
+
+    <span class="kw">fn </span>visit_newtype_struct&lt;D&gt;(<span class="self">self</span>, deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, D::Error&gt;
+    <span class="kw">where
+        </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+    {
+        <span class="prelude-val">Ok</span>(f16(&lt;u16 <span class="kw">as </span>Deserialize&gt;::deserialize(deserializer)<span class="question-mark">?</span>))
+    }
+
+    <span class="kw">fn </span>visit_str&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="kw">where
+        </span>E: serde::de::Error,
+    {
+        v.parse().map_err(|<span class="kw">_</span>| {
+            serde::de::Error::invalid_value(serde::de::Unexpected::Str(v), <span class="kw-2">&amp;</span><span class="string">&quot;a float string&quot;</span>)
+        })
+    }
+
+    <span class="kw">fn </span>visit_f32&lt;E&gt;(<span class="self">self</span>, v: f32) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="kw">where
+        </span>E: serde::de::Error,
+    {
+        <span class="prelude-val">Ok</span>(f16::from_f32(v))
+    }
+
+    <span class="kw">fn </span>visit_f64&lt;E&gt;(<span class="self">self</span>, v: f64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="kw">where
+        </span>E: serde::de::Error,
+    {
+        <span class="prelude-val">Ok</span>(f16::from_f64(v))
     }
 }
 

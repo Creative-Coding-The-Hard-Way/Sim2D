@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.9.0/src/sources.rs`."><title>sources.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../itertools/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.10.5/src/sources.rs`."><title>sources.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../itertools/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -181,14 +181,6 @@
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Iterators that are sources (produce elements from parameters,
 //! not from another iterator).
 </span><span class="attr">#![allow(deprecated)]
@@ -196,9 +188,9 @@
 </span><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::mem;
 
-<span class="doccomment">/// See [`repeat_call`](../fn.repeat_call.html) for more information.
+<span class="doccomment">/// See [`repeat_call`](crate::repeat_call) for more information.
 </span><span class="attr">#[derive(Clone)]
-#[deprecated(note=<span class="string">&quot;Use std repeat_with() instead&quot;</span>, since=<span class="string">&quot;0.8&quot;</span>)]
+#[deprecated(note=<span class="string">&quot;Use std repeat_with() instead&quot;</span>, since=<span class="string">&quot;0.8.0&quot;</span>)]
 </span><span class="kw">pub struct </span>RepeatCall&lt;F&gt; {
     f: F,
 }
@@ -230,7 +222,7 @@
 ///     vec![1, 1, 1, 1, 1]
 /// );
 /// ```
-</span><span class="attr">#[deprecated(note=<span class="string">&quot;Use std repeat_with() instead&quot;</span>, since=<span class="string">&quot;0.8&quot;</span>)]
+</span><span class="attr">#[deprecated(note=<span class="string">&quot;Use std repeat_with() instead&quot;</span>, since=<span class="string">&quot;0.8.0&quot;</span>)]
 </span><span class="kw">pub fn </span>repeat_call&lt;F, A&gt;(function: F) -&gt; RepeatCall&lt;F&gt;
     <span class="kw">where </span>F: FnMut() -&gt; A
 {
@@ -243,7 +235,7 @@
     <span class="kw">type </span>Item = A;
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;A&gt; {
+    </span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         <span class="prelude-val">Some</span>((<span class="self">self</span>.f)())
     }
 
@@ -258,7 +250,7 @@
 /// `unfold` is a general iterator builder: it has a mutable state value,
 /// and a closure with access to the state that produces the next value.
 ///
-/// This more or less equivalent to a regular struct with an `Iterator`
+/// This more or less equivalent to a regular struct with an [`Iterator`]
 /// implementation, and is useful for one-off iterators.
 ///
 /// ```
@@ -267,22 +259,21 @@
 ///
 /// use itertools::unfold;
 ///
-/// let (mut x1, mut x2) = (1u32, 1u32);
-/// let mut fibonacci = unfold((), move |_| {
+/// let mut fibonacci = unfold((1u32, 1u32), |(x1, x2)| {
 ///     // Attempt to get the next Fibonacci number
-///     let next = x1.saturating_add(x2);
+///     let next = x1.saturating_add(*x2);
 ///
 ///     // Shift left: ret &lt;- x1 &lt;- x2 &lt;- next
-///     let ret = x1;
-///     x1 = x2;
-///     x2 = next;
+///     let ret = *x1;
+///     *x1 = *x2;
+///     *x2 = next;
 ///
 ///     // If addition has saturated at the maximum, we are finished
-///     if ret == x1 &amp;&amp; ret &gt; 1 {
-///         return None;
+///     if ret == *x1 &amp;&amp; ret &gt; 1 {
+///         None
+///     } else {
+///         Some(ret)
 ///     }
-///
-///     Some(ret)
 /// });
 ///
 /// itertools::assert_equal(fibonacci.by_ref().take(8),
@@ -304,7 +295,7 @@
     <span class="macro">debug_fmt_fields!</span>(Unfold, state);
 }
 
-<span class="doccomment">/// See [`unfold`](../fn.unfold.html) for more information.
+<span class="doccomment">/// See [`unfold`](crate::unfold) for more information.
 </span><span class="attr">#[derive(Clone)]
 #[must_use = <span class="string">&quot;iterators are lazy and do nothing unless consumed&quot;</span>]
 </span><span class="kw">pub struct </span>Unfold&lt;St, F&gt; {
@@ -319,22 +310,15 @@
     <span class="kw">type </span>Item = A;
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;A&gt; {
+    </span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         (<span class="self">self</span>.f)(<span class="kw-2">&amp;mut </span><span class="self">self</span>.state)
-    }
-
-    <span class="attr">#[inline]
-    </span><span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
-        <span class="comment">// no possible known bounds at this point
-        </span>(<span class="number">0</span>, <span class="prelude-val">None</span>)
     }
 }
 
 <span class="doccomment">/// An iterator that infinitely applies function to value and yields results.
 ///
-/// This `struct` is created by the [`iterate()`] function. See its documentation for more.
-///
-/// [`iterate()`]: ../fn.iterate.html
+/// This `struct` is created by the [`iterate()`](crate::iterate) function.
+/// See its documentation for more.
 </span><span class="attr">#[derive(Clone)]
 #[must_use = <span class="string">&quot;iterators are lazy and do nothing unless consumed&quot;</span>]
 </span><span class="kw">pub struct </span>Iterate&lt;St, F&gt; {

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/flexi_logger-0.24.0/src/write_mode.rs`."><title>write_mode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/flexi_logger-0.25.5/src/write_mode.rs`."><title>write_mode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -226,6 +226,18 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
 <span class="doccomment">/// Default buffer capacity (8k), when buffering is used.
@@ -237,11 +249,13 @@
 <span class="doccomment">/// Default size of the message pool;
 /// a higher value could further reduce allocations during log file rotation and cleanup.
 </span><span class="attr">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;async&quot;</span>)))]
 </span><span class="kw">pub const </span>DEFAULT_POOL_CAPA: usize = <span class="number">50</span>;
 
 <span class="doccomment">/// Default capacity for the message buffers;
 /// a higher value reduces allocations when longer log lines are used.
 </span><span class="attr">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;async&quot;</span>)))]
 </span><span class="kw">pub const </span>DEFAULT_MESSAGE_CAPA: usize = <span class="number">200</span>;
 
 <span class="doccomment">/// Describes whether the log output should be written synchronously or asynchronously,
@@ -284,6 +298,12 @@
     /// Every log line is directly written to the output, without buffering.
     /// This allows seeing new log lines in real time, and does not need additional threads.
     </span>Direct,
+
+    <span class="doccomment">/// Do not buffer and support `cargo test`&#39;s capture.
+    ///
+    /// Much like `Direct`, just a bit slower, and allows
+    /// `cargo test` to capture log output and print it only for failing tests.
+    </span>SupportCapture,
 
     <span class="doccomment">/// Same as `BufferAndFlushWith` with default capacity ([`DEFAULT_BUFFER_CAPACITY`])
     /// and default interval ([`DEFAULT_FLUSH_INTERVAL`]).
@@ -360,7 +380,7 @@
 <span class="kw">impl </span>WriteMode {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>inner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; EffectiveWriteMode {
         <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
-            <span class="self">Self</span>::Direct =&gt; EffectiveWriteMode::Direct,
+            <span class="self">Self</span>::Direct | <span class="self">Self</span>::SupportCapture =&gt; EffectiveWriteMode::Direct,
             <span class="self">Self</span>::BufferDontFlush =&gt; {
                 EffectiveWriteMode::BufferDontFlushWith(DEFAULT_BUFFER_CAPACITY)
             }
@@ -397,7 +417,10 @@
     }
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>without_flushing(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WriteMode {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Direct | <span class="self">Self</span>::BufferDontFlush | <span class="self">Self</span>::BufferDontFlushWith(<span class="kw">_</span>) =&gt; <span class="kw-2">*</span><span class="self">self</span>,
+            <span class="self">Self</span>::Direct
+            | <span class="self">Self</span>::SupportCapture
+            | <span class="self">Self</span>::BufferDontFlush
+            | <span class="self">Self</span>::BufferDontFlushWith(<span class="kw">_</span>) =&gt; <span class="kw-2">*</span><span class="self">self</span>,
             <span class="self">Self</span>::BufferAndFlush =&gt; <span class="self">Self</span>::BufferDontFlush,
             <span class="self">Self</span>::BufferAndFlushWith(bufsize, <span class="kw">_</span>) =&gt; <span class="self">Self</span>::BufferDontFlushWith(<span class="kw-2">*</span>bufsize),
             <span class="attr">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
@@ -437,9 +460,10 @@
     }
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>get_flush_interval(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Duration {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Direct | <span class="self">Self</span>::BufferDontFlush | <span class="self">Self</span>::BufferDontFlushWith(<span class="kw">_</span>) =&gt; {
-                Duration::from_secs(<span class="number">0</span>)
-            }
+            <span class="self">Self</span>::Direct
+            | <span class="self">Self</span>::SupportCapture
+            | <span class="self">Self</span>::BufferDontFlush
+            | <span class="self">Self</span>::BufferDontFlushWith(<span class="kw">_</span>) =&gt; Duration::from_secs(<span class="number">0</span>),
             <span class="self">Self</span>::BufferAndFlush =&gt; DEFAULT_FLUSH_INTERVAL,
             <span class="attr">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
             </span><span class="self">Self</span>::Async =&gt; DEFAULT_FLUSH_INTERVAL,

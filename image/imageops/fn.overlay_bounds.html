@@ -11,7 +11,7 @@ onto the bottom image, how large can we be? Have to wary of the following issues
 <li>Overflows in the computation</li>
 <li>Coordinates could be completely out of bounds</li>
 </ul>
-<p>The main idea is to make use of inequalities provided by the nature of <code>saturing_add</code> and
+<p>The main idea is to make use of inequalities provided by the nature of <code>saturating_add</code> and
 <code>saturating_sub</code>. These intrinsically validate that all resulting coordinates will be in bounds
 for both images.</p>
 <p>We want that all these coordinate accesses are safe:</p>

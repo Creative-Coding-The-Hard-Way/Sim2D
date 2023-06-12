@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/wide-0.7.4/src/f32x4_.rs`."><title>f32x4_.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wide/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/wide-0.7.9/src/f32x4_.rs`."><title>f32x4_.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wide/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1478,6 +1478,101 @@
 <a href="#1478" id="1478">1478</a>
 <a href="#1479" id="1479">1479</a>
 <a href="#1480" id="1480">1480</a>
+<a href="#1481" id="1481">1481</a>
+<a href="#1482" id="1482">1482</a>
+<a href="#1483" id="1483">1483</a>
+<a href="#1484" id="1484">1484</a>
+<a href="#1485" id="1485">1485</a>
+<a href="#1486" id="1486">1486</a>
+<a href="#1487" id="1487">1487</a>
+<a href="#1488" id="1488">1488</a>
+<a href="#1489" id="1489">1489</a>
+<a href="#1490" id="1490">1490</a>
+<a href="#1491" id="1491">1491</a>
+<a href="#1492" id="1492">1492</a>
+<a href="#1493" id="1493">1493</a>
+<a href="#1494" id="1494">1494</a>
+<a href="#1495" id="1495">1495</a>
+<a href="#1496" id="1496">1496</a>
+<a href="#1497" id="1497">1497</a>
+<a href="#1498" id="1498">1498</a>
+<a href="#1499" id="1499">1499</a>
+<a href="#1500" id="1500">1500</a>
+<a href="#1501" id="1501">1501</a>
+<a href="#1502" id="1502">1502</a>
+<a href="#1503" id="1503">1503</a>
+<a href="#1504" id="1504">1504</a>
+<a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
+<a href="#1512" id="1512">1512</a>
+<a href="#1513" id="1513">1513</a>
+<a href="#1514" id="1514">1514</a>
+<a href="#1515" id="1515">1515</a>
+<a href="#1516" id="1516">1516</a>
+<a href="#1517" id="1517">1517</a>
+<a href="#1518" id="1518">1518</a>
+<a href="#1519" id="1519">1519</a>
+<a href="#1520" id="1520">1520</a>
+<a href="#1521" id="1521">1521</a>
+<a href="#1522" id="1522">1522</a>
+<a href="#1523" id="1523">1523</a>
+<a href="#1524" id="1524">1524</a>
+<a href="#1525" id="1525">1525</a>
+<a href="#1526" id="1526">1526</a>
+<a href="#1527" id="1527">1527</a>
+<a href="#1528" id="1528">1528</a>
+<a href="#1529" id="1529">1529</a>
+<a href="#1530" id="1530">1530</a>
+<a href="#1531" id="1531">1531</a>
+<a href="#1532" id="1532">1532</a>
+<a href="#1533" id="1533">1533</a>
+<a href="#1534" id="1534">1534</a>
+<a href="#1535" id="1535">1535</a>
+<a href="#1536" id="1536">1536</a>
+<a href="#1537" id="1537">1537</a>
+<a href="#1538" id="1538">1538</a>
+<a href="#1539" id="1539">1539</a>
+<a href="#1540" id="1540">1540</a>
+<a href="#1541" id="1541">1541</a>
+<a href="#1542" id="1542">1542</a>
+<a href="#1543" id="1543">1543</a>
+<a href="#1544" id="1544">1544</a>
+<a href="#1545" id="1545">1545</a>
+<a href="#1546" id="1546">1546</a>
+<a href="#1547" id="1547">1547</a>
+<a href="#1548" id="1548">1548</a>
+<a href="#1549" id="1549">1549</a>
+<a href="#1550" id="1550">1550</a>
+<a href="#1551" id="1551">1551</a>
+<a href="#1552" id="1552">1552</a>
+<a href="#1553" id="1553">1553</a>
+<a href="#1554" id="1554">1554</a>
+<a href="#1555" id="1555">1555</a>
+<a href="#1556" id="1556">1556</a>
+<a href="#1557" id="1557">1557</a>
+<a href="#1558" id="1558">1558</a>
+<a href="#1559" id="1559">1559</a>
+<a href="#1560" id="1560">1560</a>
+<a href="#1561" id="1561">1561</a>
+<a href="#1562" id="1562">1562</a>
+<a href="#1563" id="1563">1563</a>
+<a href="#1564" id="1564">1564</a>
+<a href="#1565" id="1565">1565</a>
+<a href="#1566" id="1566">1566</a>
+<a href="#1567" id="1567">1567</a>
+<a href="#1568" id="1568">1568</a>
+<a href="#1569" id="1569">1569</a>
+<a href="#1570" id="1570">1570</a>
+<a href="#1571" id="1571">1571</a>
+<a href="#1572" id="1572">1572</a>
+<a href="#1573" id="1573">1573</a>
+<a href="#1574" id="1574">1574</a>
+<a href="#1575" id="1575">1575</a>
 </pre><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
 <span class="macro">pick! </span>{
@@ -1503,7 +1598,29 @@
         u32x4_all_true(f32x4_eq(<span class="self">self</span>.simd, other.simd))
       }
     }
-  } <span class="kw">else </span>{
+  } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))] </span>{
+    <span class="kw">use </span>core::arch::aarch64::<span class="kw-2">*</span>;
+    <span class="attr">#[repr(C)]
+    #[derive(Copy, Clone)]
+    </span><span class="kw">pub struct </span>f32x4 { neon : float32x4_t }
+
+    <span class="kw">impl </span>Default <span class="kw">for </span>f32x4 {
+      <span class="attr">#[inline]
+      #[must_use]
+      </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self </span>{ neon: vdupq_n_f32(<span class="number">0.0</span>)} }
+      }
+    }
+
+    <span class="kw">impl </span>PartialEq <span class="kw">for </span>f32x4 {
+      <span class="attr">#[inline]
+      #[must_use]
+      </span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="kw">unsafe </span>{ vminvq_u32(vceqq_f32(<span class="self">self</span>.neon, other.neon))==u32::MAX }
+      }
+
+    }
+    } <span class="kw">else </span>{
     <span class="attr">#[derive(Default, Clone, Copy, PartialEq)]
     #[repr(C, align(<span class="number">16</span>))]
     </span><span class="kw">pub struct </span>f32x4 { arr: [f32;<span class="number">4</span>] }
@@ -1555,6 +1672,8 @@
         <span class="self">Self </span>{ sse: add_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_add(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self </span>{ neon: vaddq_f32(<span class="self">self</span>.neon, rhs.neon) } }
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="self">self</span>.arr[<span class="number">0</span>] + rhs.arr[<span class="number">0</span>],
@@ -1577,6 +1696,8 @@
         <span class="self">Self </span>{ sse: sub_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_sub(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vsubq_f32(<span class="self">self</span>.neon, rhs.neon) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="self">self</span>.arr[<span class="number">0</span>] - rhs.arr[<span class="number">0</span>],
@@ -1599,6 +1720,8 @@
         <span class="self">Self </span>{ sse: mul_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_mul(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vmulq_f32(<span class="self">self</span>.neon, rhs.neon) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="self">self</span>.arr[<span class="number">0</span>] * rhs.arr[<span class="number">0</span>],
@@ -1621,6 +1744,8 @@
         <span class="self">Self </span>{ sse: div_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_div(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vdivq_f32(<span class="self">self</span>.neon, rhs.neon) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="self">self</span>.arr[<span class="number">0</span>] / rhs.arr[<span class="number">0</span>],
@@ -1715,6 +1840,8 @@
         <span class="self">Self </span>{ sse: bitand_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: v128_and(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vandq_u32(vreinterpretq_u32_f32(<span class="self">self</span>.neon), vreinterpretq_u32_f32(rhs.neon))) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           f32::from_bits(<span class="self">self</span>.arr[<span class="number">0</span>].to_bits() &amp; rhs.arr[<span class="number">0</span>].to_bits()),
@@ -1737,6 +1864,8 @@
         <span class="self">Self </span>{ sse: bitor_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: v128_or(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vorrq_u32(vreinterpretq_u32_f32(<span class="self">self</span>.neon), vreinterpretq_u32_f32(rhs.neon))) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           f32::from_bits(<span class="self">self</span>.arr[<span class="number">0</span>].to_bits() | rhs.arr[<span class="number">0</span>].to_bits()),
@@ -1759,6 +1888,8 @@
         <span class="self">Self </span>{ sse: bitxor_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: v128_xor(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(veorq_u32(vreinterpretq_u32_f32(<span class="self">self</span>.neon), vreinterpretq_u32_f32(rhs.neon))) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           f32::from_bits(<span class="self">self</span>.arr[<span class="number">0</span>].to_bits() ^ rhs.arr[<span class="number">0</span>].to_bits()),
@@ -1781,6 +1912,8 @@
         <span class="self">Self </span>{ sse: cmp_eq_mask_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_eq(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vceqq_f32(<span class="self">self</span>.neon, rhs.neon)) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] == rhs.arr[<span class="number">0</span>] { f32::from_bits(u32::MAX) } <span class="kw">else </span>{ <span class="number">0.0 </span>},
@@ -1803,6 +1936,8 @@
         <span class="self">Self </span>{ sse: cmp_ge_mask_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_ge(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vcgeq_f32(<span class="self">self</span>.neon, rhs.neon)) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] &gt;= rhs.arr[<span class="number">0</span>] { f32::from_bits(u32::MAX) } <span class="kw">else </span>{ <span class="number">0.0 </span>},
@@ -1825,6 +1960,8 @@
         <span class="self">Self </span>{ sse: cmp_gt_mask_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_gt(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vcgtq_f32(<span class="self">self</span>.neon, rhs.neon)) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] &gt; rhs.arr[<span class="number">0</span>] { f32::from_bits(u32::MAX) } <span class="kw">else </span>{ <span class="number">0.0 </span>},
@@ -1847,6 +1984,8 @@
         <span class="self">Self </span>{ sse: cmp_neq_mask_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_ne(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vmvnq_u32(vceqq_f32(<span class="self">self</span>.neon, rhs.neon))) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] != rhs.arr[<span class="number">0</span>] { f32::from_bits(u32::MAX) } <span class="kw">else </span>{ <span class="number">0.0 </span>},
@@ -1869,6 +2008,8 @@
         <span class="self">Self </span>{ sse: cmp_le_mask_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_le(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vcleq_f32(<span class="self">self</span>.neon, rhs.neon)) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] &lt;= rhs.arr[<span class="number">0</span>] { f32::from_bits(u32::MAX) } <span class="kw">else </span>{ <span class="number">0.0 </span>},
@@ -1891,6 +2032,8 @@
         <span class="self">Self </span>{ sse: cmp_lt_mask_m128(<span class="self">self</span>.sse, rhs.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_lt(<span class="self">self</span>.simd, rhs.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vcltq_f32(<span class="self">self</span>.neon, rhs.neon)) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] &lt; rhs.arr[<span class="number">0</span>] { f32::from_bits(u32::MAX) } <span class="kw">else </span>{ <span class="number">0.0 </span>},
@@ -1929,6 +2072,8 @@
     <span class="macro">pick! </span>{
       <span class="kw">if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_abs(<span class="self">self</span>.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vabsq_f32(<span class="self">self</span>.neon) }}
       } <span class="kw">else </span>{
         <span class="kw">let </span>non_sign_bits = f32x4::from(f32::from_bits(i32::MAX <span class="kw">as </span>u32));
         <span class="self">self </span>&amp; non_sign_bits
@@ -1949,6 +2094,8 @@
         <span class="self">Self </span>{
           simd: f32x4_pmax(<span class="self">self</span>.simd, rhs.simd),
         }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vmaxq_f32(<span class="self">self</span>.neon, rhs.neon) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] &lt; rhs.arr[<span class="number">0</span>] { rhs.arr[<span class="number">0</span>] } <span class="kw">else </span>{ <span class="self">self</span>.arr[<span class="number">0</span>] },
@@ -1986,6 +2133,8 @@
             f32x4_ne(<span class="self">self</span>.simd, <span class="self">self</span>.simd), <span class="comment">// NaN check
           </span>)
         }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vmaxnmq_f32(<span class="self">self</span>.neon, rhs.neon) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="self">self</span>.arr[<span class="number">0</span>].max(rhs.arr[<span class="number">0</span>]),
@@ -2010,6 +2159,8 @@
         <span class="self">Self </span>{
           simd: f32x4_pmin(<span class="self">self</span>.simd, rhs.simd),
         }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vminq_f32(<span class="self">self</span>.neon, rhs.neon) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>] &lt; rhs.arr[<span class="number">0</span>] { <span class="self">self</span>.arr[<span class="number">0</span>] } <span class="kw">else </span>{ rhs.arr[<span class="number">0</span>] },
@@ -2047,6 +2198,8 @@
             f32x4_ne(<span class="self">self</span>.simd, <span class="self">self</span>.simd), <span class="comment">// NaN check
           </span>)
         }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vminnmq_f32(<span class="self">self</span>.neon, rhs.neon) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="self">self</span>.arr[<span class="number">0</span>].min(rhs.arr[<span class="number">0</span>]),
@@ -2065,6 +2218,8 @@
         <span class="self">Self </span>{ sse: cmp_unord_mask_m128(<span class="self">self</span>.sse, <span class="self">self</span>.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_ne(<span class="self">self</span>.simd, <span class="self">self</span>.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_u32(vmvnq_u32(vceqq_f32(<span class="self">self</span>.neon, <span class="self">self</span>.neon))) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="kw">if </span><span class="self">self</span>.arr[<span class="number">0</span>].is_nan() { f32::from_bits(u32::MAX) } <span class="kw">else </span>{ <span class="number">0.0 </span>},
@@ -2108,6 +2263,8 @@
         mask.blend(<span class="self">self</span>, f)
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_nearest(<span class="self">self</span>.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vrndnq_f32(<span class="self">self</span>.neon) }}
       } <span class="kw">else </span>{
         <span class="comment">// Note(Lokathor): This software fallback is probably very slow compared
         // to having a hardware option available, even just the sse2 version is
@@ -2170,6 +2327,8 @@
         flip_to_max ^ cast
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         cast(<span class="self">Self </span>{ simd: i32x4_trunc_sat_f32x4(f32x4_nearest(<span class="self">self</span>.simd)) })
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        cast(<span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_s32(vcvtnq_s32_f32(<span class="self">self</span>.neon)) }})
       } <span class="kw">else </span>{
         <span class="kw">let </span>rounded: [f32; <span class="number">4</span>] = cast(<span class="self">self</span>.round());
         cast([
@@ -2213,6 +2372,8 @@
         flip_to_max ^ cast
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         cast(<span class="self">Self </span>{ simd: i32x4_trunc_sat_f32x4(<span class="self">self</span>.simd) })
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        cast(<span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vreinterpretq_f32_s32(vcvtq_s32_f32(<span class="self">self</span>.neon)) }})
       } <span class="kw">else </span>{
         <span class="kw">let </span>n: [f32;<span class="number">4</span>] = cast(<span class="self">self</span>);
         cast([
@@ -2286,6 +2447,7 @@
   }
 
   <span class="attr">#[allow(non_upper_case_globals)]
+  #[inline]
   </span><span class="kw">pub fn </span>asin_acos(<span class="self">self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
     <span class="comment">// Based on the Agner Fog &quot;vector class library&quot;:
     // https://github.com/vectorclass/version2/blob/master/vectormath_trig.h
@@ -2325,6 +2487,7 @@
   }
 
   <span class="attr">#[allow(non_upper_case_globals)]
+  #[inline]
   </span><span class="kw">pub fn </span>asin(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
     <span class="comment">// Based on the Agner Fog &quot;vector class library&quot;:
     // https://github.com/vectorclass/version2/blob/master/vectormath_trig.h
@@ -2395,6 +2558,7 @@
   }
 
   <span class="attr">#[allow(non_upper_case_globals)]
+  #[inline]
   </span><span class="kw">pub fn </span>atan(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
     <span class="comment">// Based on the Agner Fog &quot;vector class library&quot;:
     // https://github.com/vectorclass/version2/blob/master/vectormath_trig.h
@@ -2433,6 +2597,7 @@
   }
 
   <span class="attr">#[allow(non_upper_case_globals)]
+  #[inline]
   </span><span class="kw">pub fn </span>atan2(<span class="self">self</span>, x: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
     <span class="comment">// Based on the Agner Fog &quot;vector class library&quot;:
     // https://github.com/vectorclass/version2/blob/master/vectormath_trig.h
@@ -2454,9 +2619,9 @@
     <span class="comment">// check for special case: x and y are both +/- INF
     </span><span class="kw">let </span>both_infinite = x.is_inf() &amp; y.is_inf();
     <span class="kw">if </span>both_infinite.any() {
-      <span class="kw">let </span>mone = -<span class="self">Self</span>::ONE;
-      x2 = both_infinite.blend(x2 &amp; mone, x2);
-      y2 = both_infinite.blend(y2 &amp; mone, y2);
+      <span class="kw">let </span>minus_one = -<span class="self">Self</span>::ONE;
+      x2 = both_infinite.blend(x2 &amp; minus_one, x2);
+      y2 = both_infinite.blend(y2 &amp; minus_one, y2);
     }
 
     <span class="comment">// x = y = 0 will produce NAN. No problem, fixed below
@@ -2580,6 +2745,8 @@
         <span class="self">Self </span>{ sse: reciprocal_m128(<span class="self">self</span>.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_div(f32x4_splat(<span class="number">1.0</span>), <span class="self">self</span>.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vdivq_f32(vdupq_n_f32(<span class="number">1.0</span>), <span class="self">self</span>.neon) }}
       } <span class="kw">else </span>{
         <span class="self">Self </span>{ arr: [
           <span class="number">1.0 </span>/ <span class="self">self</span>.arr[<span class="number">0</span>],
@@ -2598,6 +2765,8 @@
         <span class="self">Self </span>{ sse: reciprocal_sqrt_m128(<span class="self">self</span>.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_div(f32x4_splat(<span class="number">1.0</span>), f32x4_sqrt(<span class="self">self</span>.simd)) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vdivq_f32(vdupq_n_f32(<span class="number">1.0</span>), vsqrtq_f32(<span class="self">self</span>.neon)) }}
       } <span class="kw">else if </span><span class="attr">#[cfg(feature=<span class="string">&quot;std&quot;</span>)] </span>{
         <span class="self">Self </span>{ arr: [
           <span class="number">1.0 </span>/ <span class="self">self</span>.arr[<span class="number">0</span>].sqrt(),
@@ -2623,6 +2792,8 @@
         <span class="self">Self </span>{ sse: sqrt_m128(<span class="self">self</span>.sse) }
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         <span class="self">Self </span>{ simd: f32x4_sqrt(<span class="self">self</span>.simd) }
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe </span>{<span class="self">Self </span>{ neon: vsqrtq_f32(<span class="self">self</span>.neon) }}
       } <span class="kw">else if </span><span class="attr">#[cfg(feature=<span class="string">&quot;std&quot;</span>)] </span>{
         <span class="self">Self </span>{ arr: [
           <span class="self">self</span>.arr[<span class="number">0</span>].sqrt(),
@@ -2640,6 +2811,7 @@
       }
     }
   }
+
   <span class="attr">#[inline]
   #[must_use]
   </span><span class="kw">pub fn </span>move_mask(<span class="self">self</span>) -&gt; i32 {
@@ -2648,6 +2820,21 @@
         move_mask_m128(<span class="self">self</span>.sse)
       } <span class="kw">else if </span><span class="attr">#[cfg(target_feature=<span class="string">&quot;simd128&quot;</span>)] </span>{
         u32x4_bitmask(<span class="self">self</span>.simd) <span class="kw">as </span>i32
+      } <span class="kw">else if </span><span class="attr">#[cfg(all(target_feature=<span class="string">&quot;neon&quot;</span>,target_arch=<span class="string">&quot;aarch64&quot;</span>))]</span>{
+        <span class="kw">unsafe
+        </span>{
+          <span class="kw">let </span>as_u32 = vreinterpretq_u32_f32(<span class="self">self</span>.neon);
+
+          <span class="comment">// mask the top bit
+          </span><span class="kw">let </span>masked = vandq_u32(as_u32, vdupq_n_u32(<span class="number">0x80000000</span>));
+
+          <span class="comment">// shift by appropriate amount
+          </span><span class="kw">let </span>shiftby : [i32;<span class="number">4</span>] = [-<span class="number">31</span>,-<span class="number">30</span>,-<span class="number">29</span>,-<span class="number">28</span>];
+          <span class="kw">let </span>out = vshlq_u32(masked, vld1q_s32(shiftby.as_ptr()) );
+
+          <span class="comment">// horizontal add everything and return it
+          </span>vaddvq_u32(out) <span class="kw">as </span>i32
+        }
       } <span class="kw">else </span>{
         (((<span class="self">self</span>.arr[<span class="number">0</span>].to_bits() <span class="kw">as </span>i32) &lt; <span class="number">0</span>) <span class="kw">as </span>i32) &lt;&lt; <span class="number">0 </span>|
         (((<span class="self">self</span>.arr[<span class="number">1</span>].to_bits() <span class="kw">as </span>i32) &lt; <span class="number">0</span>) <span class="kw">as </span>i32) &lt;&lt; <span class="number">1 </span>|
@@ -2745,32 +2932,32 @@
     );
     cast::&lt;<span class="kw">_</span>, f32x4&gt;(t2)
   }
-
-  <span class="kw">fn </span>is_zero_or_subnormal(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+  <span class="attr">#[inline]
+  </span><span class="kw">fn </span>is_zero_or_subnormal(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
     <span class="kw">let </span>t = cast::&lt;<span class="kw">_</span>, i32x4&gt;(<span class="self">self</span>);
     <span class="kw">let </span>t = t &amp; i32x4::splat(<span class="number">0x7F800000</span>);
     i32x4::round_float(t.cmp_eq(i32x4::splat(<span class="number">0</span>)))
   }
-
-  <span class="kw">fn </span>infinity() -&gt; <span class="self">Self </span>{
+  <span class="attr">#[inline]
+  </span><span class="kw">fn </span>infinity() -&gt; <span class="self">Self </span>{
     cast::&lt;<span class="kw">_</span>, f32x4&gt;(i32x4::splat(<span class="number">0x7F800000</span>))
   }
-
-  <span class="kw">fn </span>nan_log() -&gt; <span class="self">Self </span>{
+  <span class="attr">#[inline]
+  </span><span class="kw">fn </span>nan_log() -&gt; <span class="self">Self </span>{
     cast::&lt;<span class="kw">_</span>, f32x4&gt;(i32x4::splat(<span class="number">0x7FC00000 </span>| <span class="number">0x101 </span>&amp; <span class="number">0x003FFFFF</span>))
   }
-
-  <span class="kw">fn </span>nan_pow() -&gt; <span class="self">Self </span>{
+  <span class="attr">#[inline]
+  </span><span class="kw">fn </span>nan_pow() -&gt; <span class="self">Self </span>{
     cast::&lt;<span class="kw">_</span>, f32x4&gt;(i32x4::splat(<span class="number">0x7FC00000 </span>| <span class="number">0x101 </span>&amp; <span class="number">0x003FFFFF</span>))
   }
-
-  <span class="kw">pub fn </span>sign_bit(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>sign_bit(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
     <span class="kw">let </span>t1 = cast::&lt;<span class="kw">_</span>, i32x4&gt;(<span class="self">self</span>);
     <span class="kw">let </span>t2 = t1 &gt;&gt; <span class="number">31</span>;
     !cast::&lt;<span class="kw">_</span>, f32x4&gt;(t2).cmp_eq(f32x4::ZERO)
   }
-
-  <span class="kw">pub fn </span>reduce_add(<span class="self">self</span>) -&gt; f32 {
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>reduce_add(<span class="self">self</span>) -&gt; f32 {
     <span class="kw">let </span>arr: [f32; <span class="number">4</span>] = cast(<span class="self">self</span>);
     arr.iter().sum()
   }
@@ -2946,15 +3133,18 @@
     (<span class="self">self</span>.is_nan() | y.is_nan()).blend(<span class="self">self </span>+ y, z)
   }
 
-  <span class="kw">pub fn </span>powf(<span class="self">self</span>, y: f32) -&gt; <span class="self">Self </span>{
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>powf(<span class="self">self</span>, y: f32) -&gt; <span class="self">Self </span>{
     <span class="self">Self</span>::pow_f32x4(<span class="self">self</span>, f32x4::splat(y))
   }
 
-  <span class="kw">pub fn </span>to_array(<span class="self">self</span>) -&gt; [f32; <span class="number">4</span>] {
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>to_array(<span class="self">self</span>) -&gt; [f32; <span class="number">4</span>] {
     cast(<span class="self">self</span>)
   }
 
-  <span class="kw">pub fn </span>as_array_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[f32; <span class="number">4</span>] {
+  <span class="attr">#[inline]
+  </span><span class="kw">pub fn </span>as_array_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[f32; <span class="number">4</span>] {
     cast_ref(<span class="self">self</span>)
   }
 }

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["DeviceDiagnosticCheckpoints","MeshShader","RayTracing"]};
+window.SIDEBAR_ITEMS = {"struct":["CoverageReductionMode","DeviceDiagnosticCheckpoints","MeshShader","RayTracing"]};

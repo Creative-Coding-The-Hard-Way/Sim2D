@@ -83,30 +83,75 @@
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
 <a href="#85" id="85">85</a>
-</pre><pre class="rust"><code><span class="kw">mod </span>error;
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+</pre><pre class="rust"><code><span class="kw">mod </span>assets;
+<span class="kw">mod </span>error;
 <span class="kw">mod </span>renderer;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>vulkan_api;
 
-<span class="kw">use </span>{<span class="kw">crate</span>::math::Vec2, vulkan_api::SpriteData};
+<span class="kw">use </span>{<span class="kw">crate</span>::math::Vec2, std::sync::Arc, vulkan_api::SpriteData};
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::renderer::NewAssetsCommand;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::assets::NewAssets;
 <span class="kw">pub use </span><span class="self">self</span>::{
+    assets::{AssetLoader, Assets, CachedFont, FontId, Image, TextureId},
     error::GraphicsError,
-    renderer::{AssetLoader, Image, Renderer, TextureAtlas, TextureId},
+    renderer::Renderer,
 };
 
 <span class="kw">pub struct </span>G2D {
+    cached_fonts: Vec&lt;Arc&lt;CachedFont&gt;&gt;,
     sprites: Vec&lt;SpriteData&gt;,
 
+    <span class="kw">pub </span>font: FontId,
     <span class="kw">pub </span>clear_color: [f32; <span class="number">4</span>],
     <span class="kw">pub </span>fill_color: [f32; <span class="number">4</span>],
     <span class="kw">pub </span>image: Image,
     <span class="kw">pub </span>line_width: f32,
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>G2D {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>G2D {
+    <span class="kw">pub fn </span>new(assets: <span class="kw-2">&amp;</span>Assets) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
+            font: FontId::default_font(),
+            cached_fonts: assets.fonts().to_vec(),
             sprites: Vec::with_capacity(<span class="number">10_000</span>),
             clear_color: [<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>],
             fill_color: [<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>],
@@ -114,19 +159,13 @@
             line_width: <span class="number">1.0</span>,
         }
     }
-}
-
-<span class="kw">impl </span>G2D {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        Default::default()
-    }
 
     <span class="kw">pub fn </span>rect_centered(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pos: Vec2, size: Vec2, angle: f32) {
         <span class="self">self</span>.sprites.push(SpriteData {
             pos: [pos.x, pos.y],
             size: [size.x, size.y],
             rgba: <span class="self">self</span>.fill_color,
-            tex: <span class="self">self</span>.image.texture_id().get_index() <span class="kw">as </span>f32,
+            tex: <span class="self">self</span>.image.texture_id().raw() <span class="kw">as </span>f32,
             angle,
             uv_scale: [<span class="number">1.0</span>, <span class="number">1.0</span>],
             uv_offset: [<span class="number">0.0</span>, <span class="number">0.0</span>],
@@ -139,10 +178,29 @@
             pos: [top_left.x, top_left.y],
             size: [size.x, size.y],
             rgba: <span class="self">self</span>.fill_color,
-            tex: <span class="self">self</span>.image.texture_id().get_index() <span class="kw">as </span>f32,
+            tex: <span class="self">self</span>.image.texture_id().raw() <span class="kw">as </span>f32,
             angle,
             center_offset: [<span class="number">0.5</span>, -<span class="number">0.5</span>],
             ..Default::default()
+        });
+    }
+
+    <span class="kw">pub fn </span>rect_uvs(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        top_left: Vec2,
+        size: Vec2,
+        uv_top_left: Vec2,
+        uv_scale: Vec2,
+    ) {
+        <span class="self">self</span>.sprites.push(SpriteData {
+            pos: [top_left.x, top_left.y],
+            size: [size.x, size.y],
+            rgba: <span class="self">self</span>.fill_color,
+            tex: <span class="self">self</span>.image.texture_id().raw() <span class="kw">as </span>f32,
+            angle: <span class="number">0.0</span>,
+            center_offset: [<span class="number">0.5</span>, -<span class="number">0.5</span>],
+            uv_offset: uv_top_left.into(),
+            uv_scale: uv_scale.into(),
         });
     }
 
@@ -153,6 +211,26 @@
         <span class="kw">let </span>angle =
             ((d.y / len) / (d.x / len)).atan() + std::f32::consts::FRAC_PI_2;
         <span class="self">self</span>.rect_centered(midpoint, Vec2::new(<span class="self">self</span>.line_width, len), angle);
+    }
+
+    <span class="kw">pub fn </span>text(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pos: Vec2, text: <span class="kw">impl </span>AsRef&lt;str&gt;) {
+        <span class="kw">let </span>font = <span class="kw-2">&amp;</span><span class="self">self</span>.cached_fonts[<span class="self">self</span>.font.raw()];
+
+        <span class="kw">let </span>(glyph_sprites, <span class="kw">_</span>, <span class="kw">_</span>) = font.layout_paragraph_geometry(text);
+
+        <span class="kw">let </span>original_image = <span class="self">self</span>.image;
+        <span class="self">self</span>.image = font.atlas;
+
+        <span class="kw">for </span>sprite <span class="kw">in </span><span class="kw-2">&amp;</span>glyph_sprites {
+            <span class="self">self</span>.rect_uvs(
+                sprite.top_left + pos,
+                sprite.size,
+                sprite.uv_top_left,
+                sprite.uv_size,
+            )
+        }
+
+        <span class="self">self</span>.image = original_image;
     }
 }
 

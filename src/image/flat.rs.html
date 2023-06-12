@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/image-0.24.4/./src/flat.rs`."><title>flat.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../image/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/image-0.24.6/./src/flat.rs`."><title>flat.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../image/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1710,6 +1710,29 @@
 <a href="#1710" id="1710">1710</a>
 <a href="#1711" id="1711">1711</a>
 <a href="#1712" id="1712">1712</a>
+<a href="#1713" id="1713">1713</a>
+<a href="#1714" id="1714">1714</a>
+<a href="#1715" id="1715">1715</a>
+<a href="#1716" id="1716">1716</a>
+<a href="#1717" id="1717">1717</a>
+<a href="#1718" id="1718">1718</a>
+<a href="#1719" id="1719">1719</a>
+<a href="#1720" id="1720">1720</a>
+<a href="#1721" id="1721">1721</a>
+<a href="#1722" id="1722">1722</a>
+<a href="#1723" id="1723">1723</a>
+<a href="#1724" id="1724">1724</a>
+<a href="#1725" id="1725">1725</a>
+<a href="#1726" id="1726">1726</a>
+<a href="#1727" id="1727">1727</a>
+<a href="#1728" id="1728">1728</a>
+<a href="#1729" id="1729">1729</a>
+<a href="#1730" id="1730">1730</a>
+<a href="#1731" id="1731">1731</a>
+<a href="#1732" id="1732">1732</a>
+<a href="#1733" id="1733">1733</a>
+<a href="#1734" id="1734">1734</a>
+<a href="#1735" id="1735">1735</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Image representations for ffi.
 //!
 //! # Usage
@@ -1765,7 +1788,7 @@
     UnsupportedError, UnsupportedErrorKind,
 };
 <span class="kw">use </span><span class="kw">crate</span>::image::{GenericImage, GenericImageView};
-<span class="kw">use </span><span class="kw">crate</span>::traits::{Pixel, PixelWithColorType};
+<span class="kw">use </span><span class="kw">crate</span>::traits::Pixel;
 <span class="kw">use </span><span class="kw">crate</span>::ImageBuffer;
 
 <span class="doccomment">/// A flat buffer over a (multi channel) image.
@@ -2305,11 +2328,14 @@
     /// There is no automatic conversion.
     </span><span class="kw">pub fn </span>as_view&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;View&lt;<span class="kw-2">&amp;</span>[P::Subpixel], P&gt;, Error&gt;
     <span class="kw">where
-        </span>P: PixelWithColorType,
+        </span>P: Pixel,
         Buffer: AsRef&lt;[P::Subpixel]&gt;,
     {
         <span class="kw">if </span><span class="self">self</span>.layout.channels != P::CHANNEL_COUNT {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::WrongColor(P::COLOR_TYPE));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::ChannelCountMismatch(
+                <span class="self">self</span>.layout.channels,
+                P::CHANNEL_COUNT,
+            ));
         }
 
         <span class="kw">let </span>as_ref = <span class="self">self</span>.samples.as_ref();
@@ -2344,11 +2370,14 @@
     /// intended.
     </span><span class="kw">pub fn </span>as_view_with_mut_samples&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;View&lt;<span class="kw-2">&amp;mut </span>[P::Subpixel], P&gt;, Error&gt;
     <span class="kw">where
-        </span>P: PixelWithColorType,
+        </span>P: Pixel,
         Buffer: AsMut&lt;[P::Subpixel]&gt;,
     {
         <span class="kw">if </span><span class="self">self</span>.layout.channels != P::CHANNEL_COUNT {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::WrongColor(P::COLOR_TYPE));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::ChannelCountMismatch(
+                <span class="self">self</span>.layout.channels,
+                P::CHANNEL_COUNT,
+            ));
         }
 
         <span class="kw">let </span>as_mut = <span class="self">self</span>.samples.as_mut();
@@ -2379,7 +2408,7 @@
     /// `ImageBuffer::from_raw`.
     </span><span class="kw">pub fn </span>as_view_mut&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ViewMut&lt;<span class="kw-2">&amp;mut </span>[P::Subpixel], P&gt;, Error&gt;
     <span class="kw">where
-        </span>P: PixelWithColorType,
+        </span>P: Pixel,
         Buffer: AsMut&lt;[P::Subpixel]&gt;,
     {
         <span class="kw">if </span>!<span class="self">self</span>.layout.is_normal(NormalForm::PixelPacked) {
@@ -2387,7 +2416,10 @@
         }
 
         <span class="kw">if </span><span class="self">self</span>.layout.channels != P::CHANNEL_COUNT {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::WrongColor(P::COLOR_TYPE));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::ChannelCountMismatch(
+                <span class="self">self</span>.layout.channels,
+                P::CHANNEL_COUNT,
+            ));
         }
 
         <span class="kw">let </span>as_mut = <span class="self">self</span>.samples.as_mut();
@@ -2474,7 +2506,7 @@
     /// not release any allocation.
     </span><span class="kw">pub fn </span>try_into_buffer&lt;P&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ImageBuffer&lt;P, Buffer&gt;, (Error, <span class="self">Self</span>)&gt;
     <span class="kw">where
-        </span>P: PixelWithColorType + <span class="lifetime">&#39;static</span>,
+        </span>P: Pixel + <span class="lifetime">&#39;static</span>,
         P::Subpixel: <span class="lifetime">&#39;static</span>,
         Buffer: Deref&lt;Target = [P::Subpixel]&gt;,
     {
@@ -2483,7 +2515,10 @@
         }
 
         <span class="kw">if </span><span class="self">self</span>.layout.channels != P::CHANNEL_COUNT {
-            <span class="kw">return </span><span class="prelude-val">Err</span>((Error::WrongColor(P::COLOR_TYPE), <span class="self">self</span>));
+            <span class="kw">return </span><span class="prelude-val">Err</span>((
+                Error::ChannelCountMismatch(<span class="self">self</span>.layout.channels, P::CHANNEL_COUNT),
+                <span class="self">self</span>,
+            ));
         }
 
         <span class="kw">if </span>!<span class="self">self</span>.fits(<span class="self">self</span>.samples.deref().len()) {
@@ -2738,6 +2773,9 @@
     /// directly memory unsafe although that will likely alias pixels. One scenario is when you
     /// want to construct an `Rgba` image but have only 3 bytes per pixel and for some reason don&#39;t
     /// care about the value of the alpha channel even though you need `Rgba`.
+    </span>ChannelCountMismatch(u8, u8),
+
+    <span class="doccomment">/// Deprecated - ChannelCountMismatch is used instead
     </span>WrongColor(ColorType),
 }
 
@@ -3205,6 +3243,9 @@
                 ImageFormatHint::Unknown,
                 NormalFormRequiredError(form),
             )),
+            Error::ChannelCountMismatch(_lc, _pc) =&gt; ImageError::Parameter(
+                ParameterError::from_kind(ParameterErrorKind::DimensionMismatch),
+            ),
             Error::WrongColor(color) =&gt; {
                 ImageError::Unsupported(UnsupportedError::from_format_and_kind(
                     ImageFormatHint::Unknown,
@@ -3229,6 +3270,11 @@
                     NormalForm::RowMajorPacked =&gt; <span class="string">&quot;be packed and in row major form&quot;</span>,
                     NormalForm::Unaliased =&gt; <span class="string">&quot;not have any aliasing channels&quot;</span>,
                 }
+            ),
+            Error::ChannelCountMismatch(layout_channels, pixel_channels) =&gt; <span class="macro">write!</span>(
+                f,
+                <span class="string">&quot;The channel count of the chosen pixel (={}) does agree with the layout (={})&quot;</span>,
+                pixel_channels, layout_channels
             ),
             Error::WrongColor(color) =&gt; <span class="macro">write!</span>(
                 f,

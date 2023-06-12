@@ -260,7 +260,6 @@
     pipeline_layout: raii::PipelineLayout,
     pipeline: raii::Pipeline,
 
-    _textures: Vec&lt;Arc&lt;Texture2D&gt;&gt;,
     _sampler: raii::Sampler,
     _descriptor_pool: raii::DescriptorPool,
     _descriptor_set_layout: raii::DescriptorSetLayout,
@@ -319,6 +318,8 @@
                 mipmap_mode: vk::SamplerMipmapMode::LINEAR,
                 mag_filter: vk::Filter::LINEAR,
                 min_filter: vk::Filter::LINEAR,
+                address_mode_u: vk::SamplerAddressMode::CLAMP_TO_EDGE,
+                address_mode_v: vk::SamplerAddressMode::CLAMP_TO_EDGE,
                 ..Default::default()
             },
         )<span class="question-mark">?</span>;
@@ -342,7 +343,6 @@
             pipeline_layout,
             pipeline,
 
-            _textures: textures.to_owned(),
             _sampler: sampler,
             _descriptor_pool: descriptor_pool,
             _descriptor_set_layout: descriptor_set_layout,
