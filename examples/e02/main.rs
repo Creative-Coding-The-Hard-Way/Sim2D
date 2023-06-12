@@ -7,7 +7,6 @@ use {
         math::Vec2,
         Sim2D, Sketch,
     },
-    std::time::Duration,
 };
 
 struct Sprite {
