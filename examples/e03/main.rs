@@ -51,6 +51,9 @@ impl Sketch for LissajousDiagram {
             }
             self.colored_line(sim, self.points[i], current);
         }
+
+        sim.g.fill_color = [0.0, 0.0, 0.0, 1.0];
+        sim2d::ext::draw_fps_panel(sim);
     }
 }
 

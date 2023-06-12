@@ -3,6 +3,7 @@ mod sketch;
 mod window;
 
 pub mod application;
+pub mod ext;
 pub mod graphics;
 pub mod math;
 
