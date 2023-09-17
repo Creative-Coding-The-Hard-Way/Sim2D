@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/glfw-0.51.0/src/callbacks.rs`."><title>callbacks.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../glfw/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/glfw-0.53.0/src/callbacks.rs`."><title>callbacks.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="glfw" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../glfw/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -158,86 +158,7 @@
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
 <a href="#160" id="160">160</a>
-<a href="#161" id="161">161</a>
-<a href="#162" id="162">162</a>
-<a href="#163" id="163">163</a>
-<a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
-<a href="#170" id="170">170</a>
-<a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-</pre><pre class="rust"><code><span class="comment">// Copyright 2013 The GLFW-RS Developers. For a full listing of the authors,
+</pre></div><pre class="rust"><code><span class="comment">// Copyright 2013 The GLFW-RS Developers. For a full listing of the authors,
 // refer to the AUTHORS file at the top-level directory of this distribution.
 //
 // Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -254,56 +175,39 @@
 
 </span><span class="doccomment">//! Private callback support functions.
 
-</span><span class="kw">use </span>std::ffi::CStr;
-<span class="kw">use </span>std::mem;
-<span class="kw">use </span>std::os::raw::{c_char, c_double, c_int, c_uint};
-<span class="kw">use </span>std::path::PathBuf;
-<span class="kw">use </span>std::slice;
-<span class="kw">use </span>std::str;
-<span class="kw">use </span>std::sync::mpsc::Sender;
-
-<span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-<span class="macro">macro_rules! </span>callback (
+</span><span class="macro">macro_rules! </span>callback (
     (
-        <span class="kw">type </span>Args = ($(<span class="macro-nonterminal">$arg</span>:ident: <span class="macro-nonterminal">$arg_ty</span>:ty),<span class="kw-2">*</span>);
-        <span class="kw">type </span>Callback = <span class="macro-nonterminal">$Callback</span>:ident;
-        <span class="kw">let </span>ext_set = <span class="macro-nonterminal">$ext_set</span>:expr;
-        <span class="kw">fn </span>callback($(<span class="macro-nonterminal">$ext_arg</span>:ident: <span class="macro-nonterminal">$ext_arg_ty</span>:ty),<span class="kw-2">*</span>) <span class="macro-nonterminal">$call</span>:expr
+        args -&gt; ($(<span class="macro-nonterminal">$args</span>:ty),<span class="kw-2">*</span>),
+        glfw -&gt; <span class="macro-nonterminal">$glfw</span>:ident ($(<span class="macro-nonterminal">$glfw_arg_names</span>:ident: <span class="macro-nonterminal">$glfw_args</span>:ty),<span class="kw-2">*</span>),
+        convert_args -&gt; ($(<span class="macro-nonterminal">$convert_args</span>:expr),<span class="kw-2">*</span>)
     ) =&gt; (
-        <span class="macro">thread_local!</span>(<span class="kw">static </span>CALLBACK_KEY: RefCell&lt;<span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>Object&lt;Args&gt; + <span class="lifetime">&#39;static</span>&gt;&gt;&gt; = RefCell::new(<span class="prelude-val">None</span>));
+        <span class="macro">thread_local!</span>(<span class="kw">static </span>CALLBACK_KEY: RefCell&lt;<span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut($(<span class="macro-nonterminal">$args</span>),<span class="kw-2">*</span>)&gt;&gt;&gt; = RefCell::new(<span class="prelude-val">None</span>));
 
-        <span class="kw">type </span>Args = ($(<span class="macro-nonterminal">$arg_ty</span>),<span class="kw-2">*</span>,);
-
-        <span class="kw">trait </span>Object&lt;T&gt; {
-            <span class="kw">fn </span>call(<span class="kw-2">&amp;</span><span class="self">self</span>, args: T);
-        }
-
-        <span class="kw">impl</span>&lt;UserData&gt; Object&lt;Args&gt; <span class="kw">for </span><span class="kw">crate</span>::Callback&lt;<span class="kw">fn</span>($(<span class="macro-nonterminal">$arg_ty</span>),<span class="kw-2">*</span>, <span class="kw-2">&amp;</span>UserData), UserData&gt; {
-            <span class="kw">fn </span>call(<span class="kw-2">&amp;</span><span class="self">self</span>, ($(<span class="macro-nonterminal">$arg</span>),<span class="kw-2">*</span>,): Args) {
-                (<span class="self">self</span>.f)($(<span class="macro-nonterminal">$arg</span>),<span class="kw-2">*</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.data);
-            }
-        }
-
-        <span class="kw">pub fn </span>set&lt;UserData: <span class="lifetime">&#39;static</span>&gt;(f: <span class="kw">crate</span>::<span class="macro-nonterminal">$Callback</span>&lt;UserData&gt;) {
-            <span class="kw">let </span><span class="kw-2">mut </span>boxed_cb = <span class="prelude-val">Some</span>(Box::new(f) <span class="kw">as </span>Box&lt;<span class="kw">dyn </span>Object&lt;Args&gt; + <span class="lifetime">&#39;static</span>&gt;);
+        <span class="kw">pub fn </span>set&lt;T&gt;(f: T)
+        <span class="kw">where </span>T: FnMut($(<span class="macro-nonterminal">$args</span>),<span class="kw-2">*</span>) + <span class="lifetime">&#39;static
+        </span>{
+            <span class="kw">let </span>boxed_cb = <span class="prelude-val">Some</span>(Box::new(f) <span class="kw">as </span>Box&lt;<span class="kw">dyn </span>FnMut($(<span class="macro-nonterminal">$args</span>),<span class="kw-2">*</span>)&gt;);
             CALLBACK_KEY.with(|cb| {
-                <span class="kw-2">*</span>cb.borrow_mut() = boxed_cb.take();
+                <span class="kw-2">*</span>cb.borrow_mut() = boxed_cb;
             });
-            (<span class="macro-nonterminal">$ext_set</span>)(<span class="prelude-val">Some</span>(callback <span class="kw">as extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>($(<span class="macro-nonterminal">$ext_arg</span>: <span class="macro-nonterminal">$ext_arg_ty</span>),<span class="kw-2">*</span>)));
+            <span class="kw">unsafe </span>{
+                <span class="kw">crate</span>::ffi::<span class="macro-nonterminal">$glfw</span>(<span class="prelude-val">Some</span>(callback));
+            }
         }
 
         <span class="kw">pub fn </span>unset() {
             CALLBACK_KEY.with(|cb| {
                 <span class="kw-2">*</span>cb.borrow_mut() = <span class="prelude-val">None</span>;
             });
-            (<span class="macro-nonterminal">$ext_set</span>)(<span class="prelude-val">None</span>);
+             <span class="kw">unsafe </span>{
+                <span class="kw">crate</span>::ffi::<span class="macro-nonterminal">$glfw</span>(<span class="prelude-val">None</span>);
+            }
         }
 
-        <span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback($(<span class="macro-nonterminal">$ext_arg</span>: <span class="macro-nonterminal">$ext_arg_ty</span>),<span class="kw-2">*</span>) {
+        <span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback($(<span class="macro-nonterminal">$glfw_arg_names</span>: <span class="macro-nonterminal">$glfw_args</span>),<span class="kw-2">*</span>) {
             CALLBACK_KEY.with(|cb| {
-                <span class="kw">match </span><span class="kw-2">*</span>cb.borrow() {
-                    <span class="prelude-val">Some</span>(<span class="kw-2">ref </span>cb) =&gt; <span class="kw">unsafe </span>{ cb.call(<span class="macro-nonterminal">$call</span>) },
+                <span class="kw">match </span><span class="kw-2">*</span>cb.borrow_mut() {
+                    <span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>cb) =&gt; <span class="kw">unsafe </span>{ cb($(<span class="macro-nonterminal">$convert_args</span>),<span class="kw-2">*</span>) },
                     <span class="kw">_ </span>=&gt; {}
                 }
             })
@@ -317,12 +221,9 @@
     <span class="kw">use </span>std::os::raw::{c_char, c_int};
 
     <span class="macro">callback!</span>(
-        <span class="kw">type </span>Args = (error: <span class="kw">crate</span>::Error, description: String);
-        <span class="kw">type </span>Callback = ErrorCallback;
-        <span class="kw">let </span>ext_set = |cb| <span class="kw">unsafe </span>{ <span class="kw">crate</span>::ffi::glfwSetErrorCallback(cb) };
-        <span class="kw">fn </span>callback(error: c_int, description: <span class="kw-2">*const </span>c_char) {
-            (mem::transmute(error), <span class="kw">crate</span>::string_from_c_str(description))
-        }
+        args -&gt; (<span class="kw">crate</span>::Error, String),
+        glfw -&gt; glfwSetErrorCallback(error: c_int, description: <span class="kw-2">*const </span>c_char),
+        convert_args -&gt; (mem::transmute(error), <span class="kw">crate</span>::string_from_c_str(description))
     );
 }
 
@@ -332,15 +233,12 @@
     <span class="kw">use </span>std::os::raw::c_int;
 
     <span class="macro">callback!</span>(
-        <span class="kw">type </span>Args = (monitor: <span class="kw">crate</span>::Monitor, event: <span class="kw">crate</span>::MonitorEvent);
-        <span class="kw">type </span>Callback = MonitorCallback;
-        <span class="kw">let </span>ext_set = |cb| <span class="kw">unsafe </span>{ <span class="kw">crate</span>::ffi::glfwSetMonitorCallback(cb) };
-        <span class="kw">fn </span>callback(monitor: <span class="kw-2">*mut </span><span class="kw">crate</span>::ffi::GLFWmonitor, event: c_int) {
-            <span class="kw">let </span>monitor = <span class="kw">crate</span>::Monitor {
-                ptr: monitor
-            };
-            (monitor, mem::transmute(event))
-        }
+        args -&gt; (<span class="kw">crate</span>::Monitor, <span class="kw">crate</span>::MonitorEvent),
+        glfw -&gt; glfwSetMonitorCallback(monitor: <span class="kw-2">*mut </span><span class="kw">crate</span>::ffi::GLFWmonitor, event: c_int),
+        convert_args -&gt; (
+            <span class="kw">crate</span>::Monitor { ptr: monitor },
+            mem::transmute(event)
+        )
     );
 }
 
@@ -350,17 +248,10 @@
     <span class="kw">use </span>std::os::raw::c_int;
 
     <span class="macro">callback!</span>(
-        <span class="kw">type </span>Args = (joystick_id: <span class="kw">crate</span>::JoystickId, event: <span class="kw">crate</span>::JoystickEvent);
-        <span class="kw">type </span>Callback = JoystickCallback;
-        <span class="kw">let </span>ext_set = |cb| <span class="kw">unsafe </span>{ <span class="kw">crate</span>::ffi::glfwSetJoystickCallback(cb) };
-        <span class="kw">fn </span>callback(joystick_id: c_int, event: c_int) {
-            (mem::transmute(joystick_id), mem::transmute(event))
-        }
+        args -&gt; (<span class="kw">crate</span>::JoystickId, <span class="kw">crate</span>::JoystickEvent),
+        glfw -&gt; glfwSetJoystickCallback(joystick_id: c_int, event: c_int),
+        convert_args -&gt; (mem::transmute(joystick_id), mem::transmute(event))
     );
-}
-
-<span class="kw">unsafe fn </span>get_sender(window: <span class="kw-2">&amp;*mut </span>ffi::GLFWwindow) -&gt; <span class="kw-2">&amp;</span>Sender&lt;(f64, WindowEvent)&gt; {
-    <span class="kw-2">&amp;*</span>(ffi::glfwGetWindowUserPointer(<span class="kw-2">*</span>window) <span class="kw">as </span><span class="kw-2">*const </span>std::sync::mpsc::Sender&lt;(f64, WindowEvent)&gt;)
 }
 
 <span class="kw">pub mod </span>unbuffered {
@@ -426,55 +317,4 @@
         });
         UnsetHandlerGuard { _private: () }
     }
-}
-
-<span class="comment">// Note that this macro creates a static function pointer rather than a plain function.
-// This makes it more ergonomic to embed in an Option; see set_window_callback! in lib.rs
-</span><span class="macro">macro_rules! </span>window_callback (
-    (<span class="kw">fn </span><span class="macro-nonterminal">$name</span>:ident () =&gt; <span class="macro-nonterminal">$event</span>:ident) =&gt; (
-        <span class="kw">pub static </span><span class="macro-nonterminal">$name</span>: <span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>(window: <span class="kw-2">*mut </span>ffi::GLFWwindow) = {
-            <span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>actual_callback(window: <span class="kw-2">*mut </span>ffi::GLFWwindow) {
-                <span class="kw">unsafe </span>{
-                    <span class="kw">let </span>event = (ffi::glfwGetTime() <span class="kw">as </span>f64, WindowEvent::<span class="macro-nonterminal">$event</span>);
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = unbuffered::handle(window <span class="kw">as </span>WindowId, event) {
-                        get_sender(<span class="kw-2">&amp;</span>window).send(event).unwrap();
-                    }
-                }
-            }
-            actual_callback
-        };
-     );
-    (<span class="kw">fn </span><span class="macro-nonterminal">$name</span>:ident ($(<span class="macro-nonterminal">$ext_arg</span>:ident: <span class="macro-nonterminal">$ext_arg_ty</span>:ty),<span class="kw-2">*</span>) =&gt; <span class="macro-nonterminal">$event</span>:ident($(<span class="macro-nonterminal">$arg_conv</span>:expr),<span class="kw-2">*</span>)) =&gt; (
-        <span class="kw">pub static </span><span class="macro-nonterminal">$name</span>: <span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>(window: <span class="kw-2">*mut </span>ffi::GLFWwindow $(, <span class="macro-nonterminal">$ext_arg</span>: <span class="macro-nonterminal">$ext_arg_ty</span>)<span class="kw-2">*</span>) = {
-            <span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>actual_callback(window: <span class="kw-2">*mut </span>ffi::GLFWwindow $(, <span class="macro-nonterminal">$ext_arg</span>: <span class="macro-nonterminal">$ext_arg_ty</span>)<span class="kw-2">*</span>) {
-                <span class="kw">unsafe </span>{
-                    <span class="kw">let </span>event = (ffi::glfwGetTime() <span class="kw">as </span>f64, WindowEvent::<span class="macro-nonterminal">$event</span>($(<span class="macro-nonterminal">$arg_conv</span>),<span class="kw-2">*</span>));
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = unbuffered::handle(window <span class="kw">as </span>WindowId, event) {
-                        get_sender(<span class="kw-2">&amp;</span>window).send(event).unwrap();
-                    }
-                }
-            }
-            actual_callback
-        };
-     );
-);
-
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>window_pos_callback(xpos: c_int, ypos: c_int)                           =&gt; Pos(xpos <span class="kw">as </span>i32, ypos <span class="kw">as </span>i32));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>window_size_callback(width: c_int, height: c_int)                       =&gt; Size(width <span class="kw">as </span>i32, height <span class="kw">as </span>i32));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>window_close_callback()                                                 =&gt; Close);
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>window_refresh_callback()                                               =&gt; Refresh);
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>window_focus_callback(focused: c_int)                                   =&gt; Focus(focused == ffi::TRUE));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>window_iconify_callback(iconified: c_int)                               =&gt; Iconify(iconified == ffi::TRUE));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>framebuffer_size_callback(width: c_int, height: c_int)                  =&gt; FramebufferSize(width <span class="kw">as </span>i32, height <span class="kw">as </span>i32));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>mouse_button_callback(button: c_int, action: c_int, mods: c_int)        =&gt; MouseButton(mem::transmute(button), mem::transmute(action), Modifiers::from_bits(mods).unwrap()));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>cursor_pos_callback(xpos: c_double, ypos: c_double)                     =&gt; CursorPos(xpos <span class="kw">as </span>f64, ypos <span class="kw">as </span>f64));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>cursor_enter_callback(entered: c_int)                                   =&gt; CursorEnter(entered == ffi::TRUE));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>scroll_callback(xpos: c_double, ypos: c_double)                         =&gt; Scroll(xpos <span class="kw">as </span>f64, ypos <span class="kw">as </span>f64));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>key_callback(key: c_int, scancode: c_int, action: c_int, mods: c_int)   =&gt; Key(mem::transmute(key), scancode, mem::transmute(action), Modifiers::from_bits(mods).unwrap()));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>char_callback(character: c_uint)                                        =&gt; Char(::std::char::from_u32(character).unwrap()));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>char_mods_callback(character: c_uint, mods: c_int)                      =&gt; CharModifiers(::std::char::from_u32(character).unwrap(), Modifiers::from_bits(mods).unwrap()));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>drop_callback(num_paths: c_int, paths: <span class="kw-2">*mut *const </span>c_char)              =&gt; FileDrop(slice::from_raw_parts(paths, num_paths <span class="kw">as </span>usize).iter().map(|path| PathBuf::from(str::from_utf8(CStr::from_ptr(<span class="kw-2">*</span>path).to_bytes()).unwrap().to_string())).collect()));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>window_maximize_callback(maximized: c_int)                              =&gt; Maximize(maximized == ffi::TRUE));
-<span class="macro">window_callback!</span>(<span class="kw">fn </span>window_content_scale_callback(xscale: c_float, yscale: c_float)         =&gt; ContentScale(xscale <span class="kw">as </span>f32, yscale <span class="kw">as </span>f32));
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="glfw" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+}</code></pre></div></section></main></body></html>

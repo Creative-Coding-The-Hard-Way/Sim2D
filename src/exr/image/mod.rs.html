@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/exr-1.6.4/src/image/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../exr/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/exr-1.7.0/src/image/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="exr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../exr/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1322,7 +1322,9 @@
 <a href="#1322" id="1322">1322</a>
 <a href="#1323" id="1323">1323</a>
 <a href="#1324" id="1324">1324</a>
-</pre><pre class="rust"><code>
+<a href="#1325" id="1325">1325</a>
+<a href="#1326" id="1326">1326</a>
+</pre></div><pre class="rust"><code>
 <span class="doccomment">//! Data structures that represent a complete exr image.
 //! Contains generic structs that must be nested to obtain a complete image type.
 //!
@@ -2221,7 +2223,7 @@ pub enum DeepSamples {
         /// Warning: If you use `SpecificChannels`, the comparison might be inaccurate
         /// for images with mixed compression methods. This is to be used with `AnyChannels` mainly.
         </span><span class="kw">fn </span>assert_equals_result(<span class="kw-2">&amp;</span><span class="self">self</span>, result: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
-            <span class="self">self</span>.validate_result(result, ValidationOptions::default(), String::new()).unwrap();
+            <span class="self">self</span>.validate_result(result, ValidationOptions::default(), || String::new()).unwrap();
         }
 
         <span class="doccomment">/// Compare self with the other.
@@ -2235,7 +2237,9 @@ pub enum DeepSamples {
         </span><span class="kw">fn </span>validate_result(
             <span class="kw-2">&amp;</span><span class="self">self</span>, lossy_result: <span class="kw-2">&amp;</span><span class="self">Self</span>,
             options: ValidationOptions,
-            context: String
+            <span class="comment">// this is a lazy string, because constructing a string is only necessary in the case of an error,
+            // but eats up memory and allocation time every time. this was measured.
+            </span>context: <span class="kw">impl </span>Fn() -&gt; String
         ) -&gt; ValidationResult;
     }
 
@@ -2251,21 +2255,21 @@ pub enum DeepSamples {
 
 
     <span class="kw">impl</span>&lt;C&gt; ValidateResult <span class="kw">for </span>Image&lt;C&gt; <span class="kw">where </span>C: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
-            <span class="kw">if </span><span class="self">self</span>.attributes != other.attributes { <span class="prelude-val">Err</span>(location + <span class="string">&quot;| image &gt; attributes&quot;</span>) }
-            <span class="kw">else </span>{ <span class="self">self</span>.layer_data.validate_result(<span class="kw-2">&amp;</span>other.layer_data, options, location + <span class="string">&quot;| image &gt; layer data&quot;</span>) }
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
+            <span class="kw">if </span><span class="self">self</span>.attributes != other.attributes { <span class="prelude-val">Err</span>(location() + <span class="string">&quot;| image &gt; attributes&quot;</span>) }
+            <span class="kw">else </span>{ <span class="self">self</span>.layer_data.validate_result(<span class="kw-2">&amp;</span>other.layer_data, options, || location() + <span class="string">&quot;| image &gt; layer data&quot;</span>) }
         }
     }
 
     <span class="kw">impl</span>&lt;S&gt; ValidateResult <span class="kw">for </span>Layer&lt;AnyChannels&lt;S&gt;&gt;
         <span class="kw">where </span>AnyChannel&lt;S&gt;: ValidateResult, S: <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; WritableSamples&lt;<span class="lifetime">&#39;a</span>&gt;
     {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, _overridden: ValidationOptions, location: String) -&gt; ValidationResult {
-            <span class="kw">let </span>location = <span class="macro">format!</span>(<span class="string">&quot;{} (layer `{:?}`)&quot;</span>, location, <span class="self">self</span>.attributes.layer_name);
-            <span class="kw">if </span><span class="self">self</span>.attributes != other.attributes { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; attributes&quot;</span>) }
-            <span class="kw">else if </span><span class="self">self</span>.encoding != other.encoding { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; encoding&quot;</span>) }
-            <span class="kw">else if </span><span class="self">self</span>.size != other.size { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; size&quot;</span>) }
-            <span class="kw">else if </span><span class="self">self</span>.channel_data.list.len() != other.channel_data.list.len() { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; channel count&quot;</span>) }
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, _overridden: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
+            <span class="kw">let </span>location = || <span class="macro">format!</span>(<span class="string">&quot;{} (layer `{:?}`)&quot;</span>, location(), <span class="self">self</span>.attributes.layer_name);
+            <span class="kw">if </span><span class="self">self</span>.attributes != other.attributes { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; attributes&quot;</span>) }
+            <span class="kw">else if </span><span class="self">self</span>.encoding != other.encoding { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; encoding&quot;</span>) }
+            <span class="kw">else if </span><span class="self">self</span>.size != other.size { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; size&quot;</span>) }
+            <span class="kw">else if </span><span class="self">self</span>.channel_data.list.len() != other.channel_data.list.len() { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; channel count&quot;</span>) }
             <span class="kw">else </span>{
                 <span class="kw">for </span>(own_chan, other_chan) <span class="kw">in </span><span class="self">self</span>.channel_data.list.iter().zip(other.channel_data.list.iter()) {
                     own_chan.validate_result(
@@ -2280,7 +2284,7 @@ pub enum DeepSamples {
                             </span>nan_converted_to_zero: other.encoding.compression.supports_nan().not()
                         },
 
-                        <span class="macro">format!</span>(<span class="string">&quot;{} &gt; channel `{}`&quot;</span>, location, own_chan.name)
+                        || <span class="macro">format!</span>(<span class="string">&quot;{} &gt; channel `{}`&quot;</span>, location(), own_chan.name)
                     )<span class="question-mark">?</span>;
                 }
                 <span class="prelude-val">Ok</span>(())
@@ -2293,13 +2297,13 @@ pub enum DeepSamples {
     {
         <span class="doccomment">/// This does an approximate comparison for all channels,
         /// even if some channels can be compressed without loss.
-        </span><span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, _overridden: ValidationOptions, location: String) -&gt; ValidationResult {
-            <span class="kw">let </span>location = <span class="macro">format!</span>(<span class="string">&quot;{} (layer `{:?}`)&quot;</span>, location, <span class="self">self</span>.attributes.layer_name);
+        </span><span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, _overridden: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
+            <span class="kw">let </span>location = || <span class="macro">format!</span>(<span class="string">&quot;{} (layer `{:?}`)&quot;</span>, location(), <span class="self">self</span>.attributes.layer_name);
 
             <span class="comment">// TODO dedup with above
-            </span><span class="kw">if </span><span class="self">self</span>.attributes != other.attributes { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; attributes&quot;</span>) }
-            <span class="kw">else if </span><span class="self">self</span>.encoding != other.encoding { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; encoding&quot;</span>) }
-            <span class="kw">else if </span><span class="self">self</span>.size != other.size { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; size&quot;</span>) }
+            </span><span class="kw">if </span><span class="self">self</span>.attributes != other.attributes { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; attributes&quot;</span>) }
+            <span class="kw">else if </span><span class="self">self</span>.encoding != other.encoding { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; encoding&quot;</span>) }
+            <span class="kw">else if </span><span class="self">self</span>.size != other.size { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; size&quot;</span>) }
             <span class="kw">else </span>{
                 <span class="kw">let </span>options = ValidationOptions {
                     <span class="comment">// no tolerance for lossless channels
@@ -2310,60 +2314,60 @@ pub enum DeepSamples {
                     </span>nan_converted_to_zero: other.encoding.compression.supports_nan().not()
                 };
 
-                <span class="self">self</span>.channel_data.validate_result(<span class="kw-2">&amp;</span>other.channel_data, options, location + <span class="string">&quot; &gt; channel_data&quot;</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.channel_data.validate_result(<span class="kw-2">&amp;</span>other.channel_data, options, || location() + <span class="string">&quot; &gt; channel_data&quot;</span>)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
             }
         }
     }
 
     <span class="kw">impl</span>&lt;S&gt; ValidateResult <span class="kw">for </span>AnyChannels&lt;S&gt; <span class="kw">where </span>S: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="self">self</span>.list.validate_result(<span class="kw-2">&amp;</span>other.list, options, location)
         }
     }
 
     <span class="kw">impl</span>&lt;S&gt; ValidateResult <span class="kw">for </span>AnyChannel&lt;S&gt; <span class="kw">where </span>S: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
-            <span class="kw">if </span><span class="self">self</span>.name != other.name { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; name&quot;</span>) }
-            <span class="kw">else if </span><span class="self">self</span>.quantize_linearly != other.quantize_linearly { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; quantize_linearly&quot;</span>) }
-            <span class="kw">else if </span><span class="self">self</span>.sampling != other.sampling { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; sampling&quot;</span>) }
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
+            <span class="kw">if </span><span class="self">self</span>.name != other.name { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; name&quot;</span>) }
+            <span class="kw">else if </span><span class="self">self</span>.quantize_linearly != other.quantize_linearly { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; quantize_linearly&quot;</span>) }
+            <span class="kw">else if </span><span class="self">self</span>.sampling != other.sampling { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; sampling&quot;</span>) }
             <span class="kw">else </span>{
-                <span class="self">self</span>.sample_data.validate_result(<span class="kw-2">&amp;</span>other.sample_data, options, location + <span class="string">&quot; &gt; sample_data&quot;</span>)
+                <span class="self">self</span>.sample_data.validate_result(<span class="kw-2">&amp;</span>other.sample_data, options, || location() + <span class="string">&quot; &gt; sample_data&quot;</span>)
             }
         }
     }
 
     <span class="kw">impl</span>&lt;Pxs, Chans&gt; ValidateResult <span class="kw">for </span>SpecificChannels&lt;Pxs, Chans&gt; <span class="kw">where </span>Pxs: ValidateResult, Chans: Eq {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
-            <span class="kw">if </span><span class="self">self</span>.channels != other.channels { <span class="prelude-val">Err</span>(location + <span class="string">&quot; &gt; specific channels&quot;</span>) }
-            <span class="kw">else </span>{ <span class="self">self</span>.pixels.validate_result(<span class="kw-2">&amp;</span>other.pixels, options, location + <span class="string">&quot; &gt; specific pixels&quot;</span>) }
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
+            <span class="kw">if </span><span class="self">self</span>.channels != other.channels { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; &gt; specific channels&quot;</span>) }
+            <span class="kw">else </span>{ <span class="self">self</span>.pixels.validate_result(<span class="kw-2">&amp;</span>other.pixels, options, || location() + <span class="string">&quot; &gt; specific pixels&quot;</span>) }
         }
     }
 
     <span class="kw">impl</span>&lt;S&gt; ValidateResult <span class="kw">for </span>Levels&lt;S&gt; <span class="kw">where </span>S: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
-            <span class="self">self</span>.levels_as_slice().validate_result(<span class="kw-2">&amp;</span>other.levels_as_slice(), options, location + <span class="string">&quot; &gt; levels&quot;</span>)
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
+            <span class="self">self</span>.levels_as_slice().validate_result(<span class="kw-2">&amp;</span>other.levels_as_slice(), options, || location() + <span class="string">&quot; &gt; levels&quot;</span>)
         }
     }
 
     <span class="kw">impl </span>ValidateResult <span class="kw">for </span>FlatSamples {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="kw">use </span>FlatSamples::<span class="kw-2">*</span>;
             <span class="kw">match </span>(<span class="self">self</span>, other) {
-                (F16(values), F16(other_values)) =&gt; values.as_slice().validate_result(<span class="kw-2">&amp;</span>other_values.as_slice(), options, location + <span class="string">&quot; &gt; f16 samples&quot;</span>),
-                (F32(values), F32(other_values)) =&gt; values.as_slice().validate_result(<span class="kw-2">&amp;</span>other_values.as_slice(), options, location + <span class="string">&quot; &gt; f32 samples&quot;</span>),
-                (U32(values), U32(other_values)) =&gt; values.as_slice().validate_result(<span class="kw-2">&amp;</span>other_values.as_slice(), options, location + <span class="string">&quot; &gt; u32 samples&quot;</span>),
-                (own, other) =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{}: samples type mismatch. expected {:?}, found {:?}&quot;</span>, location, own.sample_type(), other.sample_type()))
+                (F16(values), F16(other_values)) =&gt; values.as_slice().validate_result(<span class="kw-2">&amp;</span>other_values.as_slice(), options, ||location() + <span class="string">&quot; &gt; f16 samples&quot;</span>),
+                (F32(values), F32(other_values)) =&gt; values.as_slice().validate_result(<span class="kw-2">&amp;</span>other_values.as_slice(), options, ||location() + <span class="string">&quot; &gt; f32 samples&quot;</span>),
+                (U32(values), U32(other_values)) =&gt; values.as_slice().validate_result(<span class="kw-2">&amp;</span>other_values.as_slice(), options, ||location() + <span class="string">&quot; &gt; u32 samples&quot;</span>),
+                (own, other) =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{}: samples type mismatch. expected {:?}, found {:?}&quot;</span>, location(), own.sample_type(), other.sample_type()))
             }
         }
     }
 
     <span class="kw">impl</span>&lt;T&gt; ValidateResult <span class="kw">for </span><span class="kw-2">&amp;</span>[T] <span class="kw">where </span>T: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
-            <span class="kw">if </span><span class="self">self</span>.len() != other.len() { <span class="prelude-val">Err</span>(location + <span class="string">&quot; count&quot;</span>) }
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
+            <span class="kw">if </span><span class="self">self</span>.len() != other.len() { <span class="prelude-val">Err</span>(location() + <span class="string">&quot; count&quot;</span>) }
             <span class="kw">else </span>{
                 <span class="kw">for </span>(index, (slf, other)) <span class="kw">in </span><span class="self">self</span>.iter().zip(other.iter()).enumerate() {
-                    slf.validate_result(other, options, <span class="macro">format!</span>(<span class="string">&quot;{} element [{}] of {}&quot;</span>, location, index, <span class="self">self</span>.len()))<span class="question-mark">?</span>;
+                    slf.validate_result(other, options, ||<span class="macro">format!</span>(<span class="string">&quot;{} element [{}] of {}&quot;</span>, location(), index, <span class="self">self</span>.len()))<span class="question-mark">?</span>;
                 }
                 <span class="prelude-val">Ok</span>(())
             }
@@ -2371,25 +2375,25 @@ pub enum DeepSamples {
     }
 
     <span class="kw">impl</span>&lt;A: Array&gt; ValidateResult <span class="kw">for </span>SmallVec&lt;A&gt; <span class="kw">where </span>A::Item: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="self">self</span>.as_slice().validate_result(<span class="kw-2">&amp;</span>other.as_slice(), options, location)
         }
     }
 
     <span class="kw">impl</span>&lt;A&gt; ValidateResult <span class="kw">for </span>Vec&lt;A&gt; <span class="kw">where </span>A: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="self">self</span>.as_slice().validate_result(<span class="kw-2">&amp;</span>other.as_slice(), options, location)
         }
     }
 
     <span class="kw">impl</span>&lt;A,B,C,D&gt; ValidateResult <span class="kw">for </span>(A, B, C, D) <span class="kw">where </span>A: Clone+ ValidateResult, B: Clone+ ValidateResult, C: Clone+ ValidateResult, D: Clone+ ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="self">self</span>.clone().into_recursive().validate_result(<span class="kw-2">&amp;</span>other.clone().into_recursive(), options, location)
         }
     }
 
     <span class="kw">impl</span>&lt;A,B,C&gt; ValidateResult <span class="kw">for </span>(A, B, C) <span class="kw">where </span>A: Clone+ ValidateResult, B: Clone+ ValidateResult, C: Clone+ ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="self">self</span>.clone().into_recursive().validate_result(<span class="kw-2">&amp;</span>other.clone().into_recursive(), options, location)
         }
     }
@@ -2408,29 +2412,29 @@ pub enum DeepSamples {
 
     // implement for recursive types
     </span><span class="kw">impl </span>ValidateResult <span class="kw">for </span>NoneMore {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="kw">_</span>: ValidationOptions, <span class="kw">_</span>: String) -&gt; ValidationResult { <span class="prelude-val">Ok</span>(()) }
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="kw">_</span>: ValidationOptions, <span class="kw">_</span>: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult { <span class="prelude-val">Ok</span>(()) }
     }
 
     <span class="kw">impl</span>&lt;Inner, T&gt; ValidateResult <span class="kw">for </span>Recursive&lt;Inner, T&gt; <span class="kw">where </span>Inner: ValidateResult, T: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
-            <span class="self">self</span>.value.validate_result(<span class="kw-2">&amp;</span>other.value, options, location.clone()).and_then(|()|
-                <span class="self">self</span>.inner.validate_result(<span class="kw-2">&amp;</span>other.inner, options, location)
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
+            <span class="self">self</span>.value.validate_result(<span class="kw-2">&amp;</span>other.value, options, <span class="kw-2">&amp;</span>location).and_then(|()|
+                <span class="self">self</span>.inner.validate_result(<span class="kw-2">&amp;</span>other.inner, options, <span class="kw-2">&amp;</span>location)
             )
         }
     }
 
     <span class="kw">impl</span>&lt;S&gt; ValidateResult <span class="kw">for </span><span class="prelude-ty">Option</span>&lt;S&gt; <span class="kw">where </span>S: ValidateResult {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="kw">match </span>(<span class="self">self</span>, other) {
                 (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Ok</span>(()),
                 (<span class="prelude-val">Some</span>(value), <span class="prelude-val">Some</span>(other)) =&gt; value.validate_result(other, options, location),
-                <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(location + <span class="string">&quot;: option mismatch&quot;</span>)
+                <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(location() + <span class="string">&quot;: option mismatch&quot;</span>)
             }
         }
     }
 
     <span class="kw">impl </span>ValidateResult <span class="kw">for </span>f32 {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="kw">if </span><span class="self">self </span>== other || (<span class="self">self</span>.is_nan() &amp;&amp; other.is_nan()) || (options.nan_converted_to_zero &amp;&amp; !<span class="self">self</span>.is_normal() &amp;&amp; <span class="kw-2">*</span>other == <span class="number">0.0</span>) {
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(());
             }
@@ -2444,15 +2448,15 @@ pub enum DeepSamples {
                 <span class="kw">let </span>difference = (<span class="self">self </span>- other).abs();
 
                 <span class="kw">return if </span>difference &lt;= tolerance { <span class="prelude-val">Ok</span>(()) }
-                <span class="kw">else </span>{ <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{}: expected ~{}, found {} (adaptive tolerance {})&quot;</span>, location, <span class="self">self</span>, other, tolerance)) };
+                <span class="kw">else </span>{ <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{}: expected ~{}, found {} (adaptive tolerance {})&quot;</span>, location(), <span class="self">self</span>, other, tolerance)) };
             }
 
-            <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{}: expected exactly {}, found {}&quot;</span>, location, <span class="self">self</span>, other))
+            <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{}: expected exactly {}, found {}&quot;</span>, location(), <span class="self">self</span>, other))
         }
     }
 
     <span class="kw">impl </span>ValidateResult <span class="kw">for </span>f16 {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="kw">if </span><span class="self">self</span>.to_bits() == other.to_bits() { <span class="prelude-val">Ok</span>(()) } <span class="kw">else </span>{
                 <span class="self">self</span>.to_f32().validate_result(<span class="kw-2">&amp;</span>other.to_f32(), options, location)
             }
@@ -2460,7 +2464,7 @@ pub enum DeepSamples {
     }
 
     <span class="kw">impl </span>ValidateResult <span class="kw">for </span>u32 {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="kw">if </span><span class="self">self </span>== other { <span class="prelude-val">Ok</span>(()) } <span class="kw">else </span>{ <span class="comment">// todo to float conversion resulting in nan/infinity?
                 </span><span class="self">self</span>.to_f32().validate_result(<span class="kw-2">&amp;</span>other.to_f32(), options, location)
             }
@@ -2468,13 +2472,13 @@ pub enum DeepSamples {
     }
 
     <span class="kw">impl </span>ValidateResult <span class="kw">for </span>Sample {
-        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: String) -&gt; ValidationResult {
+        <span class="kw">fn </span>validate_result(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, options: ValidationOptions, location: <span class="kw">impl </span>Fn()-&gt;String) -&gt; ValidationResult {
             <span class="kw">use </span>Sample::<span class="kw-2">*</span>;
             <span class="kw">match </span>(<span class="self">self</span>, other) {
-                (F16(a), F16(b)) =&gt; a.validate_result(b, options, location + <span class="string">&quot; (f16)&quot;</span>),
-                (F32(a), F32(b)) =&gt; a.validate_result(b, options, location + <span class="string">&quot; (f32)&quot;</span>),
-                (U32(a), U32(b)) =&gt; a.validate_result(b, options, location + <span class="string">&quot; (u32)&quot;</span>),
-                (<span class="kw">_</span>,<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(location + <span class="string">&quot;: sample type mismatch&quot;</span>)
+                (F16(a), F16(b)) =&gt; a.validate_result(b, options, ||location() + <span class="string">&quot; (f16)&quot;</span>),
+                (F32(a), F32(b)) =&gt; a.validate_result(b, options, ||location() + <span class="string">&quot; (f32)&quot;</span>),
+                (U32(a), U32(b)) =&gt; a.validate_result(b, options, ||location() + <span class="string">&quot; (u32)&quot;</span>),
+                (<span class="kw">_</span>,<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(location() + <span class="string">&quot;: sample type mismatch&quot;</span>)
             }
         }
     }
@@ -2493,7 +2497,7 @@ pub enum DeepSamples {
             original.validate_result(
                 result,
                 ValidationOptions { allow_lossy, nan_converted_to_zero },
-                String::new()
+                || String::new()
             ).unwrap();
         }
 
@@ -2501,7 +2505,7 @@ pub enum DeepSamples {
             <span class="macro">assert!</span>(original.validate_result(
                 result,
                 ValidationOptions { allow_lossy, nan_converted_to_zero },
-                String::new()
+                || String::new()
             ).is_err());
         }
 
@@ -2551,7 +2555,7 @@ pub enum DeepSamples {
                     .validate_result(
                         <span class="kw-2">&amp;</span>lossy,
                         ValidationOptions { allow_lossy, .. Default::default() },
-                        String::new() <span class="comment">// type_name::&lt;T&gt;().to_string()
+                        || String::new() <span class="comment">// type_name::&lt;T&gt;().to_string()
                     </span>)
                     .unwrap_err();
 
@@ -2646,5 +2650,4 @@ pub enum DeepSamples {
 }
 
 
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="exr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

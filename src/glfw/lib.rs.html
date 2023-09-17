@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/glfw-0.51.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../glfw/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/glfw-0.53.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="glfw" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../glfw/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3266,7 +3266,596 @@
 <a href="#3266" id="3266">3266</a>
 <a href="#3267" id="3267">3267</a>
 <a href="#3268" id="3268">3268</a>
-</pre><pre class="rust"><code><span class="comment">// Copyright 2013-2016 The GLFW-RS Developers. For a full listing of the authors,
+<a href="#3269" id="3269">3269</a>
+<a href="#3270" id="3270">3270</a>
+<a href="#3271" id="3271">3271</a>
+<a href="#3272" id="3272">3272</a>
+<a href="#3273" id="3273">3273</a>
+<a href="#3274" id="3274">3274</a>
+<a href="#3275" id="3275">3275</a>
+<a href="#3276" id="3276">3276</a>
+<a href="#3277" id="3277">3277</a>
+<a href="#3278" id="3278">3278</a>
+<a href="#3279" id="3279">3279</a>
+<a href="#3280" id="3280">3280</a>
+<a href="#3281" id="3281">3281</a>
+<a href="#3282" id="3282">3282</a>
+<a href="#3283" id="3283">3283</a>
+<a href="#3284" id="3284">3284</a>
+<a href="#3285" id="3285">3285</a>
+<a href="#3286" id="3286">3286</a>
+<a href="#3287" id="3287">3287</a>
+<a href="#3288" id="3288">3288</a>
+<a href="#3289" id="3289">3289</a>
+<a href="#3290" id="3290">3290</a>
+<a href="#3291" id="3291">3291</a>
+<a href="#3292" id="3292">3292</a>
+<a href="#3293" id="3293">3293</a>
+<a href="#3294" id="3294">3294</a>
+<a href="#3295" id="3295">3295</a>
+<a href="#3296" id="3296">3296</a>
+<a href="#3297" id="3297">3297</a>
+<a href="#3298" id="3298">3298</a>
+<a href="#3299" id="3299">3299</a>
+<a href="#3300" id="3300">3300</a>
+<a href="#3301" id="3301">3301</a>
+<a href="#3302" id="3302">3302</a>
+<a href="#3303" id="3303">3303</a>
+<a href="#3304" id="3304">3304</a>
+<a href="#3305" id="3305">3305</a>
+<a href="#3306" id="3306">3306</a>
+<a href="#3307" id="3307">3307</a>
+<a href="#3308" id="3308">3308</a>
+<a href="#3309" id="3309">3309</a>
+<a href="#3310" id="3310">3310</a>
+<a href="#3311" id="3311">3311</a>
+<a href="#3312" id="3312">3312</a>
+<a href="#3313" id="3313">3313</a>
+<a href="#3314" id="3314">3314</a>
+<a href="#3315" id="3315">3315</a>
+<a href="#3316" id="3316">3316</a>
+<a href="#3317" id="3317">3317</a>
+<a href="#3318" id="3318">3318</a>
+<a href="#3319" id="3319">3319</a>
+<a href="#3320" id="3320">3320</a>
+<a href="#3321" id="3321">3321</a>
+<a href="#3322" id="3322">3322</a>
+<a href="#3323" id="3323">3323</a>
+<a href="#3324" id="3324">3324</a>
+<a href="#3325" id="3325">3325</a>
+<a href="#3326" id="3326">3326</a>
+<a href="#3327" id="3327">3327</a>
+<a href="#3328" id="3328">3328</a>
+<a href="#3329" id="3329">3329</a>
+<a href="#3330" id="3330">3330</a>
+<a href="#3331" id="3331">3331</a>
+<a href="#3332" id="3332">3332</a>
+<a href="#3333" id="3333">3333</a>
+<a href="#3334" id="3334">3334</a>
+<a href="#3335" id="3335">3335</a>
+<a href="#3336" id="3336">3336</a>
+<a href="#3337" id="3337">3337</a>
+<a href="#3338" id="3338">3338</a>
+<a href="#3339" id="3339">3339</a>
+<a href="#3340" id="3340">3340</a>
+<a href="#3341" id="3341">3341</a>
+<a href="#3342" id="3342">3342</a>
+<a href="#3343" id="3343">3343</a>
+<a href="#3344" id="3344">3344</a>
+<a href="#3345" id="3345">3345</a>
+<a href="#3346" id="3346">3346</a>
+<a href="#3347" id="3347">3347</a>
+<a href="#3348" id="3348">3348</a>
+<a href="#3349" id="3349">3349</a>
+<a href="#3350" id="3350">3350</a>
+<a href="#3351" id="3351">3351</a>
+<a href="#3352" id="3352">3352</a>
+<a href="#3353" id="3353">3353</a>
+<a href="#3354" id="3354">3354</a>
+<a href="#3355" id="3355">3355</a>
+<a href="#3356" id="3356">3356</a>
+<a href="#3357" id="3357">3357</a>
+<a href="#3358" id="3358">3358</a>
+<a href="#3359" id="3359">3359</a>
+<a href="#3360" id="3360">3360</a>
+<a href="#3361" id="3361">3361</a>
+<a href="#3362" id="3362">3362</a>
+<a href="#3363" id="3363">3363</a>
+<a href="#3364" id="3364">3364</a>
+<a href="#3365" id="3365">3365</a>
+<a href="#3366" id="3366">3366</a>
+<a href="#3367" id="3367">3367</a>
+<a href="#3368" id="3368">3368</a>
+<a href="#3369" id="3369">3369</a>
+<a href="#3370" id="3370">3370</a>
+<a href="#3371" id="3371">3371</a>
+<a href="#3372" id="3372">3372</a>
+<a href="#3373" id="3373">3373</a>
+<a href="#3374" id="3374">3374</a>
+<a href="#3375" id="3375">3375</a>
+<a href="#3376" id="3376">3376</a>
+<a href="#3377" id="3377">3377</a>
+<a href="#3378" id="3378">3378</a>
+<a href="#3379" id="3379">3379</a>
+<a href="#3380" id="3380">3380</a>
+<a href="#3381" id="3381">3381</a>
+<a href="#3382" id="3382">3382</a>
+<a href="#3383" id="3383">3383</a>
+<a href="#3384" id="3384">3384</a>
+<a href="#3385" id="3385">3385</a>
+<a href="#3386" id="3386">3386</a>
+<a href="#3387" id="3387">3387</a>
+<a href="#3388" id="3388">3388</a>
+<a href="#3389" id="3389">3389</a>
+<a href="#3390" id="3390">3390</a>
+<a href="#3391" id="3391">3391</a>
+<a href="#3392" id="3392">3392</a>
+<a href="#3393" id="3393">3393</a>
+<a href="#3394" id="3394">3394</a>
+<a href="#3395" id="3395">3395</a>
+<a href="#3396" id="3396">3396</a>
+<a href="#3397" id="3397">3397</a>
+<a href="#3398" id="3398">3398</a>
+<a href="#3399" id="3399">3399</a>
+<a href="#3400" id="3400">3400</a>
+<a href="#3401" id="3401">3401</a>
+<a href="#3402" id="3402">3402</a>
+<a href="#3403" id="3403">3403</a>
+<a href="#3404" id="3404">3404</a>
+<a href="#3405" id="3405">3405</a>
+<a href="#3406" id="3406">3406</a>
+<a href="#3407" id="3407">3407</a>
+<a href="#3408" id="3408">3408</a>
+<a href="#3409" id="3409">3409</a>
+<a href="#3410" id="3410">3410</a>
+<a href="#3411" id="3411">3411</a>
+<a href="#3412" id="3412">3412</a>
+<a href="#3413" id="3413">3413</a>
+<a href="#3414" id="3414">3414</a>
+<a href="#3415" id="3415">3415</a>
+<a href="#3416" id="3416">3416</a>
+<a href="#3417" id="3417">3417</a>
+<a href="#3418" id="3418">3418</a>
+<a href="#3419" id="3419">3419</a>
+<a href="#3420" id="3420">3420</a>
+<a href="#3421" id="3421">3421</a>
+<a href="#3422" id="3422">3422</a>
+<a href="#3423" id="3423">3423</a>
+<a href="#3424" id="3424">3424</a>
+<a href="#3425" id="3425">3425</a>
+<a href="#3426" id="3426">3426</a>
+<a href="#3427" id="3427">3427</a>
+<a href="#3428" id="3428">3428</a>
+<a href="#3429" id="3429">3429</a>
+<a href="#3430" id="3430">3430</a>
+<a href="#3431" id="3431">3431</a>
+<a href="#3432" id="3432">3432</a>
+<a href="#3433" id="3433">3433</a>
+<a href="#3434" id="3434">3434</a>
+<a href="#3435" id="3435">3435</a>
+<a href="#3436" id="3436">3436</a>
+<a href="#3437" id="3437">3437</a>
+<a href="#3438" id="3438">3438</a>
+<a href="#3439" id="3439">3439</a>
+<a href="#3440" id="3440">3440</a>
+<a href="#3441" id="3441">3441</a>
+<a href="#3442" id="3442">3442</a>
+<a href="#3443" id="3443">3443</a>
+<a href="#3444" id="3444">3444</a>
+<a href="#3445" id="3445">3445</a>
+<a href="#3446" id="3446">3446</a>
+<a href="#3447" id="3447">3447</a>
+<a href="#3448" id="3448">3448</a>
+<a href="#3449" id="3449">3449</a>
+<a href="#3450" id="3450">3450</a>
+<a href="#3451" id="3451">3451</a>
+<a href="#3452" id="3452">3452</a>
+<a href="#3453" id="3453">3453</a>
+<a href="#3454" id="3454">3454</a>
+<a href="#3455" id="3455">3455</a>
+<a href="#3456" id="3456">3456</a>
+<a href="#3457" id="3457">3457</a>
+<a href="#3458" id="3458">3458</a>
+<a href="#3459" id="3459">3459</a>
+<a href="#3460" id="3460">3460</a>
+<a href="#3461" id="3461">3461</a>
+<a href="#3462" id="3462">3462</a>
+<a href="#3463" id="3463">3463</a>
+<a href="#3464" id="3464">3464</a>
+<a href="#3465" id="3465">3465</a>
+<a href="#3466" id="3466">3466</a>
+<a href="#3467" id="3467">3467</a>
+<a href="#3468" id="3468">3468</a>
+<a href="#3469" id="3469">3469</a>
+<a href="#3470" id="3470">3470</a>
+<a href="#3471" id="3471">3471</a>
+<a href="#3472" id="3472">3472</a>
+<a href="#3473" id="3473">3473</a>
+<a href="#3474" id="3474">3474</a>
+<a href="#3475" id="3475">3475</a>
+<a href="#3476" id="3476">3476</a>
+<a href="#3477" id="3477">3477</a>
+<a href="#3478" id="3478">3478</a>
+<a href="#3479" id="3479">3479</a>
+<a href="#3480" id="3480">3480</a>
+<a href="#3481" id="3481">3481</a>
+<a href="#3482" id="3482">3482</a>
+<a href="#3483" id="3483">3483</a>
+<a href="#3484" id="3484">3484</a>
+<a href="#3485" id="3485">3485</a>
+<a href="#3486" id="3486">3486</a>
+<a href="#3487" id="3487">3487</a>
+<a href="#3488" id="3488">3488</a>
+<a href="#3489" id="3489">3489</a>
+<a href="#3490" id="3490">3490</a>
+<a href="#3491" id="3491">3491</a>
+<a href="#3492" id="3492">3492</a>
+<a href="#3493" id="3493">3493</a>
+<a href="#3494" id="3494">3494</a>
+<a href="#3495" id="3495">3495</a>
+<a href="#3496" id="3496">3496</a>
+<a href="#3497" id="3497">3497</a>
+<a href="#3498" id="3498">3498</a>
+<a href="#3499" id="3499">3499</a>
+<a href="#3500" id="3500">3500</a>
+<a href="#3501" id="3501">3501</a>
+<a href="#3502" id="3502">3502</a>
+<a href="#3503" id="3503">3503</a>
+<a href="#3504" id="3504">3504</a>
+<a href="#3505" id="3505">3505</a>
+<a href="#3506" id="3506">3506</a>
+<a href="#3507" id="3507">3507</a>
+<a href="#3508" id="3508">3508</a>
+<a href="#3509" id="3509">3509</a>
+<a href="#3510" id="3510">3510</a>
+<a href="#3511" id="3511">3511</a>
+<a href="#3512" id="3512">3512</a>
+<a href="#3513" id="3513">3513</a>
+<a href="#3514" id="3514">3514</a>
+<a href="#3515" id="3515">3515</a>
+<a href="#3516" id="3516">3516</a>
+<a href="#3517" id="3517">3517</a>
+<a href="#3518" id="3518">3518</a>
+<a href="#3519" id="3519">3519</a>
+<a href="#3520" id="3520">3520</a>
+<a href="#3521" id="3521">3521</a>
+<a href="#3522" id="3522">3522</a>
+<a href="#3523" id="3523">3523</a>
+<a href="#3524" id="3524">3524</a>
+<a href="#3525" id="3525">3525</a>
+<a href="#3526" id="3526">3526</a>
+<a href="#3527" id="3527">3527</a>
+<a href="#3528" id="3528">3528</a>
+<a href="#3529" id="3529">3529</a>
+<a href="#3530" id="3530">3530</a>
+<a href="#3531" id="3531">3531</a>
+<a href="#3532" id="3532">3532</a>
+<a href="#3533" id="3533">3533</a>
+<a href="#3534" id="3534">3534</a>
+<a href="#3535" id="3535">3535</a>
+<a href="#3536" id="3536">3536</a>
+<a href="#3537" id="3537">3537</a>
+<a href="#3538" id="3538">3538</a>
+<a href="#3539" id="3539">3539</a>
+<a href="#3540" id="3540">3540</a>
+<a href="#3541" id="3541">3541</a>
+<a href="#3542" id="3542">3542</a>
+<a href="#3543" id="3543">3543</a>
+<a href="#3544" id="3544">3544</a>
+<a href="#3545" id="3545">3545</a>
+<a href="#3546" id="3546">3546</a>
+<a href="#3547" id="3547">3547</a>
+<a href="#3548" id="3548">3548</a>
+<a href="#3549" id="3549">3549</a>
+<a href="#3550" id="3550">3550</a>
+<a href="#3551" id="3551">3551</a>
+<a href="#3552" id="3552">3552</a>
+<a href="#3553" id="3553">3553</a>
+<a href="#3554" id="3554">3554</a>
+<a href="#3555" id="3555">3555</a>
+<a href="#3556" id="3556">3556</a>
+<a href="#3557" id="3557">3557</a>
+<a href="#3558" id="3558">3558</a>
+<a href="#3559" id="3559">3559</a>
+<a href="#3560" id="3560">3560</a>
+<a href="#3561" id="3561">3561</a>
+<a href="#3562" id="3562">3562</a>
+<a href="#3563" id="3563">3563</a>
+<a href="#3564" id="3564">3564</a>
+<a href="#3565" id="3565">3565</a>
+<a href="#3566" id="3566">3566</a>
+<a href="#3567" id="3567">3567</a>
+<a href="#3568" id="3568">3568</a>
+<a href="#3569" id="3569">3569</a>
+<a href="#3570" id="3570">3570</a>
+<a href="#3571" id="3571">3571</a>
+<a href="#3572" id="3572">3572</a>
+<a href="#3573" id="3573">3573</a>
+<a href="#3574" id="3574">3574</a>
+<a href="#3575" id="3575">3575</a>
+<a href="#3576" id="3576">3576</a>
+<a href="#3577" id="3577">3577</a>
+<a href="#3578" id="3578">3578</a>
+<a href="#3579" id="3579">3579</a>
+<a href="#3580" id="3580">3580</a>
+<a href="#3581" id="3581">3581</a>
+<a href="#3582" id="3582">3582</a>
+<a href="#3583" id="3583">3583</a>
+<a href="#3584" id="3584">3584</a>
+<a href="#3585" id="3585">3585</a>
+<a href="#3586" id="3586">3586</a>
+<a href="#3587" id="3587">3587</a>
+<a href="#3588" id="3588">3588</a>
+<a href="#3589" id="3589">3589</a>
+<a href="#3590" id="3590">3590</a>
+<a href="#3591" id="3591">3591</a>
+<a href="#3592" id="3592">3592</a>
+<a href="#3593" id="3593">3593</a>
+<a href="#3594" id="3594">3594</a>
+<a href="#3595" id="3595">3595</a>
+<a href="#3596" id="3596">3596</a>
+<a href="#3597" id="3597">3597</a>
+<a href="#3598" id="3598">3598</a>
+<a href="#3599" id="3599">3599</a>
+<a href="#3600" id="3600">3600</a>
+<a href="#3601" id="3601">3601</a>
+<a href="#3602" id="3602">3602</a>
+<a href="#3603" id="3603">3603</a>
+<a href="#3604" id="3604">3604</a>
+<a href="#3605" id="3605">3605</a>
+<a href="#3606" id="3606">3606</a>
+<a href="#3607" id="3607">3607</a>
+<a href="#3608" id="3608">3608</a>
+<a href="#3609" id="3609">3609</a>
+<a href="#3610" id="3610">3610</a>
+<a href="#3611" id="3611">3611</a>
+<a href="#3612" id="3612">3612</a>
+<a href="#3613" id="3613">3613</a>
+<a href="#3614" id="3614">3614</a>
+<a href="#3615" id="3615">3615</a>
+<a href="#3616" id="3616">3616</a>
+<a href="#3617" id="3617">3617</a>
+<a href="#3618" id="3618">3618</a>
+<a href="#3619" id="3619">3619</a>
+<a href="#3620" id="3620">3620</a>
+<a href="#3621" id="3621">3621</a>
+<a href="#3622" id="3622">3622</a>
+<a href="#3623" id="3623">3623</a>
+<a href="#3624" id="3624">3624</a>
+<a href="#3625" id="3625">3625</a>
+<a href="#3626" id="3626">3626</a>
+<a href="#3627" id="3627">3627</a>
+<a href="#3628" id="3628">3628</a>
+<a href="#3629" id="3629">3629</a>
+<a href="#3630" id="3630">3630</a>
+<a href="#3631" id="3631">3631</a>
+<a href="#3632" id="3632">3632</a>
+<a href="#3633" id="3633">3633</a>
+<a href="#3634" id="3634">3634</a>
+<a href="#3635" id="3635">3635</a>
+<a href="#3636" id="3636">3636</a>
+<a href="#3637" id="3637">3637</a>
+<a href="#3638" id="3638">3638</a>
+<a href="#3639" id="3639">3639</a>
+<a href="#3640" id="3640">3640</a>
+<a href="#3641" id="3641">3641</a>
+<a href="#3642" id="3642">3642</a>
+<a href="#3643" id="3643">3643</a>
+<a href="#3644" id="3644">3644</a>
+<a href="#3645" id="3645">3645</a>
+<a href="#3646" id="3646">3646</a>
+<a href="#3647" id="3647">3647</a>
+<a href="#3648" id="3648">3648</a>
+<a href="#3649" id="3649">3649</a>
+<a href="#3650" id="3650">3650</a>
+<a href="#3651" id="3651">3651</a>
+<a href="#3652" id="3652">3652</a>
+<a href="#3653" id="3653">3653</a>
+<a href="#3654" id="3654">3654</a>
+<a href="#3655" id="3655">3655</a>
+<a href="#3656" id="3656">3656</a>
+<a href="#3657" id="3657">3657</a>
+<a href="#3658" id="3658">3658</a>
+<a href="#3659" id="3659">3659</a>
+<a href="#3660" id="3660">3660</a>
+<a href="#3661" id="3661">3661</a>
+<a href="#3662" id="3662">3662</a>
+<a href="#3663" id="3663">3663</a>
+<a href="#3664" id="3664">3664</a>
+<a href="#3665" id="3665">3665</a>
+<a href="#3666" id="3666">3666</a>
+<a href="#3667" id="3667">3667</a>
+<a href="#3668" id="3668">3668</a>
+<a href="#3669" id="3669">3669</a>
+<a href="#3670" id="3670">3670</a>
+<a href="#3671" id="3671">3671</a>
+<a href="#3672" id="3672">3672</a>
+<a href="#3673" id="3673">3673</a>
+<a href="#3674" id="3674">3674</a>
+<a href="#3675" id="3675">3675</a>
+<a href="#3676" id="3676">3676</a>
+<a href="#3677" id="3677">3677</a>
+<a href="#3678" id="3678">3678</a>
+<a href="#3679" id="3679">3679</a>
+<a href="#3680" id="3680">3680</a>
+<a href="#3681" id="3681">3681</a>
+<a href="#3682" id="3682">3682</a>
+<a href="#3683" id="3683">3683</a>
+<a href="#3684" id="3684">3684</a>
+<a href="#3685" id="3685">3685</a>
+<a href="#3686" id="3686">3686</a>
+<a href="#3687" id="3687">3687</a>
+<a href="#3688" id="3688">3688</a>
+<a href="#3689" id="3689">3689</a>
+<a href="#3690" id="3690">3690</a>
+<a href="#3691" id="3691">3691</a>
+<a href="#3692" id="3692">3692</a>
+<a href="#3693" id="3693">3693</a>
+<a href="#3694" id="3694">3694</a>
+<a href="#3695" id="3695">3695</a>
+<a href="#3696" id="3696">3696</a>
+<a href="#3697" id="3697">3697</a>
+<a href="#3698" id="3698">3698</a>
+<a href="#3699" id="3699">3699</a>
+<a href="#3700" id="3700">3700</a>
+<a href="#3701" id="3701">3701</a>
+<a href="#3702" id="3702">3702</a>
+<a href="#3703" id="3703">3703</a>
+<a href="#3704" id="3704">3704</a>
+<a href="#3705" id="3705">3705</a>
+<a href="#3706" id="3706">3706</a>
+<a href="#3707" id="3707">3707</a>
+<a href="#3708" id="3708">3708</a>
+<a href="#3709" id="3709">3709</a>
+<a href="#3710" id="3710">3710</a>
+<a href="#3711" id="3711">3711</a>
+<a href="#3712" id="3712">3712</a>
+<a href="#3713" id="3713">3713</a>
+<a href="#3714" id="3714">3714</a>
+<a href="#3715" id="3715">3715</a>
+<a href="#3716" id="3716">3716</a>
+<a href="#3717" id="3717">3717</a>
+<a href="#3718" id="3718">3718</a>
+<a href="#3719" id="3719">3719</a>
+<a href="#3720" id="3720">3720</a>
+<a href="#3721" id="3721">3721</a>
+<a href="#3722" id="3722">3722</a>
+<a href="#3723" id="3723">3723</a>
+<a href="#3724" id="3724">3724</a>
+<a href="#3725" id="3725">3725</a>
+<a href="#3726" id="3726">3726</a>
+<a href="#3727" id="3727">3727</a>
+<a href="#3728" id="3728">3728</a>
+<a href="#3729" id="3729">3729</a>
+<a href="#3730" id="3730">3730</a>
+<a href="#3731" id="3731">3731</a>
+<a href="#3732" id="3732">3732</a>
+<a href="#3733" id="3733">3733</a>
+<a href="#3734" id="3734">3734</a>
+<a href="#3735" id="3735">3735</a>
+<a href="#3736" id="3736">3736</a>
+<a href="#3737" id="3737">3737</a>
+<a href="#3738" id="3738">3738</a>
+<a href="#3739" id="3739">3739</a>
+<a href="#3740" id="3740">3740</a>
+<a href="#3741" id="3741">3741</a>
+<a href="#3742" id="3742">3742</a>
+<a href="#3743" id="3743">3743</a>
+<a href="#3744" id="3744">3744</a>
+<a href="#3745" id="3745">3745</a>
+<a href="#3746" id="3746">3746</a>
+<a href="#3747" id="3747">3747</a>
+<a href="#3748" id="3748">3748</a>
+<a href="#3749" id="3749">3749</a>
+<a href="#3750" id="3750">3750</a>
+<a href="#3751" id="3751">3751</a>
+<a href="#3752" id="3752">3752</a>
+<a href="#3753" id="3753">3753</a>
+<a href="#3754" id="3754">3754</a>
+<a href="#3755" id="3755">3755</a>
+<a href="#3756" id="3756">3756</a>
+<a href="#3757" id="3757">3757</a>
+<a href="#3758" id="3758">3758</a>
+<a href="#3759" id="3759">3759</a>
+<a href="#3760" id="3760">3760</a>
+<a href="#3761" id="3761">3761</a>
+<a href="#3762" id="3762">3762</a>
+<a href="#3763" id="3763">3763</a>
+<a href="#3764" id="3764">3764</a>
+<a href="#3765" id="3765">3765</a>
+<a href="#3766" id="3766">3766</a>
+<a href="#3767" id="3767">3767</a>
+<a href="#3768" id="3768">3768</a>
+<a href="#3769" id="3769">3769</a>
+<a href="#3770" id="3770">3770</a>
+<a href="#3771" id="3771">3771</a>
+<a href="#3772" id="3772">3772</a>
+<a href="#3773" id="3773">3773</a>
+<a href="#3774" id="3774">3774</a>
+<a href="#3775" id="3775">3775</a>
+<a href="#3776" id="3776">3776</a>
+<a href="#3777" id="3777">3777</a>
+<a href="#3778" id="3778">3778</a>
+<a href="#3779" id="3779">3779</a>
+<a href="#3780" id="3780">3780</a>
+<a href="#3781" id="3781">3781</a>
+<a href="#3782" id="3782">3782</a>
+<a href="#3783" id="3783">3783</a>
+<a href="#3784" id="3784">3784</a>
+<a href="#3785" id="3785">3785</a>
+<a href="#3786" id="3786">3786</a>
+<a href="#3787" id="3787">3787</a>
+<a href="#3788" id="3788">3788</a>
+<a href="#3789" id="3789">3789</a>
+<a href="#3790" id="3790">3790</a>
+<a href="#3791" id="3791">3791</a>
+<a href="#3792" id="3792">3792</a>
+<a href="#3793" id="3793">3793</a>
+<a href="#3794" id="3794">3794</a>
+<a href="#3795" id="3795">3795</a>
+<a href="#3796" id="3796">3796</a>
+<a href="#3797" id="3797">3797</a>
+<a href="#3798" id="3798">3798</a>
+<a href="#3799" id="3799">3799</a>
+<a href="#3800" id="3800">3800</a>
+<a href="#3801" id="3801">3801</a>
+<a href="#3802" id="3802">3802</a>
+<a href="#3803" id="3803">3803</a>
+<a href="#3804" id="3804">3804</a>
+<a href="#3805" id="3805">3805</a>
+<a href="#3806" id="3806">3806</a>
+<a href="#3807" id="3807">3807</a>
+<a href="#3808" id="3808">3808</a>
+<a href="#3809" id="3809">3809</a>
+<a href="#3810" id="3810">3810</a>
+<a href="#3811" id="3811">3811</a>
+<a href="#3812" id="3812">3812</a>
+<a href="#3813" id="3813">3813</a>
+<a href="#3814" id="3814">3814</a>
+<a href="#3815" id="3815">3815</a>
+<a href="#3816" id="3816">3816</a>
+<a href="#3817" id="3817">3817</a>
+<a href="#3818" id="3818">3818</a>
+<a href="#3819" id="3819">3819</a>
+<a href="#3820" id="3820">3820</a>
+<a href="#3821" id="3821">3821</a>
+<a href="#3822" id="3822">3822</a>
+<a href="#3823" id="3823">3823</a>
+<a href="#3824" id="3824">3824</a>
+<a href="#3825" id="3825">3825</a>
+<a href="#3826" id="3826">3826</a>
+<a href="#3827" id="3827">3827</a>
+<a href="#3828" id="3828">3828</a>
+<a href="#3829" id="3829">3829</a>
+<a href="#3830" id="3830">3830</a>
+<a href="#3831" id="3831">3831</a>
+<a href="#3832" id="3832">3832</a>
+<a href="#3833" id="3833">3833</a>
+<a href="#3834" id="3834">3834</a>
+<a href="#3835" id="3835">3835</a>
+<a href="#3836" id="3836">3836</a>
+<a href="#3837" id="3837">3837</a>
+<a href="#3838" id="3838">3838</a>
+<a href="#3839" id="3839">3839</a>
+<a href="#3840" id="3840">3840</a>
+<a href="#3841" id="3841">3841</a>
+<a href="#3842" id="3842">3842</a>
+<a href="#3843" id="3843">3843</a>
+<a href="#3844" id="3844">3844</a>
+<a href="#3845" id="3845">3845</a>
+<a href="#3846" id="3846">3846</a>
+<a href="#3847" id="3847">3847</a>
+<a href="#3848" id="3848">3848</a>
+<a href="#3849" id="3849">3849</a>
+<a href="#3850" id="3850">3850</a>
+<a href="#3851" id="3851">3851</a>
+<a href="#3852" id="3852">3852</a>
+<a href="#3853" id="3853">3853</a>
+<a href="#3854" id="3854">3854</a>
+<a href="#3855" id="3855">3855</a>
+<a href="#3856" id="3856">3856</a>
+<a href="#3857" id="3857">3857</a>
+</pre></div><pre class="rust"><code><span class="comment">// Copyright 2013-2016 The GLFW-RS Developers. For a full listing of the authors,
 // refer to the AUTHORS file at the top-level directory of this distribution.
 //
 // Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -3286,15 +3875,15 @@
 #![crate_type = <span class="string">&quot;dylib&quot;</span>]
 #![crate_name = <span class="string">&quot;glfw&quot;</span>]
 #![deny(
-    rust_2018_compatibility,
-    rust_2018_idioms,
-    nonstandard_style,
-    unused,
-    future_incompatible,
-    missing_copy_implementations,
-    missing_debug_implementations,
-    missing_abi,
-    clippy::doc_markdown
+rust_2018_compatibility,
+rust_2018_idioms,
+nonstandard_style,
+unused,
+future_incompatible,
+missing_copy_implementations,
+missing_debug_implementations,
+missing_abi,
+clippy::doc_markdown
 )]
 #![allow(non_upper_case_globals)]
 
@@ -3308,7 +3897,8 @@
 //! use glfw::{Action, Context, Key};
 //!
 //! fn main() {
-//!    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+//!    use glfw::fail_on_errors;
+//! let mut glfw = glfw::init(fail_on_errors!()).unwrap();
 //!
 //!     // Create a windowed mode window and its OpenGL context
 //!     let (mut window, events) = glfw.create_window(300, 300, &quot;Hello this is window&quot;, glfw::WindowMode::Windowed)
@@ -3349,7 +3939,175 @@
 
 </span><span class="comment">// TODO: Document differences between GLFW and glfw-rs
 
-</span><span class="attr">#[cfg(feature = <span class="string">&quot;log&quot;</span>)]
+</span><span class="macro">macro_rules! </span>make_user_callback_functions {
+    (
+        doc -&gt; <span class="macro-nonterminal">$doc</span>:literal,
+        set -&gt; <span class="macro-nonterminal">$set</span>:ident,
+        unset -&gt; <span class="macro-nonterminal">$unset</span>:ident,
+        poll -&gt; <span class="macro-nonterminal">$poll</span>:ident,
+        callback_field -&gt; <span class="macro-nonterminal">$callback_field</span>:ident,
+        poll_field -&gt; <span class="macro-nonterminal">$poll_field</span>:ident,
+        glfw -&gt; <span class="macro-nonterminal">$glfw</span>:ident,
+        args -&gt; ($(<span class="macro-nonterminal">$args</span>:ty),<span class="kw-2">*</span>),
+        secret -&gt; <span class="macro-nonterminal">$secret</span>:ident
+    ) =&gt; {
+
+        <span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+        #[doc = <span class="macro-nonterminal">$doc</span>]
+        </span><span class="kw">pub fn </span><span class="macro-nonterminal">$set</span>&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, callback: T)
+        <span class="kw">where </span>T: FnMut(<span class="kw-2">&amp;mut </span>Window, $(<span class="macro-nonterminal">$args</span>),<span class="kw-2">*</span>) + <span class="lifetime">&#39;static </span>{
+            <span class="kw">unsafe </span>{
+                <span class="kw">let </span>callbacks = WindowCallbacks::get_callbacks(<span class="self">self</span>.ptr);
+                callbacks.<span class="macro-nonterminal">$callback_field </span>= <span class="prelude-val">Some</span>(Box::new(callback));
+                ffi::<span class="macro-nonterminal">$glfw</span>(<span class="self">self</span>.ptr, <span class="prelude-val">Some</span>(<span class="self">Self</span>::<span class="macro-nonterminal">$secret</span>));
+            }
+        }
+
+        <span class="attr">#[cfg(not(feature = <span class="string">&quot;glfw-callbacks&quot;</span>))]
+        #[doc = <span class="macro-nonterminal">$doc</span>]
+        </span><span class="kw">pub fn </span><span class="macro-nonterminal">$set</span>&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, callback: T)
+        <span class="kw">where </span>T: FnMut($(<span class="macro-nonterminal">$args</span>),<span class="kw-2">*</span>) + <span class="lifetime">&#39;static </span>{
+            <span class="kw">unsafe </span>{
+                <span class="kw">let </span>callbacks = WindowCallbacks::get_callbacks(<span class="self">self</span>.ptr);
+                callbacks.<span class="macro-nonterminal">$callback_field </span>= <span class="prelude-val">Some</span>(Box::new(callback));
+                ffi::<span class="macro-nonterminal">$glfw</span>(<span class="self">self</span>.ptr, <span class="prelude-val">Some</span>(<span class="self">Self</span>::<span class="macro-nonterminal">$secret</span>));
+            }
+        }
+
+        <span class="attr">#[doc = <span class="macro-nonterminal">$doc</span>]
+        </span><span class="kw">pub fn </span><span class="macro-nonterminal">$unset</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+            <span class="kw">unsafe </span>{
+                <span class="kw">let </span>callbacks = WindowCallbacks::get_callbacks(<span class="self">self</span>.ptr);
+                callbacks.<span class="macro-nonterminal">$callback_field </span>= <span class="prelude-val">None</span>;
+
+                <span class="comment">// We&#39;re removing the callback, if theres no polling either, set to null
+                </span><span class="kw">if </span>!callbacks.<span class="macro-nonterminal">$poll_field </span>{
+                    ffi::<span class="macro-nonterminal">$glfw</span>(<span class="self">self</span>.ptr, <span class="prelude-val">None</span>);
+                }
+            }
+        }
+
+        <span class="attr">#[doc = <span class="macro-nonterminal">$doc</span>]
+        </span><span class="kw">pub fn </span><span class="macro-nonterminal">$poll</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
+            <span class="kw">unsafe </span>{
+                <span class="kw">let </span>callbacks = WindowCallbacks::get_callbacks(<span class="self">self</span>.ptr);
+                callbacks.<span class="macro-nonterminal">$poll_field </span>= should_poll;
+
+                <span class="comment">// If no polling and not custom callback, set glfw callback to null
+                </span><span class="kw">if </span>should_poll {
+                    ffi::<span class="macro-nonterminal">$glfw</span>(<span class="self">self</span>.ptr, <span class="prelude-val">Some</span>(<span class="self">Self</span>::<span class="macro-nonterminal">$secret</span>));
+                } <span class="kw">else if </span>callbacks.<span class="macro-nonterminal">$callback_field</span>.is_none() {
+                    ffi::<span class="macro-nonterminal">$glfw</span>(<span class="self">self</span>.ptr, <span class="prelude-val">None</span>);
+                }
+            }
+        }
+    }
+}
+
+<span class="macro">macro_rules! </span>new_callback {
+    (
+        doc -&gt; <span class="macro-nonterminal">$doc</span>:literal,
+        set -&gt; <span class="macro-nonterminal">$set</span>:ident,
+        unset -&gt; <span class="macro-nonterminal">$unset</span>:ident,
+        poll -&gt; <span class="macro-nonterminal">$poll</span>:ident,
+        callback_field -&gt; <span class="macro-nonterminal">$callback_field</span>:ident,
+        poll_field -&gt; <span class="macro-nonterminal">$poll_field</span>:ident,
+        window_event -&gt; <span class="macro-nonterminal">$window_event</span>:ident ($(<span class="macro-nonterminal">$args</span>:ty),+),
+        glfw -&gt; <span class="macro-nonterminal">$glfw</span>:ident ($(<span class="macro-nonterminal">$glfw_arg_names</span>:ident: <span class="macro-nonterminal">$glfw_args</span>:ty),<span class="kw-2">*</span>),
+        convert_args -&gt; ($(<span class="macro-nonterminal">$convert_args</span>:expr),<span class="kw-2">*</span>),
+        secret -&gt; <span class="macro-nonterminal">$secret</span>:ident
+    ) =&gt; {
+
+        <span class="attr">#[allow(unused_unsafe)]
+        </span><span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span><span class="macro-nonterminal">$secret</span>(glfw_window: <span class="kw-2">*mut </span>GLFWwindow, $(<span class="macro-nonterminal">$glfw_arg_names</span>: <span class="macro-nonterminal">$glfw_args</span>),<span class="kw-2">*</span>) {
+            <span class="kw">unsafe </span>{
+                <span class="kw">let </span>callbacks = WindowCallbacks::get_callbacks(glfw_window);
+                <span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+                </span><span class="kw">let </span>window = <span class="kw-2">&amp;mut *</span>callbacks.window_ptr;
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(func) = <span class="kw-2">&amp;mut </span>callbacks.<span class="macro-nonterminal">$callback_field </span>{
+                    <span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+                    </span>{
+                        func(window, $(<span class="macro-nonterminal">$convert_args</span>),<span class="kw-2">*</span>);
+                    }
+                    <span class="attr">#[cfg(not(feature = <span class="string">&quot;glfw-callbacks&quot;</span>))]
+                    </span>{
+                        func($(<span class="macro-nonterminal">$convert_args</span>),<span class="kw-2">*</span>);
+                    }
+                }
+                <span class="kw">if </span>callbacks.<span class="macro-nonterminal">$poll_field </span>{
+                    <span class="kw">let </span>event = (ffi::glfwGetTime() <span class="kw">as </span>f64, WindowEvent::<span class="macro-nonterminal">$window_event</span>($(<span class="macro-nonterminal">$convert_args</span>),<span class="kw-2">*</span>));
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = callbacks::unbuffered::handle(glfw_window <span class="kw">as </span>WindowId, event) {
+                        callbacks.sender.send(event).unwrap();
+                    }
+                }
+            }
+        }
+
+        <span class="macro">make_user_callback_functions!</span>(
+            doc -&gt; <span class="macro-nonterminal">$doc</span>,
+            set -&gt; <span class="macro-nonterminal">$set</span>,
+            unset -&gt; <span class="macro-nonterminal">$unset</span>,
+            poll -&gt; <span class="macro-nonterminal">$poll</span>,
+            callback_field -&gt; <span class="macro-nonterminal">$callback_field</span>,
+            poll_field -&gt; <span class="macro-nonterminal">$poll_field</span>,
+            glfw -&gt; <span class="macro-nonterminal">$glfw</span>,
+            args -&gt; ($(<span class="macro-nonterminal">$args</span>),<span class="kw-2">*</span>),
+            secret -&gt; <span class="macro-nonterminal">$secret
+        </span>);
+    };
+    (
+        doc -&gt; <span class="macro-nonterminal">$doc</span>:literal,
+        set -&gt; <span class="macro-nonterminal">$set</span>:ident,
+        unset -&gt; <span class="macro-nonterminal">$unset</span>:ident,
+        poll -&gt; <span class="macro-nonterminal">$poll</span>:ident,
+        callback_field -&gt; <span class="macro-nonterminal">$callback_field</span>:ident,
+        poll_field -&gt; <span class="macro-nonterminal">$poll_field</span>:ident,
+        window_event -&gt; <span class="macro-nonterminal">$window_event</span>:ident,
+        glfw -&gt; <span class="macro-nonterminal">$glfw</span>:ident ($(<span class="macro-nonterminal">$glfw_arg_names</span>:ident: <span class="macro-nonterminal">$glfw_args</span>:ty),<span class="kw-2">*</span>),
+        convert_args -&gt; ($(<span class="macro-nonterminal">$convert_args</span>:expr),<span class="kw-2">*</span>),
+        secret -&gt; <span class="macro-nonterminal">$secret</span>:ident
+    ) =&gt; {
+
+        <span class="attr">#[allow(unused_unsafe)]
+        </span><span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span><span class="macro-nonterminal">$secret</span>(glfw_window: <span class="kw-2">*mut </span>GLFWwindow, $(<span class="macro-nonterminal">$glfw_arg_names</span>: <span class="macro-nonterminal">$glfw_args</span>),<span class="kw-2">*</span>) {
+            <span class="kw">unsafe </span>{
+                <span class="kw">let </span>callbacks = WindowCallbacks::get_callbacks(glfw_window);
+                <span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+                </span><span class="kw">let </span>window = <span class="kw-2">&amp;mut *</span>callbacks.window_ptr;
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(func) = <span class="kw-2">&amp;mut </span>callbacks.<span class="macro-nonterminal">$callback_field </span>{
+                    <span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+                    </span>{
+                        func(window);
+                    }
+                    <span class="attr">#[cfg(not(feature = <span class="string">&quot;glfw-callbacks&quot;</span>))]
+                    </span>{
+                        func();
+                    }
+                }
+                <span class="kw">if </span>callbacks.<span class="macro-nonterminal">$poll_field </span>{
+                    <span class="kw">let </span>event = (ffi::glfwGetTime() <span class="kw">as </span>f64, WindowEvent::<span class="macro-nonterminal">$window_event</span>);
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = callbacks::unbuffered::handle(glfw_window <span class="kw">as </span>WindowId, event) {
+                        callbacks.sender.send(event).unwrap();
+                    }
+                }
+            }
+        }
+
+        <span class="macro">make_user_callback_functions!</span>(
+            doc -&gt; <span class="macro-nonterminal">$doc</span>,
+            set -&gt; <span class="macro-nonterminal">$set</span>,
+            unset -&gt; <span class="macro-nonterminal">$unset</span>,
+            poll -&gt; <span class="macro-nonterminal">$poll</span>,
+            callback_field -&gt; <span class="macro-nonterminal">$callback_field</span>,
+            poll_field -&gt; <span class="macro-nonterminal">$poll_field</span>,
+            glfw -&gt; <span class="macro-nonterminal">$glfw</span>,
+            args -&gt; (),
+            secret -&gt; <span class="macro-nonterminal">$secret
+        </span>);
+    }
+}
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;log&quot;</span>)]
 #[macro_use]
 </span><span class="kw">extern crate </span>log;
 <span class="attr">#[macro_use]
@@ -3375,12 +4133,16 @@
 </span><span class="kw">use </span>std::os::raw::c_void;
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::ptr;
+<span class="kw">use </span>std::ptr::{null, null_mut};
 <span class="kw">use </span>std::slice;
 <span class="kw">use </span>std::sync::atomic::{AtomicUsize, Ordering};
 <span class="kw">use </span>std::sync::mpsc::{channel, Receiver, Sender};
+<span class="attr">#[allow(unused)]
+</span><span class="kw">use </span>std::ffi::<span class="kw-2">*</span>;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
 </span><span class="kw">use </span>ash::vk;
+<span class="kw">use </span><span class="kw">crate</span>::ffi::GLFWwindow;
 
 <span class="doccomment">/// Alias to `MouseButton1`, supplied for improved clarity.
 </span><span class="kw">pub use </span><span class="self">self</span>::MouseButton::Button1 <span class="kw">as </span>MouseButtonLeft;
@@ -3391,6 +4153,14 @@
 
 <span class="kw">mod </span>callbacks;
 <span class="kw">pub mod </span>ffi;
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+</span><span class="doccomment">/// Type returned by creating a window
+</span><span class="kw">pub type </span>WindowType = Box&lt;Window&gt;;
+
+<span class="attr">#[cfg(not(feature = <span class="string">&quot;glfw-callbacks&quot;</span>))]
+</span><span class="doccomment">/// Type returned by creating a window
+</span><span class="kw">pub type </span>WindowType = Window;
 
 <span class="doccomment">/// Unique identifier for a `Window`.
 </span><span class="kw">pub type </span>WindowId = usize;
@@ -3554,8 +4324,8 @@
 
 <span class="doccomment">/// Wrapper around `glfwGetKeyName`
 </span><span class="attr">#[deprecated(
-    since = <span class="string">&quot;0.16.0&quot;</span>,
-    note = <span class="string">&quot;&#39;key_name&#39; can cause a segfault, use &#39;get_key_name&#39; instead&quot;
+since = <span class="string">&quot;0.16.0&quot;</span>,
+note = <span class="string">&quot;&#39;key_name&#39; can cause a segfault, use &#39;get_key_name&#39; instead&quot;
 </span>)]
 </span><span class="kw">pub fn </span>key_name(key: <span class="prelude-ty">Option</span>&lt;Key&gt;, scancode: <span class="prelude-ty">Option</span>&lt;Scancode&gt;) -&gt; String {
     <span class="kw">unsafe </span>{
@@ -3585,8 +4355,8 @@
 <span class="kw">impl </span>Key {
     <span class="doccomment">/// Wrapper around `glfwGetKeyName` without scancode
     </span><span class="attr">#[deprecated(
-        since = <span class="string">&quot;0.16.0&quot;</span>,
-        note = <span class="string">&quot;Key method &#39;name&#39; can cause a segfault, use &#39;get_name&#39; instead&quot;
+    since = <span class="string">&quot;0.16.0&quot;</span>,
+    note = <span class="string">&quot;Key method &#39;name&#39; can cause a segfault, use &#39;get_name&#39; instead&quot;
     </span>)]
     </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="attr">#[allow(deprecated)]
@@ -3655,12 +4425,6 @@
     }
 }
 
-<span class="attr">#[derive(Copy, Clone, Debug)]
-</span><span class="kw">pub struct </span>Callback&lt;Fn, UserData&gt; {
-    <span class="kw">pub </span>f: Fn,
-    <span class="kw">pub </span>data: UserData,
-}
-
 <span class="doccomment">/// Tokens corresponding to various error types.
 </span><span class="attr">#[repr(i32)]
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -3700,39 +4464,43 @@
 
 <span class="kw">impl </span>error::Error <span class="kw">for </span>Error {}
 
-<span class="doccomment">/// An error callback. This can be supplied with some user data to be passed to
-/// the callback function when it is triggered.
-</span><span class="kw">pub type </span>ErrorCallback&lt;UserData&gt; = Callback&lt;<span class="kw">fn</span>(Error, String, <span class="kw-2">&amp;</span>UserData), UserData&gt;;
-
-<span class="doccomment">/// The function to be used with the `FAIL_ON_ERRORS` callback.
-</span><span class="kw">pub fn </span>fail_on_errors(<span class="kw">_</span>: Error, description: String, <span class="kw">_</span>: <span class="kw-2">&amp;</span>()) {
+<span class="doccomment">/// The function to be used with the `fail_on_errors!()` callback.
+</span><span class="kw">pub fn </span>fail_on_errors(<span class="kw">_</span>: Error, description: String) {
     <span class="macro">panic!</span>(<span class="string">&quot;GLFW Error: {}&quot;</span>, description);
 }
 
 <span class="doccomment">/// A callback that triggers a task failure when an error is encountered.
-</span><span class="kw">pub static </span>FAIL_ON_ERRORS: <span class="prelude-ty">Option</span>&lt;ErrorCallback&lt;()&gt;&gt; = <span class="prelude-val">Some</span>(Callback {
-    f: fail_on_errors <span class="kw">as fn</span>(Error, String, <span class="kw-2">&amp;</span>()),
-    data: (),
-});
+</span><span class="attr">#[macro_export]
+</span><span class="macro">macro_rules! </span>fail_on_errors {
+    () =&gt; {{
+        |error, description| {
+            fail_on_errors(error, description);
+        }
+    }}
+}
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;log&quot;</span>)]
 </span><span class="doccomment">/// The function to be used with the `LOG_ERRORS` callback.
-</span><span class="kw">pub fn </span>log_errors(<span class="kw">_</span>: Error, description: String, <span class="kw">_</span>: <span class="kw-2">&amp;</span>()) {
+</span><span class="kw">pub fn </span>log_errors(<span class="kw">_</span>: Error, description: String) {
     <span class="macro">error!</span>(<span class="string">&quot;GLFW Error: {}&quot;</span>, description);
 }
 
 <span class="attr">#[cfg(not(feature = <span class="string">&quot;log&quot;</span>))]
 </span><span class="doccomment">/// The function to be used with the `LOG_ERRORS` callback.
-</span><span class="kw">pub fn </span>log_errors(<span class="kw">_</span>: Error, description: String, <span class="kw">_</span>: <span class="kw-2">&amp;</span>()) {
+</span><span class="kw">pub fn </span>log_errors(<span class="kw">_</span>: Error, description: String) {
     <span class="macro">eprintln!</span>(<span class="string">&quot;GLFW Error: {}&quot;</span>, description);
 }
 
 <span class="doccomment">/// A callback that logs each error as it is encountered without triggering a
-/// task failure.
-</span><span class="kw">pub static </span>LOG_ERRORS: <span class="prelude-ty">Option</span>&lt;ErrorCallback&lt;()&gt;&gt; = <span class="prelude-val">Some</span>(Callback {
-    f: log_errors <span class="kw">as fn</span>(Error, String, <span class="kw-2">&amp;</span>()),
-    data: (),
-});
+/// task failure
+</span><span class="attr">#[macro_export]
+</span><span class="macro">macro_rules! </span>log_errors {
+    () =&gt; {{
+        |error, description| {
+            log_errors(error, description);
+        }
+    }}
+}
 
 <span class="doccomment">/// When not using the `image` library, or if you just want to,
 /// you can specify an image from its raw pixel data using this structure.
@@ -3921,6 +4689,89 @@
 /// It uses for &quot;global&quot; refference counting for Glfw.
 </span><span class="kw">static </span>REF_COUNT_FOR_GLFW: AtomicUsize = AtomicUsize::new(<span class="number">0</span>);
 
+<span class="doccomment">/// A struct that represents a thread safe handle to a `Glfw`
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>ThreadSafeGlfw {
+    glfw: Glfw
+}
+
+<span class="kw">impl </span>ThreadSafeGlfw {
+
+    <span class="doccomment">/// Creates a new `Glfw` wrapper that can be shared between threads
+    </span><span class="kw">pub fn </span>from(glfw: <span class="kw-2">&amp;mut </span>Glfw) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            glfw: glfw.clone()
+        }
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::set_swap_interval`]
+    </span><span class="kw">pub fn </span>set_swap_interval(<span class="kw-2">&amp;mut </span><span class="self">self</span>, interval: SwapInterval) {
+        <span class="self">self</span>.glfw.set_swap_interval(interval);
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::extension_supported`]
+    </span><span class="kw">pub fn </span>extension_supported(<span class="kw-2">&amp;</span><span class="self">self</span>, extension: <span class="kw-2">&amp;</span>str) -&gt; bool {
+        <span class="self">self</span>.glfw.extension_supported(extension)
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::get_time`]
+    </span><span class="kw">pub fn </span>get_time(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
+        <span class="self">self</span>.glfw.get_time()
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::set_time`]
+    </span><span class="kw">pub fn </span>set_time(<span class="kw-2">&amp;mut </span><span class="self">self</span>, time: f64) {
+        <span class="self">self</span>.glfw.set_time(time);
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::vulkan_supported`]
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
+    </span><span class="kw">pub fn </span>vulkan_supported(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.glfw.vulkan_supported()
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::get_required_instance_extensions`]
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
+    </span><span class="kw">pub fn </span>get_required_instance_extensions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt; {
+        <span class="self">self</span>.glfw.get_required_instance_extensions()
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::get_instance_proc_address_raw`]
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
+    </span><span class="kw">pub fn </span>get_instance_proc_address_raw(<span class="kw-2">&amp;</span><span class="self">self</span>, instance: vk::Instance, procname: <span class="kw-2">&amp;</span>str) -&gt; VkProc {
+        <span class="self">self</span>.glfw.get_instance_proc_address_raw(instance, procname)
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::get_physical_device_presentation_support_raw`]
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
+    </span><span class="kw">pub fn </span>get_physical_device_presentation_support_raw(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        instance: vk::Instance,
+        device: vk::PhysicalDevice,
+        queue_family: u32,
+    ) -&gt; bool {
+        <span class="self">self</span>.glfw.get_physical_device_presentation_support_raw(instance, device, queue_family)
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::get_timer_value`]
+    </span><span class="kw">pub fn </span>get_timer_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        <span class="self">self</span>.glfw.get_timer_value()
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::get_timer_frequency`]
+    </span><span class="kw">pub fn </span>get_timer_frequency(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        <span class="self">self</span>.glfw.get_timer_frequency()
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Glfw::post_empty_event`]
+    </span><span class="kw">pub fn </span>post_empty_event(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="self">self</span>.glfw.post_empty_event()
+    }
+
+}
+
+<span class="kw">unsafe impl </span>Send <span class="kw">for </span>ThreadSafeGlfw {}
+
 <span class="doccomment">/// A token from which to call various GLFW functions. It can be obtained by
 /// calling the `init` function. This cannot be sent to other tasks, and should
 /// only be initialized on the main platform thread. Whilst this might make
@@ -3992,17 +4843,10 @@
         },
     }
 }
-
 <span class="doccomment">/// Initializes the GLFW library. This must be called on the main platform
 /// thread.
 ///
 /// Wrapper for `glfwInit`.
-///
-/// # Error callback
-///
-/// An error callback can be set if desired. This allows for the handling of any
-/// errors that occur during initialization. This can subsequently be changed
-/// using the `Glfw::set_error_callback` function.
 ///
 /// # Example
 ///
@@ -4010,7 +4854,27 @@
 /// extern crate glfw;
 ///
 /// fn main() {
-///    let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+///    let glfw = glfw::init_no_callbacks().unwrap();
+/// }
+/// ~~~
+///
+/// # Error callback
+///
+/// An error callback can be set if desired. This allows for the handling of any
+/// errors that occur during initialization. This can subsequently be changed
+/// using the `glfw::init` function.
+///
+/// ~~~no_run
+/// extern crate glfw;
+/// #[macro_use]
+/// extern crate log;
+///
+/// fn main() {
+///    let glfw = glfw::init(error_callback).unwrap();
+/// }
+///
+/// fn error_callback(err: glfw::Error, description: String) {
+///     error!(&quot;GLFW error {:?}: {:?}&quot;, err, description);
 /// }
 /// ~~~
 ///
@@ -4021,16 +4885,20 @@
 /// - Subsequent calls to `init` will return `Glfw` token immediately.
 /// - If an initialization error occurred within the GLFW library
 ///   `Err(InternalInitError)` will be returned.
-</span><span class="kw">pub fn </span>init&lt;UserData: <span class="lifetime">&#39;static</span>&gt;(
-    <span class="kw-2">mut </span>callback: <span class="prelude-ty">Option</span>&lt;ErrorCallback&lt;UserData&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Glfw, InitError&gt; {
-    <span class="comment">// Initialize the error callback if it was supplied. This is done
+</span><span class="kw">pub fn </span>init&lt;T&gt;(callback: T)
+    -&gt; <span class="prelude-ty">Result</span>&lt;Glfw, InitError&gt;
+    <span class="kw">where </span>T: FnMut(Error, String) + <span class="lifetime">&#39;static
+</span>{
+    <span class="comment">// Initialize the error callback. This is done
     // before `ffi::glfwInit` because errors could occur during
     // initialization.
-    </span><span class="kw">match </span>callback.take() {
-        <span class="prelude-val">Some</span>(f) =&gt; callbacks::error::set(f),
-        <span class="prelude-val">None </span>=&gt; callbacks::error::unset(),
-    }
+    </span>callbacks::error::set(callback);
+
+    init_no_callbacks()
+}
+
+<span class="kw">pub fn </span>init_no_callbacks() -&gt; <span class="prelude-ty">Result</span>&lt;Glfw, InitError&gt;
+{
     <span class="comment">// initialize GLFW.
     // FYI: multiple not terminated ffi::glfwInit() returns ffi::TRUE immediately.
     // https://www.glfw.org/docs/latest/group__init.html#ga317aac130a235ab08c6db0834907d85e
@@ -4048,62 +4916,75 @@
     /// # Example
     ///
     /// ~~~ignore
-    /// use std::cell::Cell;
-    ///
-    /// fn error_callback(_: glfw::Error, description: String, error_count: &amp;Cell&lt;usize&gt;) {
-    ///     println!(&quot;GLFW error {}: {}&quot;, error_count.get(), description);
-    ///     error_count.set(error_count.get() + 1);
-    /// }
-    ///
     /// // sets a new callback
-    /// glfw.set_error_callback(Some(
-    ///     glfw::Callback {
-    ///         f: error_callback,
-    ///         data: Cell::new(0),
-    ///     }
-    /// ));
+    /// let mut error_count: usize = 0;
+    /// glfw.set_error_callback(Some(move |error, description| {
+    ///     println!(&quot;GLFW error {}: {}&quot;, error_count, description);
+    ///     error_count += 1;
+    /// }));
     ///
     /// // removes the previously set callback
     /// glfw.set_error_callback(None);
     /// ~~~
     ///
-    /// The `FAIL_ON_ERRORS` and `LOG_ERRORS` callbacks are provided for
+    /// The `fail_on_errors!()` and `log_errors!()` callback macros are provided for
     /// convenience. For example:
     ///
     /// ~~~ignore
     /// // triggers a task failure when a GLFW error is encountered.
-    /// glfw.set_error_callback(glfw::FAIL_ON_ERRORS);
+    /// glfw.set_error_callback(fail_on_errors!());
     /// ~~~
-    </span><span class="kw">pub fn </span>set_error_callback&lt;UserData: <span class="lifetime">&#39;static</span>&gt;(
+    </span><span class="kw">pub fn </span>set_error_callback&lt;T&gt;(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        callback: <span class="prelude-ty">Option</span>&lt;ErrorCallback&lt;UserData&gt;&gt;,
-    ) {
-        <span class="kw">match </span>callback {
-            <span class="prelude-val">Some</span>(f) =&gt; callbacks::error::set(f),
-            <span class="prelude-val">None </span>=&gt; callbacks::error::unset(),
-        }
+        callback: T,
+    )
+    <span class="kw">where </span>T: FnMut(Error, String) + <span class="lifetime">&#39;static
+    </span>{
+        callbacks::error::set(callback);
+    }
+
+    <span class="doccomment">/// Unsets the monitor callback
+    </span><span class="kw">pub fn </span>unset_error_callback(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+    )
+    {
+        callbacks::error::unset();
     }
 
     <span class="doccomment">/// Sets the monitor callback, overwriting the previous one stored.
-    </span><span class="kw">pub fn </span>set_monitor_callback&lt;UserData: <span class="lifetime">&#39;static</span>&gt;(
+    </span><span class="kw">pub fn </span>set_monitor_callback&lt;T&gt;(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        callback: <span class="prelude-ty">Option</span>&lt;MonitorCallback&lt;UserData&gt;&gt;,
-    ) {
-        <span class="kw">match </span>callback {
-            <span class="prelude-val">Some</span>(f) =&gt; callbacks::monitor::set(f),
-            <span class="prelude-val">None </span>=&gt; callbacks::monitor::unset(),
-        }
+        callback: T
+    )
+    <span class="kw">where </span>T: FnMut(Monitor, MonitorEvent) + <span class="lifetime">&#39;static
+    </span>{
+        callbacks::monitor::set(callback);
+    }
+
+    <span class="doccomment">/// Unsets the monitor callback
+    </span><span class="kw">pub fn </span>unset_monitor_callback(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+    )
+    {
+        callbacks::monitor::unset();
     }
 
     <span class="doccomment">/// Sets the joystick callback, overwriting the previous one stored
-    </span><span class="kw">pub fn </span>set_joystick_callback&lt;UserData: <span class="lifetime">&#39;static</span>&gt;(
+    </span><span class="kw">pub fn </span>set_joystick_callback&lt;T&gt;(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        callback: <span class="prelude-ty">Option</span>&lt;JoystickCallback&lt;UserData&gt;&gt;,
-    ) {
-        <span class="kw">match </span>callback {
-            <span class="prelude-val">Some</span>(f) =&gt; callbacks::joystick::set(f),
-            <span class="prelude-val">None </span>=&gt; callbacks::joystick::unset(),
-        }
+        callback: T,
+    )
+    <span class="kw">where </span>T: FnMut(JoystickId, JoystickEvent) + <span class="lifetime">&#39;static
+    </span>{
+        callbacks::joystick::set(callback);
+    }
+
+    <span class="doccomment">/// Unsets the joystick callback
+    </span><span class="kw">pub fn </span>unset_joystick_callback(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+    )
+    {
+        callbacks::joystick::unset();
     }
 
     <span class="doccomment">/// Supplies the primary monitor to the closure provided, if it exists.
@@ -4120,11 +5001,11 @@
     /// ~~~
     </span><span class="kw">pub fn </span>with_primary_monitor&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; T
     <span class="kw">where
-        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Monitor&gt;) -&gt; T,
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Monitor&gt;) -&gt; T,
     {
         <span class="kw">match unsafe </span>{ ffi::glfwGetPrimaryMonitor() } {
             ptr <span class="kw">if </span>ptr.is_null() =&gt; f(<span class="self">self</span>, <span class="prelude-val">None</span>),
-            ptr =&gt; f(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>Monitor { ptr })),
+            ptr =&gt; f(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;mut </span>Monitor { ptr })),
         }
     }
 
@@ -4142,14 +5023,14 @@
     /// ~~~
     </span><span class="kw">pub fn </span>with_connected_monitors&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; T
     <span class="kw">where
-        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="kw-2">&amp;</span>[Monitor]) -&gt; T,
+        </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>, <span class="kw-2">&amp;mut </span>[Monitor]) -&gt; T,
     {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
             <span class="kw">let </span>ptr = ffi::glfwGetMonitors(<span class="kw-2">&amp;mut </span>count);
             f(
                 <span class="self">self</span>,
-                <span class="kw-2">&amp;</span>slice::from_raw_parts(ptr <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>, count <span class="kw">as </span>usize)
+                <span class="kw-2">&amp;mut </span>slice::from_raw_parts(ptr <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>, count <span class="kw">as </span>usize)
                     .iter()
                     .map(|<span class="kw-2">&amp;</span>ptr| Monitor { ptr })
                     .collect::&lt;Vec&lt;Monitor&gt;&gt;(),
@@ -4284,6 +5165,9 @@
             WindowHint::Focused(is_focused) =&gt; <span class="kw">unsafe </span>{
                 ffi::glfwWindowHint(ffi::FOCUSED, is_focused <span class="kw">as </span>c_int)
             },
+            WindowHint::Maximized(is_maximized) =&gt; <span class="kw">unsafe </span>{
+                ffi::glfwWindowHint(ffi::MAXIMIZED, is_maximized <span class="kw">as </span>c_int)
+            },
             WindowHint::ContextNoError(is_no_error) =&gt; <span class="kw">unsafe </span>{
                 ffi::glfwWindowHint(ffi::CONTEXT_NO_ERROR, is_no_error <span class="kw">as </span>c_int)
             },
@@ -4343,7 +5227,7 @@
         height: u32,
         title: <span class="kw-2">&amp;</span>str,
         mode: WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;(Window, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;(WindowType, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
         <span class="attr">#[cfg(feature = <span class="string">&quot;wayland&quot;</span>)]
         </span>{
             <span class="comment">// Has to be set otherwise wayland refuses to open window.
@@ -4360,7 +5244,7 @@
         title: <span class="kw-2">&amp;</span>str,
         mode: WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;,
         share: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Window&gt;,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;(Window, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;(WindowType, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
         <span class="kw">let </span>ptr = <span class="kw">unsafe </span>{
             with_c_str(title, |title| {
                 ffi::glfwCreateWindow(
@@ -4380,20 +5264,29 @@
         </span>} <span class="kw">else </span>{
             <span class="kw">let </span>(drop_sender, drop_receiver) = channel();
             <span class="kw">let </span>(sender, receiver) = channel();
+            <span class="kw">let </span>window = Window {
+                ptr,
+                glfw: <span class="self">self</span>.clone(),
+                is_shared: share.is_some(),
+                drop_sender: <span class="prelude-val">Some</span>(drop_sender),
+                drop_receiver,
+                current_cursor: <span class="prelude-val">None</span>,
+            };
+            <span class="attr">#[allow(unused_mut)]
+                </span><span class="kw">let </span><span class="kw-2">mut </span>callbacks = Box::new(WindowCallbacks::new(sender));
+
+            <span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+                </span><span class="kw">let </span>window = Box::new(window);
+
             <span class="kw">unsafe </span>{
-                ffi::glfwSetWindowUserPointer(ptr, mem::transmute(Box::new(sender)));
+                <span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+                </span>{
+                    callbacks.window_ptr = mem::transmute(<span class="kw-2">&amp;*</span>window);
+                }
+                ffi::glfwSetWindowUserPointer(ptr, mem::transmute(callbacks));
             }
-            <span class="prelude-val">Some</span>((
-                Window {
-                    ptr,
-                    glfw: <span class="self">self</span>.clone(),
-                    is_shared: share.is_some(),
-                    drop_sender: <span class="prelude-val">Some</span>(drop_sender),
-                    drop_receiver,
-                    current_cursor: <span class="prelude-val">None</span>,
-                },
-                receiver,
-            ))
+
+            <span class="prelude-val">Some</span>((window, receiver))
         }
     }
 
@@ -4437,8 +5330,8 @@
     ///
     /// Wrapper for `glfwPollEvents`.
     </span><span class="kw">pub fn </span>poll_events_unbuffered&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F)
-    <span class="kw">where
-        </span>F: FnMut(WindowId, (f64, WindowEvent)) -&gt; <span class="prelude-ty">Option</span>&lt;(f64, WindowEvent)&gt;,
+        <span class="kw">where
+            </span>F: FnMut(WindowId, (f64, WindowEvent)) -&gt; <span class="prelude-ty">Option</span>&lt;(f64, WindowEvent)&gt;,
     {
         <span class="kw">let </span>_unset_handler_guard = <span class="kw">unsafe </span>{ <span class="kw">crate</span>::callbacks::unbuffered::set_handler(<span class="kw-2">&amp;mut </span>f) };
         <span class="self">self</span>.poll_events();
@@ -4459,8 +5352,8 @@
     ///
     /// Wrapper for `glfwWaitEvents`.
     </span><span class="kw">pub fn </span>wait_events_unbuffered&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F)
-    <span class="kw">where
-        </span>F: FnMut(WindowId, (f64, WindowEvent)) -&gt; <span class="prelude-ty">Option</span>&lt;(f64, WindowEvent)&gt;,
+        <span class="kw">where
+            </span>F: FnMut(WindowId, (f64, WindowEvent)) -&gt; <span class="prelude-ty">Option</span>&lt;(f64, WindowEvent)&gt;,
     {
         <span class="kw">let </span>_unset_handler_guard = <span class="kw">unsafe </span>{ <span class="kw">crate</span>::callbacks::unbuffered::set_handler(<span class="kw-2">&amp;mut </span>f) };
         <span class="self">self</span>.wait_events();
@@ -4483,8 +5376,8 @@
     ///
     /// Wrapper for `glfwWaitEventsTimeout`.
     </span><span class="kw">pub fn </span>wait_events_timeout_unbuffered&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, timeout: f64, <span class="kw-2">mut </span>f: F)
-    <span class="kw">where
-        </span>F: FnMut(WindowId, (f64, WindowEvent)) -&gt; <span class="prelude-ty">Option</span>&lt;(f64, WindowEvent)&gt;,
+        <span class="kw">where
+            </span>F: FnMut(WindowId, (f64, WindowEvent)) -&gt; <span class="prelude-ty">Option</span>&lt;(f64, WindowEvent)&gt;,
     {
         <span class="kw">let </span>_unset_handler_guard = <span class="kw">unsafe </span>{ <span class="kw">crate</span>::callbacks::unbuffered::set_handler(<span class="kw-2">&amp;mut </span>f) };
         <span class="self">self</span>.wait_events_timeout(timeout);
@@ -4495,7 +5388,7 @@
     /// If no windows exist, this function returns immediately.
     ///
     /// Wrapper for `glfwPostEmptyEvent`.
-    </span><span class="kw">pub fn </span>post_empty_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+    </span><span class="kw">pub fn </span>post_empty_event(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">unsafe </span>{
             ffi::glfwPostEmptyEvent();
         }
@@ -4520,12 +5413,12 @@
     }
 
     <span class="doccomment">/// Wrapper for `glfwGetTimerValue`.
-    </span><span class="kw">pub fn </span>get_timer_value() -&gt; u64 {
+    </span><span class="kw">pub fn </span>get_timer_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="kw">unsafe </span>{ ffi::glfwGetTimerValue() <span class="kw">as </span>u64 }
     }
 
     <span class="doccomment">/// Wrapper for `glfwGetTimerFrequency`
-    </span><span class="kw">pub fn </span>get_timer_frequency() -&gt; u64 {
+    </span><span class="kw">pub fn </span>get_timer_frequency(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="kw">unsafe </span>{ ffi::glfwGetTimerFrequency() <span class="kw">as </span>u64 }
     }
 
@@ -4627,12 +5520,12 @@
     ) -&gt; bool {
         vk::TRUE
             == <span class="kw">unsafe </span>{
-                ffi::glfwGetPhysicalDevicePresentationSupport(
-                    instance,
-                    device,
-                    queue_family <span class="kw">as </span>c_uint,
-                ) <span class="kw">as </span>u32
-            }
+            ffi::glfwGetPhysicalDevicePresentationSupport(
+                instance,
+                device,
+                queue_family <span class="kw">as </span>c_uint,
+            ) <span class="kw">as </span>u32
+        }
     }
 
     <span class="doccomment">/// Constructs a `Joystick` handle corresponding to the supplied `JoystickId`.
@@ -4685,6 +5578,152 @@
     }
 }
 
+<span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+</span><span class="kw">struct </span>WindowCallbacks {
+    window_ptr: <span class="kw-2">*mut </span>Window,
+    sender: Sender&lt;(f64, WindowEvent)&gt;,
+    pos_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, i32, i32)&gt;&gt;,
+    size_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, i32, i32)&gt;&gt;,
+    close_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window)&gt;&gt;,
+    refresh_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window)&gt;&gt;,
+    focus_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, bool)&gt;&gt;,
+    iconify_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, bool)&gt;&gt;,
+    framebuffer_size_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, i32, i32)&gt;&gt;,
+    key_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, Key, Scancode, Action, Modifiers)&gt;&gt;,
+    char_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, char)&gt;&gt;,
+    char_mods_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, char, Modifiers)&gt;&gt;,
+    mouse_button_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, MouseButton, Action, Modifiers)&gt;&gt;,
+    cursor_pos_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, f64, f64)&gt;&gt;,
+    cursor_enter_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, bool)&gt;&gt;,
+    scroll_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, f64, f64)&gt;&gt;,
+    drag_and_drop_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, Vec&lt;PathBuf&gt;)&gt;&gt;,
+    maximize_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, bool)&gt;&gt;,
+    content_scale_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>Window, f32, f32)&gt;&gt;,
+    pos_polling: bool,
+    size_polling: bool,
+    close_polling: bool,
+    refresh_polling: bool,
+    focus_polling: bool,
+    iconify_polling: bool,
+    framebuffer_size_polling: bool,
+    key_polling: bool,
+    char_polling: bool,
+    char_mods_polling: bool,
+    mouse_button_polling: bool,
+    cursor_pos_polling: bool,
+    cursor_enter_polling: bool,
+    scroll_polling: bool,
+    drag_and_drop_polling: bool,
+    maximize_polling: bool,
+    content_scale_polling: bool
+}
+
+<span class="attr">#[cfg(not(feature = <span class="string">&quot;glfw-callbacks&quot;</span>))]
+</span><span class="kw">struct </span>WindowCallbacks {
+    sender: Sender&lt;(f64, WindowEvent)&gt;,
+    pos_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(i32, i32)&gt;&gt;,
+    size_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(i32, i32)&gt;&gt;,
+    close_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut()&gt;&gt;,
+    refresh_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut()&gt;&gt;,
+    focus_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(bool)&gt;&gt;,
+    iconify_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(bool)&gt;&gt;,
+    framebuffer_size_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(i32, i32)&gt;&gt;,
+    key_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(Key, Scancode, Action, Modifiers)&gt;&gt;,
+    char_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(char)&gt;&gt;,
+    char_mods_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(char, Modifiers)&gt;&gt;,
+    mouse_button_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(MouseButton, Action, Modifiers)&gt;&gt;,
+    cursor_pos_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(f64, f64)&gt;&gt;,
+    cursor_enter_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(bool)&gt;&gt;,
+    scroll_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(f64, f64)&gt;&gt;,
+    drag_and_drop_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(Vec&lt;PathBuf&gt;)&gt;&gt;,
+    maximize_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(bool)&gt;&gt;,
+    content_scale_callback: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>FnMut(f32, f32)&gt;&gt;,
+    pos_polling: bool,
+    size_polling: bool,
+    close_polling: bool,
+    refresh_polling: bool,
+    focus_polling: bool,
+    iconify_polling: bool,
+    framebuffer_size_polling: bool,
+    key_polling: bool,
+    char_polling: bool,
+    char_mods_polling: bool,
+    mouse_button_polling: bool,
+    cursor_pos_polling: bool,
+    cursor_enter_polling: bool,
+    scroll_polling: bool,
+    drag_and_drop_polling: bool,
+    maximize_polling: bool,
+    content_scale_polling: bool
+}
+
+<span class="kw">impl </span>WindowCallbacks {
+
+    <span class="kw">fn </span>new(receiver: Sender&lt;(f64, WindowEvent)&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            <span class="attr">#[cfg(feature = <span class="string">&quot;glfw-callbacks&quot;</span>)]
+            </span>window_ptr: std::ptr::null_mut(),
+            sender: receiver,
+            pos_callback: <span class="prelude-val">None</span>,
+            size_callback: <span class="prelude-val">None</span>,
+            close_callback: <span class="prelude-val">None</span>,
+            refresh_callback: <span class="prelude-val">None</span>,
+            focus_callback: <span class="prelude-val">None</span>,
+            iconify_callback: <span class="prelude-val">None</span>,
+            framebuffer_size_callback: <span class="prelude-val">None</span>,
+            key_callback: <span class="prelude-val">None</span>,
+            char_callback: <span class="prelude-val">None</span>,
+            char_mods_callback: <span class="prelude-val">None</span>,
+            mouse_button_callback: <span class="prelude-val">None</span>,
+            cursor_pos_callback: <span class="prelude-val">None</span>,
+            cursor_enter_callback: <span class="prelude-val">None</span>,
+            scroll_callback: <span class="prelude-val">None</span>,
+            drag_and_drop_callback: <span class="prelude-val">None</span>,
+            maximize_callback: <span class="prelude-val">None</span>,
+            content_scale_callback: <span class="prelude-val">None</span>,
+            pos_polling: <span class="bool-val">false</span>,
+            size_polling: <span class="bool-val">false</span>,
+            close_polling: <span class="bool-val">false</span>,
+            refresh_polling: <span class="bool-val">false</span>,
+            focus_polling: <span class="bool-val">false</span>,
+            iconify_polling: <span class="bool-val">false</span>,
+            framebuffer_size_polling: <span class="bool-val">false</span>,
+            key_polling: <span class="bool-val">false</span>,
+            char_polling: <span class="bool-val">false</span>,
+            char_mods_polling: <span class="bool-val">false</span>,
+            mouse_button_polling: <span class="bool-val">false</span>,
+            cursor_pos_polling: <span class="bool-val">false</span>,
+            cursor_enter_polling: <span class="bool-val">false</span>,
+            scroll_polling: <span class="bool-val">false</span>,
+            drag_and_drop_polling: <span class="bool-val">false</span>,
+            maximize_polling: <span class="bool-val">false</span>,
+            content_scale_polling: <span class="bool-val">false
+        </span>}
+    }
+
+    <span class="kw">fn </span>get_callbacks&lt;<span class="lifetime">&#39;a</span>&gt;(window: <span class="kw-2">*mut </span>GLFWwindow) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>WindowCallbacks {
+        <span class="kw">unsafe </span>{
+            <span class="kw-2">&amp;mut *</span>(ffi::glfwGetWindowUserPointer(window) <span class="kw">as </span><span class="kw-2">*mut </span>WindowCallbacks)
+        }
+    }
+}
+
+<span class="doccomment">/// Wrapper for `glfwGetError`.
+</span><span class="kw">pub fn </span>get_error() -&gt; Error {
+    <span class="kw">unsafe </span>{
+        mem::transmute(ffi::glfwGetError(null_mut()))
+    }
+}
+
+<span class="doccomment">/// Wrapper for `glfwGetError`.
+</span><span class="kw">pub fn </span>get_error_string() -&gt; (Error, String) {
+    <span class="kw">unsafe </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>description: <span class="kw-2">*const </span>c_char = null();
+        <span class="kw">let </span>error: Error = mem::transmute(ffi::glfwGetError(<span class="kw-2">&amp;mut </span>description));
+        (error, string_from_c_str(description))
+    }
+}
+
 <span class="doccomment">/// Wrapper for `glfwGetVersion`.
 </span><span class="kw">pub fn </span>get_version() -&gt; Version {
     <span class="kw">unsafe </span>{
@@ -4716,8 +5755,8 @@
 
 <span class="doccomment">/// Replacement for `ToCStr::with_c_str`
 </span><span class="kw">pub fn </span>with_c_str&lt;F, T&gt;(s: <span class="kw-2">&amp;</span>str, f: F) -&gt; T
-<span class="kw">where
-    </span>F: FnOnce(<span class="kw-2">*const </span>c_char) -&gt; T,
+    <span class="kw">where
+        </span>F: FnOnce(<span class="kw-2">*const </span>c_char) -&gt; T,
 {
     <span class="kw">let </span>c_str = CString::new(s.as_bytes());
     f(c_str.unwrap().as_bytes_with_nul().as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>)
@@ -4727,10 +5766,6 @@
 </span><span class="kw">pub fn </span>get_version_string() -&gt; String {
     <span class="kw">unsafe </span>{ string_from_c_str(ffi::glfwGetVersionString()) }
 }
-
-<span class="doccomment">/// An monitor callback. This can be supplied with some user data to be passed
-/// to the callback function when it is triggered.
-</span><span class="kw">pub type </span>MonitorCallback&lt;UserData&gt; = Callback&lt;<span class="kw">fn</span>(Monitor, MonitorEvent, <span class="kw-2">&amp;</span>UserData), UserData&gt;;
 
 <span class="doccomment">/// A struct that wraps a `*GLFWmonitor` handle.
 </span><span class="attr">#[allow(missing_copy_implementations)]
@@ -4745,6 +5780,25 @@
 }
 
 <span class="kw">impl </span>Monitor {
+
+    <span class="doccomment">/// Wrapper for `glfwGetPrimaryMonitor`.
+    </span><span class="kw">pub fn </span>from_primary() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{
+            <span class="self">Self </span>{
+                ptr: ffi::glfwGetPrimaryMonitor()
+            }
+        }
+    }
+
+    <span class="doccomment">/// Wrapper for `glfwGetWindowMonitor`.
+    </span><span class="kw">pub fn </span>from_window(window: <span class="kw-2">&amp;</span>Window) -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{
+            <span class="self">Self </span>{
+                ptr: ffi::glfwGetWindowMonitor(window.ptr)
+            }
+        }
+    }
+
     <span class="doccomment">/// Wrapper for `glfwGetMonitorPos`.
     </span><span class="kw">pub fn </span>get_pos(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (i32, i32) {
         <span class="kw">unsafe </span>{
@@ -5016,6 +6070,10 @@
     ///
     /// This hint is ignored for full screen and initially hidden windows.
     </span>Focused(bool),
+    <span class="doccomment">/// Specifies whether the windowed mode window will be maximized when created.
+    ///
+    /// This hint is ignored for full screen windows.
+    </span>Maximized(bool),
     <span class="doccomment">/// Specifies whether the OpenGL or OpenGL ES contexts do not emit errors,
     /// allowing for better performance in some situations.
     </span>ContextNoError(bool),
@@ -5213,20 +6271,6 @@
     <span class="kw">pub </span>glfw: Glfw,
 }
 
-<span class="macro">macro_rules! </span>set_window_callback {
-    (<span class="macro-nonterminal">$window</span>:ident, <span class="macro-nonterminal">$should_poll</span>:expr, <span class="macro-nonterminal">$ll_fn</span>:ident, <span class="macro-nonterminal">$callback</span>:ident) =&gt; {{
-        <span class="kw">if </span><span class="macro-nonterminal">$should_poll </span>{
-            <span class="kw">unsafe </span>{
-                ffi::<span class="macro-nonterminal">$ll_fn</span>(<span class="macro-nonterminal">$window</span>.ptr, <span class="prelude-val">Some</span>(callbacks::<span class="macro-nonterminal">$callback</span>));
-            }
-        } <span class="kw">else </span>{
-            <span class="kw">unsafe </span>{
-                ffi::<span class="macro-nonterminal">$ll_fn</span>(<span class="macro-nonterminal">$window</span>.ptr, <span class="prelude-val">None</span>);
-            }
-        }
-    }};
-}
-
 <span class="kw">impl </span>Window {
     <span class="doccomment">/// Returns the address of the specified client API or extension function if
     /// it is supported by the context associated with this Window. If this Window is not the
@@ -5283,14 +6327,17 @@
     ) -&gt; vk::Result {
         <span class="kw">unsafe </span>{ ffi::glfwCreateWindowSurface(instance, <span class="self">self</span>.ptr, allocator, surface) }
     }
-    <span class="doccomment">/// Wrapper for `glfwCreateWindow`.
+
+    <span class="doccomment">/// Creates a new shared window.
+    ///
+    /// Wrapper for `glfwCreateWindow`.
     </span><span class="kw">pub fn </span>create_shared(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         width: u32,
         height: u32,
         title: <span class="kw-2">&amp;</span>str,
         mode: WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;(Window, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;(WindowType, Receiver&lt;(f64, WindowEvent)&gt;)&gt; {
         <span class="self">self</span>.glfw
             .create_window_intern(width, height, title, mode, <span class="prelude-val">Some</span>(<span class="self">self</span>))
     }
@@ -5304,6 +6351,7 @@
     </span><span class="kw">pub fn </span>render_context(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; RenderContext {
         RenderContext {
             ptr: <span class="self">self</span>.ptr,
+            glfw: <span class="self">self</span>.glfw.clone(),
             <span class="comment">// this will only be None after dropping so this is safe
             </span>drop_sender: <span class="self">self</span>.drop_sender.as_ref().unwrap().clone(),
         }
@@ -5467,8 +6515,8 @@
     /// });
     /// ~~~
     </span><span class="kw">pub fn </span>with_window_mode&lt;T, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, f: F) -&gt; T
-    <span class="kw">where
-        </span>F: FnOnce(WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; T,
+        <span class="kw">where
+            </span>F: FnOnce(WindowMode&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; T,
     {
         <span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ ffi::glfwGetWindowMonitor(<span class="self">self</span>.ptr) };
         <span class="kw">if </span>ptr.is_null() {
@@ -5636,15 +6684,247 @@
         <span class="kw">unsafe </span>{ ffi::glfwGetWindowAttrib(<span class="self">self</span>.ptr, ffi::HOVERED) == ffi::TRUE }
     }
 
-    <span class="doccomment">/// Wrapper for `glfwSetWindowPosCallback`.
-    </span><span class="kw">pub fn </span>set_pos_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetWindowPosCallback,
-            window_pos_callback
-        );
-    }
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetWindowPosCallback`.&quot;</span>,
+        set -&gt; set_pos_callback,
+        unset -&gt; unset_pos_callback,
+        poll -&gt; set_pos_polling,
+        callback_field -&gt; pos_callback,
+        poll_field -&gt; pos_polling,
+        window_event -&gt; Pos(i32, i32),
+        glfw -&gt; glfwSetWindowPosCallback(x: c_int, y: c_int),
+        convert_args -&gt; (x <span class="kw">as </span>i32, y <span class="kw">as </span>i32),
+        secret -&gt; _pos_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetWindowSizeCallback`.&quot;</span>,
+        set -&gt; set_size_callback,
+        unset -&gt; unset_size_callback,
+        poll -&gt; set_size_polling,
+        callback_field -&gt; size_callback,
+        poll_field -&gt; size_polling,
+        window_event -&gt; Size(i32, i32),
+        glfw -&gt; glfwSetWindowSizeCallback(width: c_int, height: c_int),
+        convert_args -&gt; (width <span class="kw">as </span>i32, height <span class="kw">as </span>i32),
+        secret -&gt; _size_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetWindowCloseCallback`.&quot;</span>,
+        set -&gt; set_close_callback,
+        unset -&gt; unset_close_callback,
+        poll -&gt; set_close_polling,
+        callback_field -&gt; close_callback,
+        poll_field -&gt; close_polling,
+        window_event -&gt; Close,
+        glfw -&gt; glfwSetWindowCloseCallback(),
+        convert_args -&gt; (),
+        secret -&gt; _close_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetWindowRefreshCallback`.&quot;</span>,
+        set -&gt; set_refresh_callback,
+        unset -&gt; unset_refresh_callback,
+        poll -&gt; set_refresh_polling,
+        callback_field -&gt; refresh_callback,
+        poll_field -&gt; refresh_polling,
+        window_event -&gt; Refresh,
+        glfw -&gt; glfwSetWindowRefreshCallback(),
+        convert_args -&gt; (),
+        secret -&gt; _refresh_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetWindowFocusCallback`.&quot;</span>,
+        set -&gt; set_focus_callback,
+        unset -&gt; unset_focus_callback,
+        poll -&gt; set_focus_polling,
+        callback_field -&gt; focus_callback,
+        poll_field -&gt; focus_polling,
+        window_event -&gt; Focus(bool),
+        glfw -&gt; glfwSetWindowFocusCallback(focused: c_int),
+        convert_args -&gt; (focused == ffi::TRUE),
+        secret -&gt; _focus_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetWindowIconifyCallback`.&quot;</span>,
+        set -&gt; set_iconify_callback,
+        unset -&gt; unset_iconify_callback,
+        poll -&gt; set_iconify_polling,
+        callback_field -&gt; iconify_callback,
+        poll_field -&gt; iconify_polling,
+        window_event -&gt; Iconify(bool),
+        glfw -&gt; glfwSetWindowIconifyCallback(iconified: c_int),
+        convert_args -&gt; (iconified == ffi::TRUE),
+        secret -&gt; _iconify_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetFramebufferSizeCallback`.&quot;</span>,
+        set -&gt; set_framebuffer_size_callback,
+        unset -&gt; unset_framebuffer_size_callback,
+        poll -&gt; set_framebuffer_size_polling,
+        callback_field -&gt; framebuffer_size_callback,
+        poll_field -&gt; framebuffer_size_polling,
+        window_event -&gt; FramebufferSize(i32, i32),
+        glfw -&gt; glfwSetFramebufferSizeCallback(width: c_int, height: c_int),
+        convert_args -&gt; (width <span class="kw">as </span>i32, height <span class="kw">as </span>i32),
+        secret -&gt; _framebuffer_size_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetKeyCallback`.&quot;</span>,
+        set -&gt; set_key_callback,
+        unset -&gt; unset_key_callback,
+        poll -&gt; set_key_polling,
+        callback_field -&gt; key_callback,
+        poll_field -&gt; key_polling,
+        window_event -&gt; Key(Key, Scancode, Action, Modifiers),
+        glfw -&gt; glfwSetKeyCallback(key: c_int, scancode: c_int, action: c_int, mods: c_int),
+        convert_args -&gt; (
+            mem::transmute(key),
+            scancode, mem::transmute(action),
+            Modifiers::from_bits(mods).unwrap()
+        ),
+        secret -&gt; _key_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetCharCallback`.&quot;</span>,
+        set -&gt; set_char_callback,
+        unset -&gt; unset_char_callback,
+        poll -&gt; set_char_polling,
+        callback_field -&gt; char_callback,
+        poll_field -&gt; char_polling,
+        window_event -&gt; Char(char),
+        glfw -&gt; glfwSetCharCallback(character: c_uint),
+        convert_args -&gt; (::std::char::from_u32(character).unwrap()),
+        secret -&gt; _char_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetCharModsCallback`.&quot;</span>,
+        set -&gt; set_char_mods_callback,
+        unset -&gt; unset_char_mods_callback,
+        poll -&gt; set_char_mods_polling,
+        callback_field -&gt; char_mods_callback,
+        poll_field -&gt; char_mods_polling,
+        window_event -&gt; CharModifiers(char, Modifiers),
+        glfw -&gt; glfwSetCharModsCallback(character: c_uint, mods: c_int),
+        convert_args -&gt; (
+            ::std::char::from_u32(character).unwrap(),
+            Modifiers::from_bits(mods).unwrap()
+        ),
+        secret -&gt; _char_mods_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetMouseButtonCallback`.&quot;</span>,
+        set -&gt; set_mouse_button_callback,
+        unset -&gt; unset_mouse_button_callback,
+        poll -&gt; set_mouse_button_polling,
+        callback_field -&gt; mouse_button_callback,
+        poll_field -&gt; mouse_button_polling,
+        window_event -&gt; MouseButton(MouseButton, Action, Modifiers),
+        glfw -&gt; glfwSetMouseButtonCallback(button: c_int, action: c_int, mods: c_int),
+        convert_args -&gt; (
+            mem::transmute(button),
+            mem::transmute(action),
+            Modifiers::from_bits(mods).unwrap()
+        ),
+        secret -&gt; _mouse_button_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetCursorPosCallback`.&quot;</span>,
+        set -&gt; set_cursor_pos_callback,
+        unset -&gt; unset_cursor_pos_callback,
+        poll -&gt; set_cursor_pos_polling,
+        callback_field -&gt; cursor_pos_callback,
+        poll_field -&gt; cursor_pos_polling,
+        window_event -&gt; CursorPos(f64, f64),
+        glfw -&gt; glfwSetCursorPosCallback(x: c_double, y: c_double),
+        convert_args -&gt; (x <span class="kw">as </span>f64, y <span class="kw">as </span>f64),
+        secret -&gt; _cursor_pos_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetCursorEnterCallback`.&quot;</span>,
+        set -&gt; set_cursor_enter_callback,
+        unset -&gt; unset_cursor_enter_callback,
+        poll -&gt; set_cursor_enter_polling,
+        callback_field -&gt; cursor_enter_callback,
+        poll_field -&gt; cursor_enter_polling,
+        window_event -&gt; CursorEnter(bool),
+        glfw -&gt; glfwSetCursorEnterCallback(entered: c_int),
+        convert_args -&gt; (entered == ffi::TRUE),
+        secret -&gt; _cursor_enter_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetScrollCallback`.&quot;</span>,
+        set -&gt; set_scroll_callback,
+        unset -&gt; unset_scroll_callback,
+        poll -&gt; set_scroll_polling,
+        callback_field -&gt; scroll_callback,
+        poll_field -&gt; scroll_polling,
+        window_event -&gt; Scroll(f64, f64),
+        glfw -&gt; glfwSetScrollCallback(x: c_double, y: c_double),
+        convert_args -&gt; (x <span class="kw">as </span>f64, y <span class="kw">as </span>f64),
+        secret -&gt; _scroll_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetDropCallback`.&quot;</span>,
+        set -&gt; set_drag_and_drop_callback,
+        unset -&gt; unset_drag_and_drop_callback,
+        poll -&gt; set_drag_and_drop_polling,
+        callback_field -&gt; drag_and_drop_callback,
+        poll_field -&gt; drag_and_drop_polling,
+        window_event -&gt; FileDrop(Vec&lt;PathBuf&gt;),
+        glfw -&gt; glfwSetDropCallback(num_paths: c_int, paths: <span class="kw-2">*mut *const </span>c_char),
+        convert_args -&gt; ({
+            slice::from_raw_parts(paths, num_paths <span class="kw">as </span>usize)
+            .iter()
+            .map(|path| PathBuf::from(std::str::from_utf8({
+                CStr::from_ptr(<span class="kw-2">*</span>path)
+                    .to_bytes()
+            })
+            .unwrap()
+            .to_string()))
+            .collect()
+        }),
+        secret -&gt; _drag_and_drop_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetWindowMaximizeCallback`.&quot;</span>,
+        set -&gt; set_maximize_callback,
+        unset -&gt; unset_maximize_callback,
+        poll -&gt; set_maximize_polling,
+        callback_field -&gt; maximize_callback,
+        poll_field -&gt; maximize_polling,
+        window_event -&gt; Maximize(bool),
+        glfw -&gt; glfwSetWindowMaximizeCallback(maximized: c_int),
+        convert_args -&gt; (maximized == ffi::TRUE),
+        secret -&gt; _maximize_callback
+    );
+
+    <span class="macro">new_callback!</span>(
+        doc -&gt; <span class="string">&quot;Wrapper for `glfwSetWindowContentScaleCallback`.&quot;</span>,
+        set -&gt; set_content_scale_callback,
+        unset -&gt; unset_content_scale_callback,
+        poll -&gt; set_content_scale_polling,
+        callback_field -&gt; content_scale_callback,
+        poll_field -&gt; content_scale_polling,
+        window_event -&gt; ContentScale(f32, f32),
+        glfw -&gt; glfwSetWindowContentScaleCallback(xscale: c_float, yscale: c_float),
+        convert_args -&gt; (xscale <span class="kw">as </span>f32, yscale <span class="kw">as </span>f32),
+        secret -&gt; _content_scale_callback
+    );
 
     <span class="doccomment">/// Starts or stops polling for all available events
     </span><span class="kw">pub fn </span>set_all_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
@@ -5665,91 +6945,6 @@
         <span class="self">self</span>.set_drag_and_drop_polling(should_poll);
         <span class="self">self</span>.set_maximize_polling(should_poll);
         <span class="self">self</span>.set_content_scale_polling(should_poll);
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetWindowSizeCallback`.
-    </span><span class="kw">pub fn </span>set_size_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetWindowSizeCallback,
-            window_size_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetWindowCloseCallback`.
-    </span><span class="kw">pub fn </span>set_close_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetWindowCloseCallback,
-            window_close_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetWindowRefreshCallback`.
-    </span><span class="kw">pub fn </span>set_refresh_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetWindowRefreshCallback,
-            window_refresh_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetWindowFocusCallback`.
-    </span><span class="kw">pub fn </span>set_focus_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetWindowFocusCallback,
-            window_focus_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetWindowIconifyCallback`.
-    </span><span class="kw">pub fn </span>set_iconify_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetWindowIconifyCallback,
-            window_iconify_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetFramebufferSizeCallback`.
-    </span><span class="kw">pub fn </span>set_framebuffer_size_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetFramebufferSizeCallback,
-            framebuffer_size_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetDropCallback`.
-    </span><span class="kw">pub fn </span>set_drag_and_drop_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(<span class="self">self</span>, should_poll, glfwSetDropCallback, drop_callback);
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetWindowMaximizeCallback`.
-    </span><span class="kw">pub fn </span>set_maximize_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetWindowMaximizeCallback,
-            window_maximize_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetWindowContentScaleCallback`.
-    </span><span class="kw">pub fn </span>set_content_scale_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetWindowContentScaleCallback,
-            window_content_scale_callback
-        );
     }
 
     <span class="doccomment">/// Wrapper for `glfwGetInputMode` called with `CURSOR`.
@@ -5924,61 +7119,6 @@
         }
     }
 
-    <span class="doccomment">/// Wrapper for `glfwSetKeyCallback`.
-    </span><span class="kw">pub fn </span>set_key_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(<span class="self">self</span>, should_poll, glfwSetKeyCallback, key_callback);
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetCharCallback`.
-    </span><span class="kw">pub fn </span>set_char_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(<span class="self">self</span>, should_poll, glfwSetCharCallback, char_callback);
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetCharModsCallback`
-    </span><span class="kw">pub fn </span>set_char_mods_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetCharModsCallback,
-            char_mods_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetMouseButtonCallback`.
-    </span><span class="kw">pub fn </span>set_mouse_button_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetMouseButtonCallback,
-            mouse_button_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetCursorPosCallback`.
-    </span><span class="kw">pub fn </span>set_cursor_pos_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetCursorPosCallback,
-            cursor_pos_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetCursorEnterCallback`.
-    </span><span class="kw">pub fn </span>set_cursor_enter_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(
-            <span class="self">self</span>,
-            should_poll,
-            glfwSetCursorEnterCallback,
-            cursor_enter_callback
-        );
-    }
-
-    <span class="doccomment">/// Wrapper for `glfwSetScrollCallback`.
-    </span><span class="kw">pub fn </span>set_scroll_polling(<span class="kw-2">&amp;mut </span><span class="self">self</span>, should_poll: bool) {
-        <span class="macro">set_window_callback!</span>(<span class="self">self</span>, should_poll, glfwSetScrollCallback, scroll_callback);
-    }
-
     <span class="doccomment">/// Wrapper for `glfwGetClipboardString`.
     </span><span class="kw">pub fn </span>set_clipboard_string(<span class="kw-2">&amp;mut </span><span class="self">self</span>, string: <span class="kw-2">&amp;</span>str) {
         <span class="kw">unsafe </span>{
@@ -6080,7 +7220,7 @@
 
         <span class="kw">if </span>!<span class="self">self</span>.ptr.is_null() {
             <span class="kw">unsafe </span>{
-                <span class="kw">let _</span>: Box&lt;Sender&lt;(f64, WindowEvent)&gt;&gt; =
+                <span class="kw">let _</span>: Box&lt;WindowCallbacks&gt; =
                     mem::transmute(ffi::glfwGetWindowUserPointer(<span class="self">self</span>.ptr));
             }
         }
@@ -6097,10 +7237,52 @@
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>RenderContext {
     ptr: <span class="kw-2">*mut </span>ffi::GLFWwindow,
+    glfw: Glfw,
     <span class="doccomment">/// As long as this sender is alive, it is not safe to drop the parent
     /// `Window`.
     </span><span class="attr">#[allow(dead_code)]
     </span>drop_sender: Sender&lt;()&gt;,
+}
+
+<span class="kw">impl </span>RenderContext {
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Window::get_proc_address`]
+    </span><span class="kw">pub fn </span>get_proc_address(<span class="kw-2">&amp;mut </span><span class="self">self</span>, procname: <span class="kw-2">&amp;</span>str) -&gt; GLProc {
+        <span class="kw">if </span><span class="self">self</span>.ptr != <span class="kw">unsafe </span>{ ffi::glfwGetCurrentContext() } {
+            <span class="self">self</span>.make_current();
+        }
+
+        <span class="self">self</span>.glfw.get_proc_address_raw(procname)
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Window::get_instance_proc_address`]
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
+    </span><span class="kw">pub fn </span>get_instance_proc_address(<span class="kw-2">&amp;mut </span><span class="self">self</span>, instance: vk::Instance, procname: <span class="kw-2">&amp;</span>str) -&gt; VkProc {
+        <span class="self">self</span>.glfw.get_instance_proc_address_raw(instance, procname)
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Window::get_physical_device_presentation_support`]
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
+    </span><span class="kw">pub fn </span>get_physical_device_presentation_support(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        instance: vk::Instance,
+        device: vk::PhysicalDevice,
+        queue_family: u32,
+    ) -&gt; bool {
+        <span class="self">self</span>.glfw
+            .get_physical_device_presentation_support_raw(instance, device, queue_family)
+    }
+
+    <span class="doccomment">/// Wrapper function, please refer to [`Window::create_window_surface`]
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;vulkan&quot;</span>)]
+    </span><span class="kw">pub fn </span>create_window_surface(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        instance: vk::Instance,
+        allocator: <span class="kw-2">*const </span>vk::AllocationCallbacks,
+        surface: <span class="kw-2">*mut </span>vk::SurfaceKHR,
+    ) -&gt; vk::Result {
+        <span class="kw">unsafe </span>{ ffi::glfwCreateWindowSurface(instance, <span class="self">self</span>.ptr, allocator, surface) }
+    }
 }
 
 <span class="kw">unsafe impl </span>Send <span class="kw">for </span>RenderContext {}
@@ -6246,8 +7428,8 @@
     </span>{
         <span class="kw">let _ </span>= context; <span class="comment">// to avoid unused lint
         </span><span class="kw">let </span><span class="kw-2">mut </span>wh = raw_window_handle::WebWindowHandle::empty();
-         <span class="comment">// glfw on emscripten only supports a single window. so, just hardcode it
-         // sdl2 crate does the same. users can just add `data-raw-handle=&quot;1&quot;` attribute to their canvas element
+        <span class="comment">// glfw on emscripten only supports a single window. so, just hardcode it
+        // sdl2 crate does the same. users can just add `data-raw-handle=&quot;1&quot;` attribute to their canvas element
         </span>wh.id = <span class="number">1</span>;
         RawWindowHandle::Web(wh)
     }
@@ -6413,10 +7595,6 @@
     Disconnected = ffi::DISCONNECTED,
 }
 
-<span class="doccomment">/// An joystick callback. This can be supplied with some user data to be passed
-/// to the callback function when it is triggered.
-</span><span class="kw">pub type </span>JoystickCallback&lt;UserData&gt; = Callback&lt;<span class="kw">fn</span>(JoystickId, JoystickEvent, <span class="kw-2">&amp;</span>UserData), UserData&gt;;
-
 <span class="kw">impl </span>Joystick {
     <span class="doccomment">/// Wrapper for `glfwJoystickPresent`.
     </span><span class="kw">pub fn </span>is_present(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -6534,5 +7712,4 @@
         <span class="prelude-val">None </span>=&gt; ffi::DONT_CARE,
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="glfw" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

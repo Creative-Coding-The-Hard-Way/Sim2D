@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/exr-1.6.4/src/compression/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../exr/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/exr-1.7.0/src/compression/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="exr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../exr/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -664,27 +664,7 @@
 <a href="#664" id="664">664</a>
 <a href="#665" id="665">665</a>
 <a href="#666" id="666">666</a>
-<a href="#667" id="667">667</a>
-<a href="#668" id="668">668</a>
-<a href="#669" id="669">669</a>
-<a href="#670" id="670">670</a>
-<a href="#671" id="671">671</a>
-<a href="#672" id="672">672</a>
-<a href="#673" id="673">673</a>
-<a href="#674" id="674">674</a>
-<a href="#675" id="675">675</a>
-<a href="#676" id="676">676</a>
-<a href="#677" id="677">677</a>
-<a href="#678" id="678">678</a>
-<a href="#679" id="679">679</a>
-<a href="#680" id="680">680</a>
-<a href="#681" id="681">681</a>
-<a href="#682" id="682">682</a>
-<a href="#683" id="683">683</a>
-<a href="#684" id="684">684</a>
-<a href="#685" id="685">685</a>
-<a href="#686" id="686">686</a>
-</pre><pre class="rust"><code>
+</pre></div><pre class="rust"><code>
 <span class="doccomment">//! Contains the compression attribute definition
 //! and methods to compress and decompress data.
 
@@ -697,7 +677,9 @@
 <span class="kw">mod </span>b44;
 
 
-
+<span class="kw">use </span>std::convert::TryInto;
+<span class="kw">use </span>std::mem::size_of;
+<span class="kw">use </span>half::f16;
 <span class="kw">use </span><span class="kw">crate</span>::meta::attribute::{IntegerBounds, SampleType, ChannelList};
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="prelude-ty">Result</span>, Error, usize_to_i32};
 <span class="kw">use </span><span class="kw">crate</span>::meta::header::Header;
@@ -851,14 +833,20 @@
 
         <span class="kw">use </span><span class="self">self</span>::Compression::<span class="kw-2">*</span>;
         <span class="kw">let </span>compressed_little_endian = <span class="kw">match </span><span class="self">self </span>{
-            Uncompressed =&gt; <span class="prelude-val">Ok</span>(convert_current_to_little_endian(<span class="kw-2">&amp;</span>uncompressed_native_endian, <span class="kw-2">&amp;</span>header.channels, pixel_section)),
-            ZIP16 =&gt; zip::compress_bytes(<span class="kw-2">&amp;</span>header.channels, <span class="kw-2">&amp;</span>uncompressed_native_endian, pixel_section),
-            ZIP1 =&gt; zip::compress_bytes(<span class="kw-2">&amp;</span>header.channels, <span class="kw-2">&amp;</span>uncompressed_native_endian, pixel_section),
-            RLE =&gt; rle::compress_bytes(<span class="kw-2">&amp;</span>header.channels, <span class="kw-2">&amp;</span>uncompressed_native_endian, pixel_section),
-            PIZ =&gt; piz::compress(<span class="kw-2">&amp;</span>header.channels, <span class="kw-2">&amp;</span>uncompressed_native_endian, pixel_section),
-            PXR24 =&gt; pxr24::compress(<span class="kw-2">&amp;</span>header.channels, <span class="kw-2">&amp;</span>uncompressed_native_endian, pixel_section),
-            B44 =&gt; b44::compress(<span class="kw-2">&amp;</span>header.channels, <span class="kw-2">&amp;</span>uncompressed_native_endian, pixel_section, <span class="bool-val">false</span>),
-            B44A =&gt; b44::compress(<span class="kw-2">&amp;</span>header.channels, <span class="kw-2">&amp;</span>uncompressed_native_endian, pixel_section, <span class="bool-val">true</span>),
+            Uncompressed =&gt; {
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(convert_current_to_little_endian(
+                    uncompressed_native_endian, <span class="kw-2">&amp;</span>header.channels, pixel_section
+                ))
+            },
+
+            <span class="comment">// we need to clone here, because we might have to fallback to the uncompressed data later (when compressed data is larger than raw data)
+            </span>ZIP16 =&gt; zip::compress_bytes(<span class="kw-2">&amp;</span>header.channels, uncompressed_native_endian.clone(), pixel_section),
+            ZIP1 =&gt; zip::compress_bytes(<span class="kw-2">&amp;</span>header.channels, uncompressed_native_endian.clone(), pixel_section),
+            RLE =&gt; rle::compress_bytes(<span class="kw-2">&amp;</span>header.channels, uncompressed_native_endian.clone(), pixel_section),
+            PIZ =&gt; piz::compress(<span class="kw-2">&amp;</span>header.channels, uncompressed_native_endian.clone(), pixel_section),
+            PXR24 =&gt; pxr24::compress(<span class="kw-2">&amp;</span>header.channels, uncompressed_native_endian.clone(), pixel_section),
+            B44 =&gt; b44::compress(<span class="kw-2">&amp;</span>header.channels, uncompressed_native_endian.clone(), pixel_section, <span class="bool-val">false</span>),
+            B44A =&gt; b44::compress(<span class="kw-2">&amp;</span>header.channels, uncompressed_native_endian.clone(), pixel_section, <span class="bool-val">true</span>),
             <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(Error::unsupported(<span class="macro">format!</span>(<span class="string">&quot;yet unimplemented compression method: {}&quot;</span>, <span class="self">self</span>)))
         };
 
@@ -867,12 +855,12 @@
         )<span class="question-mark">?</span>;
 
         <span class="kw">if </span><span class="self">self </span>== Uncompressed || compressed_little_endian.len() &lt; uncompressed_native_endian.len() {
-            <span class="comment">// only write compressed if it actually is smaller than raw, or no compression is used
+            <span class="comment">// only write compressed if it actually is smaller than raw
             </span><span class="prelude-val">Ok</span>(compressed_little_endian)
         }
         <span class="kw">else </span>{
             <span class="comment">// if we do not use compression, manually convert uncompressed data
-            </span><span class="prelude-val">Ok</span>(convert_current_to_little_endian(<span class="kw-2">&amp;</span>uncompressed_native_endian, <span class="kw-2">&amp;</span>header.channels, pixel_section))
+            </span><span class="prelude-val">Ok</span>(convert_current_to_little_endian(uncompressed_native_endian, <span class="kw-2">&amp;</span>header.channels, pixel_section))
         }
     }
 
@@ -888,12 +876,12 @@
         // note: always true where self == Uncompressed
         </span><span class="kw">if </span>compressed.len() == expected_byte_size {
             <span class="comment">// the compressed data was larger than the raw data, so the small raw data has been written
-            </span><span class="prelude-val">Ok</span>(convert_little_endian_to_current(<span class="kw-2">&amp;</span>compressed, <span class="kw-2">&amp;</span>header.channels, pixel_section))
+            </span><span class="prelude-val">Ok</span>(convert_little_endian_to_current(compressed, <span class="kw-2">&amp;</span>header.channels, pixel_section))
         }
         <span class="kw">else </span>{
             <span class="kw">use </span><span class="self">self</span>::Compression::<span class="kw-2">*</span>;
             <span class="kw">let </span>bytes = <span class="kw">match </span><span class="self">self </span>{
-                Uncompressed =&gt; <span class="prelude-val">Ok</span>(convert_little_endian_to_current(<span class="kw-2">&amp;</span>compressed, <span class="kw-2">&amp;</span>header.channels, pixel_section)),
+                Uncompressed =&gt; <span class="prelude-val">Ok</span>(convert_little_endian_to_current(compressed, <span class="kw-2">&amp;</span>header.channels, pixel_section)),
                 ZIP16 =&gt; zip::decompress_bytes(<span class="kw-2">&amp;</span>header.channels, compressed, pixel_section, expected_byte_size, pedantic),
                 ZIP1 =&gt; zip::decompress_bytes(<span class="kw-2">&amp;</span>header.channels, compressed, pixel_section, expected_byte_size, pedantic),
                 RLE =&gt; rle::decompress_bytes(<span class="kw-2">&amp;</span>header.channels, compressed, pixel_section, expected_byte_size, pedantic),
@@ -980,102 +968,73 @@
 }
 
 <span class="comment">// see https://github.com/AcademySoftwareFoundation/openexr/blob/6a9f8af6e89547bcd370ae3cec2b12849eee0b54/OpenEXR/IlmImf/ImfMisc.cpp#L1456-L1541
-// FIXME this should really be done inside each compression method
 
-</span><span class="attr">#[allow(unused)]
-</span><span class="kw">fn </span>convert_current_to_little_endian(bytes: Bytes&lt;<span class="lifetime">&#39;_</span>&gt;, channels: <span class="kw-2">&amp;</span>ChannelList, rectangle: IntegerBounds) -&gt; ByteVec { <span class="comment">// TODO is this really not already somewhere else?
-    </span><span class="attr">#[cfg(target = <span class="string">&quot;big_endian&quot;</span>)] </span>{
-        <span class="kw">use </span>lebe::prelude::<span class="kw-2">*</span>;
+</span><span class="attr">#[allow(unused)] </span><span class="comment">// allows the extra parameters to be unused
+</span><span class="kw">fn </span>convert_current_to_little_endian(<span class="kw-2">mut </span>bytes: ByteVec, channels: <span class="kw-2">&amp;</span>ChannelList, rectangle: IntegerBounds) -&gt; ByteVec {
+    <span class="attr">#[cfg(target = <span class="string">&quot;big_endian&quot;</span>)]
+    </span>reverse_block_endianness(<span class="kw-2">&amp;mut </span>byte_vec, channels, rectangle);
 
-        <span class="comment">// FIXME do this in-place
-        </span><span class="kw">let </span><span class="kw-2">mut </span>little = Vec::with_capacity(bytes.len());
-        <span class="kw">let </span><span class="kw-2">mut </span>native = bytes;
-
-        <span class="kw">for </span>y <span class="kw">in </span>rectangle.position.y() .. rectangle.end().y() {
-            <span class="kw">for </span>channel <span class="kw">in </span><span class="kw-2">&amp;</span>channels.list {
-                <span class="kw">if </span>mod_p(y, usize_to_i32(channel.sampling.y())) != <span class="number">0 </span>{ <span class="kw">continue</span>; }
-
-                <span class="comment">// FIXME do not match on every value
-                </span><span class="kw">for </span>_x <span class="kw">in </span><span class="number">0 </span>.. rectangle.size.width() / channel.sampling.x() {
-                    <span class="kw">match </span>channel.sample_type {
-                        SampleType::F16 =&gt; little.write_as_little_endian(<span class="kw-2">&amp;</span>u16::read_from_native_endian(<span class="kw-2">&amp;mut </span>native).expect(<span class="string">&quot;read from in-memory buffer failed&quot;</span>)),
-                        SampleType::F32 =&gt; little.write_as_little_endian(<span class="kw-2">&amp;</span>f32::read_from_native_endian(<span class="kw-2">&amp;mut </span>native).expect(<span class="string">&quot;read from in-memory buffer failed&quot;</span>)),
-                        SampleType::U32 =&gt; little.write_as_little_endian(<span class="kw-2">&amp;</span>u32::read_from_native_endian(<span class="kw-2">&amp;mut </span>native).expect(<span class="string">&quot;read from in-memory buffer failed&quot;</span>)),
-                    }.expect(<span class="string">&quot;write to in-memory buffer failed&quot;</span>);
-                }
-            }
-        }
-
-        <span class="kw">return </span>little;
-    }
-
-    <span class="comment">/*fn convert_big_to_little_endian(
-        mut bytes: ByteVec, channels: &amp;ChannelList,
-        rectangle: IntegerBounds
-    ) -&gt; ByteVec {
-        use lebe::prelude::*;
-
-        let remaining_bytes = bytes.as_slice();
-
-        for y in rectangle.position.y() .. rectangle.end().y() {
-            for channel in &amp;channels.list {
-                if mod_p(y, usize_to_i32(channel.sampling.y())) != 0 { continue; }
-
-                // FIXME do not match on every value
-
-                //for _x in 0 .. rectangle.size.width() / channel.sampling.x() {
-                    match channel.sample_type {
-                        SampleType::F16 =&gt; {
-                            let values: &amp;mut [::half::f16] = remaining_bytes[..len].read_from_native_endian_mut()
-                                .expect(&quot;memory read failed&quot;);
-
-                            values.convert_current_to_little_endian();
-                        }
-                        // SampleType::F16 =&gt; little.write_as_little_endian(&amp;u16::read_from_native_endian(&amp;mut native).expect(&quot;read from in-memory buffer failed&quot;)),
-                        // SampleType::F32 =&gt; little.write_as_little_endian(&amp;f32::read_from_native_endian(&amp;mut native).expect(&quot;read from in-memory buffer failed&quot;)),
-                        // SampleType::U32 =&gt; little.write_as_little_endian(&amp;u32::read_from_native_endian(&amp;mut native).expect(&quot;read from in-memory buffer failed&quot;)),
-                    }.expect(&quot;write to in-memory buffer failed&quot;);
-                    remaining_bytes = remaining_bytes[len..];
-                //}
-            }
-        }
-    }*/
-
-    </span>bytes.to_vec()
+    bytes
 }
 
-<span class="attr">#[allow(unused)]
-</span><span class="kw">fn </span>convert_little_endian_to_current(bytes: Bytes&lt;<span class="lifetime">&#39;_</span>&gt;, channels: <span class="kw-2">&amp;</span>ChannelList, rectangle: IntegerBounds) -&gt; ByteVec { <span class="comment">// TODO is this really not already somewhere else?
-    </span><span class="attr">#[cfg(target = <span class="string">&quot;big_endian&quot;</span>)] </span>{
-        <span class="kw">use </span>lebe::prelude::<span class="kw-2">*</span>;
+<span class="attr">#[allow(unused)] </span><span class="comment">// allows the extra parameters to be unused
+</span><span class="kw">fn </span>convert_little_endian_to_current(<span class="kw-2">mut </span>bytes: ByteVec, channels: <span class="kw-2">&amp;</span>ChannelList, rectangle: IntegerBounds) -&gt; ByteVec {
+    <span class="attr">#[cfg(target = <span class="string">&quot;big_endian&quot;</span>)]
+    </span>reverse_block_endianness(<span class="kw-2">&amp;mut </span>bytes, channels, rectangle);
 
-        <span class="comment">// FIXME do this in-place
-        </span><span class="kw">let </span><span class="kw-2">mut </span>native = Vec::with_capacity(bytes.len());
-        <span class="kw">let </span><span class="kw-2">mut </span>little = bytes.as_slice();
-
-        <span class="kw">for </span>y <span class="kw">in </span>rectangle.position.y() .. rectangle.end().y() {
-            <span class="kw">for </span>channel <span class="kw">in </span><span class="kw-2">&amp;</span>channels.list {
-                <span class="kw">if </span>mod_p(y, usize_to_i32(channel.sampling.y())) != <span class="number">0 </span>{ <span class="kw">continue</span>; }
-
-                <span class="comment">// FIXME do not match on every value
-                </span><span class="kw">for </span>_x <span class="kw">in </span><span class="number">0 </span>.. rectangle.size.width() / channel.sampling.x() {
-                    <span class="kw">match </span>channel.sample_type {
-                        SampleType::F16 =&gt; native.write_as_native_endian(<span class="kw-2">&amp;</span>u16::read_from_little_endian(<span class="kw-2">&amp;mut </span>little).expect(<span class="string">&quot;read from in-memory buffer failed&quot;</span>)),
-                        SampleType::F32 =&gt; native.write_as_native_endian(<span class="kw-2">&amp;</span>f32::read_from_little_endian(<span class="kw-2">&amp;mut </span>little).expect(<span class="string">&quot;read from in-memory buffer failed&quot;</span>)),
-                        SampleType::U32 =&gt; native.write_as_native_endian(<span class="kw-2">&amp;</span>u32::read_from_little_endian(<span class="kw-2">&amp;mut </span>little).expect(<span class="string">&quot;read from in-memory buffer failed&quot;</span>)),
-                    }.expect(<span class="string">&quot;write to in-memory buffer failed&quot;</span>);
-                }
-            }
-        }
-
-        <span class="kw">return </span>native;
-    }
-
-    bytes.to_vec()
+    bytes
 }
 
+<span class="attr">#[allow(unused)] </span><span class="comment">// unused when on little endian system
+</span><span class="kw">fn </span>reverse_block_endianness(bytes: <span class="kw-2">&amp;mut </span>[u8], channels: <span class="kw-2">&amp;</span>ChannelList, rectangle: IntegerBounds){
+    <span class="kw">let </span><span class="kw-2">mut </span>remaining_bytes: <span class="kw-2">&amp;mut </span>[u8] = bytes;
 
-<span class="kw">fn </span>div_p (x: i32, y: i32) -&gt; i32 {
+    <span class="kw">for </span>y <span class="kw">in </span>rectangle.position.y() .. rectangle.end().y() {
+        <span class="kw">for </span>channel <span class="kw">in </span><span class="kw-2">&amp;</span>channels.list {
+            <span class="kw">let </span>line_is_subsampled = mod_p(y, usize_to_i32(channel.sampling.y())) != <span class="number">0</span>;
+            <span class="kw">if </span>line_is_subsampled { <span class="kw">continue</span>; }
+
+            <span class="kw">let </span>sample_count = rectangle.size.width() / channel.sampling.x();
+
+            <span class="kw">match </span>channel.sample_type {
+                SampleType::F16 =&gt; remaining_bytes = chomp_convert_n::&lt;f16&gt;(reverse_2_bytes, remaining_bytes, sample_count),
+                SampleType::F32 =&gt; remaining_bytes = chomp_convert_n::&lt;f32&gt;(reverse_4_bytes, remaining_bytes, sample_count),
+                SampleType::U32 =&gt; remaining_bytes = chomp_convert_n::&lt;u32&gt;(reverse_4_bytes, remaining_bytes, sample_count),
+            }
+        }
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>chomp_convert_n&lt;T&gt;(convert_single_value: <span class="kw">fn</span>(<span class="kw-2">&amp;mut</span>[u8]), <span class="kw-2">mut </span>bytes: <span class="kw-2">&amp;mut </span>[u8], count: usize) -&gt; <span class="kw-2">&amp;mut </span>[u8] {
+        <span class="kw">let </span>type_size = size_of::&lt;T&gt;();
+        <span class="kw">let </span>(line_bytes, rest) = bytes.split_at_mut(count * type_size);
+        <span class="kw">let </span>value_byte_chunks = line_bytes.chunks_exact_mut(type_size);
+
+        <span class="kw">for </span>value_bytes <span class="kw">in </span>value_byte_chunks {
+            convert_single_value(value_bytes);
+        }
+
+        rest
+    }
+
+    <span class="macro">debug_assert!</span>(remaining_bytes.is_empty(), <span class="string">&quot;not all bytes were converted to little endian&quot;</span>);
+}
+
+<span class="attr">#[inline]
+</span><span class="kw">fn </span>reverse_2_bytes(bytes: <span class="kw-2">&amp;mut </span>[u8]){
+    <span class="comment">// this code seems like it could be optimized easily by the compiler
+    </span><span class="kw">let </span>two_bytes: [u8; <span class="number">2</span>] = bytes.try_into().expect(<span class="string">&quot;invalid byte count&quot;</span>);
+    bytes.copy_from_slice(<span class="kw-2">&amp;</span>[two_bytes[<span class="number">1</span>], two_bytes[<span class="number">0</span>]]);
+}
+
+<span class="attr">#[inline]
+</span><span class="kw">fn </span>reverse_4_bytes(bytes: <span class="kw-2">&amp;mut </span>[u8]){
+    <span class="kw">let </span>four_bytes: [u8; <span class="number">4</span>] = bytes.try_into().expect(<span class="string">&quot;invalid byte count&quot;</span>);
+    bytes.copy_from_slice(<span class="kw-2">&amp;</span>[four_bytes[<span class="number">3</span>], four_bytes[<span class="number">2</span>], four_bytes[<span class="number">1</span>], four_bytes[<span class="number">0</span>]]);
+}
+
+<span class="attr">#[inline]
+</span><span class="kw">fn </span>div_p (x: i32, y: i32) -&gt; i32 {
     <span class="kw">if </span>x &gt;= <span class="number">0 </span>{
         <span class="kw">if </span>y &gt;= <span class="number">0 </span>{ x  / y }
         <span class="kw">else </span>{ -(x  / -y) }
@@ -1086,7 +1045,8 @@
     }
 }
 
-<span class="kw">fn </span>mod_p(x: i32, y: i32) -&gt; i32 {
+<span class="attr">#[inline]
+</span><span class="kw">fn </span>mod_p(x: i32, y: i32) -&gt; i32 {
     x - y * div_p(x, y)
 }
 
@@ -1360,14 +1320,13 @@
         current_endian: ByteVec, channels: <span class="kw-2">&amp;</span>ChannelList, rectangle: IntegerBounds
     ){
         <span class="kw">let </span>little_endian = convert_current_to_little_endian(
-            <span class="kw-2">&amp;</span>current_endian, channels, rectangle
+            current_endian.clone(), channels, rectangle
         );
 
         <span class="kw">let </span>current_endian_decoded = convert_little_endian_to_current(
-            <span class="kw-2">&amp;</span>little_endian, channels, rectangle
+            little_endian.clone(), channels, rectangle
         );
 
         <span class="macro">assert_eq!</span>(current_endian, current_endian_decoded, <span class="string">&quot;endianness conversion failed&quot;</span>);
     }
-}</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="exr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+}</code></pre></div></section></main></body></html>
