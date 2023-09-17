@@ -33,7 +33,7 @@ impl GlfwWindow {
     pub fn new(
         window_title: impl AsRef<str>,
     ) -> Result<(Self, Receiver<(f64, WindowEvent)>)> {
-        let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS)?;
+        let mut glfw = glfw::init_no_callbacks()?;
 
         if !glfw.vulkan_supported() {
             bail!("Vulkan isn't supported by glfw on this platform!");
