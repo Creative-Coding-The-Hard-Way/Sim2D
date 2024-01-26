@@ -15,22 +15,6 @@ opt-level = 1               # Use slightly better optimizations
 anyhow = "*"
 flexi_logger = { version = "*", features = ["async"] }
 log = "*"
-ash = { version = "*", features = ["linked"] }
-aquamarine = "*"
-nalgebra = "*"
-memoffset = "*"
-thiserror = "*"
-spin_sleep = "*"
-image = "*"
-indoc = "*"
-regex = "*"
-ccthw_ash_instance = { git = "https://github.com/Creative-Coding-The-Hard-Way/ash_instance.git" }
-ccthw_ash_allocator = { git = "https://github.com/Creative-Coding-The-Hard-Way/ash_allocator.git" }
-scopeguard = "*"
-approx = "*"
-rand = "*"
-rayon = "*"
-ab_glyph = "*"
 
 [build-dependencies]
 anyhow = "*"
