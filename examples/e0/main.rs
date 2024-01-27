@@ -1,36 +1,23 @@
 use {
-    anyhow::{Context, Result},
-    glfw::{Action, Context, Key},
+    anyhow::Result,
+    sim2d::application::{glfw_application_main, GLFWApplication},
 };
 
-fn main() -> Result<()> {
-    println!("oaeu");
+struct MyApp {}
 
-    let mut glfw = glfw::init_no_callbacks()?;
-    glfw.window_hint(glfw::WindowHint::ClientApi(glfw::ClientApiHint::NoApi));
-
-    let (mut window, events) = glfw
-        .create_window(800, 600, "My first window", glfw::WindowMode::Windowed)
-        .context("Unable to create the glfw window!")?;
-
-    window.set_key_polling(true);
-    window.make_current();
-
-    while !window.should_close() {
-        glfw.poll_events();
-        for (_, event) in glfw::flush_messages(&events) {
-            handle_window_event(&mut window, event);
-        }
+impl GLFWApplication for MyApp {
+    fn new(window: &mut glfw::Window) -> Self {
+        window.set_title("Example 01");
+        MyApp {}
     }
 
-    Ok(())
+    fn handle_event(&mut self, event: glfw::WindowEvent) {
+        println!("Handled event {:?}", event);
+    }
+
+    fn update(&mut self) {}
 }
 
-fn handle_window_event(window: &mut glfw::Window, event: glfw::WindowEvent) {
-    match event {
-        glfw::WindowEvent::Key(Key::Escape, _, Action::Press, _) => {
-            window.set_should_close(true)
-        }
-        _ => {}
-    }
+fn main() -> Result<()> {
+    glfw_application_main::<MyApp>()
 }
