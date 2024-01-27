@@ -6,6 +6,7 @@ use {anyhow::Result, ash::vk};
 /// device.
 #[derive(Debug, Clone, Default)]
 pub struct PhysicalDeviceMetadata {
+    pub queue_family_properties: Vec<vk::QueueFamilyProperties>,
     pub supported_extensions: Vec<String>,
     pub physical_device_features: vk::PhysicalDeviceFeatures,
     pub physical_device_vulkan_13_features: vk::PhysicalDeviceVulkan13Features,
@@ -27,19 +28,24 @@ impl PhysicalDeviceMetadata {
         ash: &ash::Instance,
         physical_device: &vk::PhysicalDevice,
     ) -> Result<Self> {
-        let physical_device_properties =
-            get_physical_device_properties(ash, physical_device);
         let (
             physical_device_features,
             physical_device_vulkan_13_features,
             descriptor_indexing_features,
         ) = get_physical_device_features(ash, physical_device);
-        let supported_extensions =
-            get_supported_physical_device_extensions(ash, physical_device)?;
-
         Ok(Self {
-            supported_extensions,
-            physical_device_properties,
+            queue_family_properties: get_queue_family_properties(
+                ash,
+                physical_device,
+            ),
+            supported_extensions: get_supported_physical_device_extensions(
+                ash,
+                physical_device,
+            )?,
+            physical_device_properties: get_physical_device_properties(
+                ash,
+                physical_device,
+            ),
             physical_device_features,
             physical_device_vulkan_13_features,
             descriptor_indexing_features,
@@ -162,4 +168,11 @@ fn get_supported_physical_device_extensions(
         })
         .collect();
     Ok(names)
+}
+
+fn get_queue_family_properties(
+    ash: &ash::Instance,
+    physical_device: &vk::PhysicalDevice,
+) -> Vec<vk::QueueFamilyProperties> {
+    unsafe { ash.get_physical_device_queue_family_properties(*physical_device) }
 }

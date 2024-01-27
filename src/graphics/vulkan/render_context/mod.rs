@@ -63,6 +63,15 @@ fn pick_physical_device(
             .enumerate_devices_with_required_features()?
             .into_iter()
             .filter(|(_, metadata)| {
+                let has_graphics =
+                    metadata.queue_family_properties.iter().any(|properties| {
+                        properties
+                            .queue_flags
+                            .contains(vk::QueueFlags::GRAPHICS)
+                    });
+                has_graphics
+            })
+            .filter(|(_, metadata)| {
                 let swapchain_extension_name =
                     ash::extensions::khr::Swapchain::name()
                         .to_owned()

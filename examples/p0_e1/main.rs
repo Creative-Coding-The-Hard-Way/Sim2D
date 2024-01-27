@@ -9,26 +9,6 @@ use {
     },
 };
 
-/// Create a Vulkan Window surface from a GLFW Window and Ash library instance.
-pub fn create_window_surface(
-    window: &glfw::Window,
-    ash: &ash::Instance,
-) -> Result<ash::vk::SurfaceKHR> {
-    let mut surface = ash::vk::SurfaceKHR::null();
-    let result = window.create_window_surface(
-        ash.handle(),
-        std::ptr::null(),
-        &mut surface,
-    );
-    if result != ash::vk::Result::SUCCESS {
-        anyhow::bail!(
-            "Unable to create the Vulkan SurfaceKHR with GLFW! {:?}",
-            result
-        );
-    }
-    Ok(surface)
-}
-
 struct MyApp {
     rc: RenderContext,
 }
