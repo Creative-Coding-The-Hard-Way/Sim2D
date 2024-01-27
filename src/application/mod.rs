@@ -1,3 +1,5 @@
+mod logging;
+
 use {
     anyhow::{bail, Context, Result},
     std::sync::{
@@ -28,8 +30,12 @@ pub trait GLFWApplication {
     fn update(&mut self);
 }
 
-pub fn glfw_application_main<App: GLFWApplication + Send + 'static>(
-) -> Result<()> {
+pub fn glfw_application_main<App>() -> Result<()>
+where
+    App: GLFWApplication + Send + 'static,
+{
+    logging::setup();
+
     // setup GLFW
     let mut glfw = glfw::init_no_callbacks()?;
     glfw.window_hint(glfw::WindowHint::ClientApi(glfw::ClientApiHint::NoApi));

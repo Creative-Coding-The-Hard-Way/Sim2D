@@ -425,6 +425,7 @@ dependencies = [
  "glfw",
  "glob",
  "log",
+ "regex",
  "textwrap",
 ]
 

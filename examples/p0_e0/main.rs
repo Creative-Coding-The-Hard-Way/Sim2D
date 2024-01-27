@@ -12,7 +12,7 @@ impl GLFWApplication for MyApp {
     }
 
     fn handle_event(&mut self, event: glfw::WindowEvent) {
-        println!("Handled event {:?}", event);
+        log::info!("Handled event {:?}", event);
     }
 
     fn update(&mut self) {}
