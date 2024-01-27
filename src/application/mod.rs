@@ -76,11 +76,8 @@ where
         std::thread::spawn(move || -> Result<App, (App, Error)> {
             while !render_should_close.load(Ordering::Relaxed) {
                 for (_, event) in glfw::flush_messages(&events) {
-                    match event {
-                        glfw::WindowEvent::Close => {
-                            render_should_close.store(true, Ordering::Relaxed);
-                        }
-                        _ => {}
+                    if event == glfw::WindowEvent::Close {
+                        render_should_close.store(true, Ordering::Relaxed);
                     }
                     if let Err(err) = app.handle_event(event) {
                         return Err((app, err));

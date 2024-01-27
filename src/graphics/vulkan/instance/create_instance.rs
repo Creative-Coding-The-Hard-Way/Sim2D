@@ -23,7 +23,7 @@ where
         ..Default::default()
     };
     let (_extension_cstrs, extension_str_ptrs) =
-        crate::graphics::vulkan::ffi::to_os_ptrs(&extensions);
+        crate::graphics::vulkan::ffi::to_os_ptrs(extensions);
     let create_info = vk::InstanceCreateInfo {
         p_application_info: &app_info,
         enabled_layer_count: 0,

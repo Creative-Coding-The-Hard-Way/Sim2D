@@ -169,8 +169,8 @@ mod test {
     #[test]
     fn verify_is_requested_and_not_supported() {
         assert!(is_requested_and_not_available(1, 0));
-        assert!(is_requested_and_not_available(1, 1) == false);
-        assert!(is_requested_and_not_available(0, 1) == false);
-        assert!(is_requested_and_not_available(0, 0) == false);
+        assert!(!is_requested_and_not_available(1, 1));
+        assert!(!is_requested_and_not_available(0, 1));
+        assert!(!is_requested_and_not_available(0, 0));
     }
 }

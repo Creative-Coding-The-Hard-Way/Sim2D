@@ -42,7 +42,7 @@ impl GLFWApplication for MyApp {
             &window
                 .glfw
                 .get_required_instance_extensions()
-                .unwrap_or(vec![]),
+                .unwrap_or_default(),
         )?;
         log::info!("Vulkan Instance created! \n{:#?}", instance);
 
