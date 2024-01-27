@@ -1,7 +1,7 @@
 mod logging;
 
 use {
-    anyhow::{bail, Context, Result},
+    anyhow::{Context, Error, Result},
     std::sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -15,19 +15,33 @@ pub trait GLFWApplication {
     /// # Params
     ///
     /// - `window`: The GLFW Window which hosts the application.
-    fn new(window: &mut glfw::Window) -> Self;
+    fn new(window: &mut glfw::Window) -> Result<Self>
+    where
+        Self: Sized;
 
     /// Handle a GLFW Event.
     ///
     /// # Params
     ///
     /// - `event`: The event to be processed.
-    fn handle_event(&mut self, event: glfw::WindowEvent);
+    #[allow(unused_variables)]
+    fn handle_event(&mut self, event: glfw::WindowEvent) -> Result<()> {
+        Ok(())
+    }
 
     /// Update the application. This is typically where rendering will occur.
     ///
     /// Update is called once after all events have been handled.
-    fn update(&mut self);
+    fn update(&mut self) -> Result<()> {
+        Ok(())
+    }
+
+    /// Destroy the application.
+    ///
+    /// This is always called before the application exits.
+    fn destroy(&mut self) -> Result<()> {
+        Ok(())
+    }
 }
 
 pub fn glfw_application_main<App>() -> Result<()>
@@ -47,7 +61,7 @@ where
     window.set_all_polling(true);
 
     // Create the GLFW App instance.
-    let mut app = App::new(&mut window);
+    let mut app = App::new(&mut window)?;
 
     // A flag used to coordinate shutting down the main thread and the render
     // thread.
@@ -56,7 +70,7 @@ where
     // Spawn the render thread
     let render_thread = {
         let render_should_close = should_close.clone();
-        std::thread::spawn(move || -> Result<()> {
+        std::thread::spawn(move || -> Result<App, (App, Error)> {
             while !render_should_close.load(Ordering::Relaxed) {
                 for (_, event) in glfw::flush_messages(&events) {
                     match event {
@@ -65,11 +79,15 @@ where
                         }
                         _ => {}
                     }
-                    app.handle_event(event);
+                    if let Err(err) = app.handle_event(event) {
+                        return Err((app, err));
+                    }
                 }
-                app.update();
+                if let Err(err) = app.update() {
+                    return Err((app, err));
+                }
             }
-            Ok(())
+            Ok(app)
         })
     };
 
@@ -79,10 +97,12 @@ where
     }
 
     // Join the render thread and exit.
-    match render_thread.join() {
-        Err(_) => {
-            bail!("Render thread panicked!");
+    match render_thread.join().expect("Render thread panicked!") {
+        Err((mut app, err)) => {
+            log::error!("App exited due to error {}, destroying...", err);
+            app.destroy()?;
+            Err(err)
         }
-        Ok(result) => result.context("Render thread exited with an error."),
+        Ok(mut app) => app.destroy(),
     }
 }

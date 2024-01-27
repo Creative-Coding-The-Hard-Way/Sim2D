@@ -16,6 +16,7 @@ anyhow = "*"
 flexi_logger = { version = "*", features = ["async"] }
 log = "*"
 regex = "*"
+ash = "*"
 
 [build-dependencies]
 anyhow = "*"

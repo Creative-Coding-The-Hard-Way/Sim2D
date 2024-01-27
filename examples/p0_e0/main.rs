@@ -6,16 +6,19 @@ use {
 struct MyApp {}
 
 impl GLFWApplication for MyApp {
-    fn new(window: &mut glfw::Window) -> Self {
-        window.set_title("Example 01");
-        MyApp {}
+    fn new(window: &mut glfw::Window) -> Result<Self> {
+        window.set_title("Example 00");
+        Ok(MyApp {})
     }
 
-    fn handle_event(&mut self, event: glfw::WindowEvent) {
+    fn handle_event(&mut self, event: glfw::WindowEvent) -> Result<()> {
         log::info!("Handled event {:?}", event);
+        Ok(())
     }
 
-    fn update(&mut self) {}
+    fn update(&mut self) -> Result<()> {
+        Ok(())
+    }
 }
 
 fn main() -> Result<()> {
