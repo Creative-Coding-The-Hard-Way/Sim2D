@@ -1,5 +1,6 @@
 mod create_instance;
 mod debug_logging;
+pub mod physical_device;
 
 use {
     anyhow::Result,
@@ -48,6 +49,9 @@ impl Instance {
     /// Unsafe because:
     /// - Any and all resources created with the instance must be destroyed
     ///   before this method is called.
+    /// - The Instance should only be destroyed once. (e.g. if there are many
+    ///   clone()s, only one should call destroy().)
+    /// - It is invalid to use the instance after destroy() has been called.
     pub unsafe fn destroy(&mut self) {
         if let Some((debug_utils, messenger)) = self.debug_utils.take() {
             debug_utils.destroy_debug_utils_messenger(messenger, None);

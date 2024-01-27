@@ -53,6 +53,9 @@ where
     // setup GLFW
     let mut glfw = glfw::init_no_callbacks()?;
     glfw.window_hint(glfw::WindowHint::ClientApi(glfw::ClientApiHint::NoApi));
+    if !glfw.vulkan_supported() {
+        anyhow::bail!("Vulkan is not supported by GLFW on this device!");
+    }
 
     // Create the Window and the event queue
     let (mut window, events) = glfw
