@@ -1,4 +1,6 @@
-use {crate::graphics::vulkan::instance::Instance, anyhow::Result, ash::vk};
+use {
+    crate::graphics::vulkan::render_context::Instance, anyhow::Result, ash::vk,
+};
 
 /// The Vulkan Surface.
 #[derive(Clone)]

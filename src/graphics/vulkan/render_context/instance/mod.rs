@@ -1,6 +1,5 @@
 mod create_instance;
 mod debug_logging;
-pub mod physical_device;
 
 use {
     anyhow::Result,

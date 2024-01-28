@@ -1,7 +1,6 @@
 use {
-    crate::graphics::vulkan::{
-        instance::physical_device::PhysicalDeviceMetadata,
-        render_context::Surface,
+    crate::graphics::vulkan::render_context::{
+        PhysicalDeviceMetadata, Surface,
     },
     anyhow::{Context, Result},
     ash::vk,

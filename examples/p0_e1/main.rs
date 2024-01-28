@@ -2,10 +2,7 @@ use {
     anyhow::Result,
     sim2d::{
         application::{glfw_application_main, GLFWApplication},
-        graphics::vulkan::{
-            instance::Instance,
-            render_context::{RenderContext, Surface},
-        },
+        graphics::vulkan::render_context::{Instance, RenderContext, Surface},
     },
 };
 

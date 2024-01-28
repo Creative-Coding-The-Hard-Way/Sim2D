@@ -1,6 +1,6 @@
 use {
-    crate::graphics::vulkan::{
-        instance::Instance, render_context::queue_families::QueueFamilies,
+    crate::graphics::vulkan::render_context::{
+        queue_families::QueueFamilies, Instance,
     },
     anyhow::{Context, Result},
     ash::vk,
@@ -19,6 +19,7 @@ pub(super) fn create_logical_device(
     let extensions = [extension_name.as_ptr()];
 
     // Pick Device Features
+    // ALSO UPDATE: physical_device::enumerate_devices_with_required_features
     let mut physical_device_vulkan_13_features =
         vk::PhysicalDeviceVulkan13Features {
             ..Default::default()

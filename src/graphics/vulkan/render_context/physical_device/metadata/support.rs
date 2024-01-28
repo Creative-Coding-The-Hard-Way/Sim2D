@@ -6,7 +6,7 @@ fn is_requested_and_not_available(requested: u32, available: u32) -> bool {
 }
 
 #[rustfmt::skip]
-pub(super) fn are_descriptor_indexing_features(
+pub(super) fn are_descriptor_indexing_features_supported(
     requested: &vk::PhysicalDeviceDescriptorIndexingFeatures,
     available: &vk::PhysicalDeviceDescriptorIndexingFeatures,
 ) -> bool {

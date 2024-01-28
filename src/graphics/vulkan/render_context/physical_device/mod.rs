@@ -1,8 +1,8 @@
+mod metadata;
+
+pub use metadata::PhysicalDeviceMetadata;
 use {
-    crate::graphics::vulkan::{
-        instance::{physical_device::PhysicalDeviceMetadata, Instance},
-        render_context::Surface,
-    },
+    crate::graphics::vulkan::render_context::{Instance, Surface},
     anyhow::{Context, Result},
     ash::vk,
 };
@@ -16,8 +16,7 @@ pub(super) fn find_suitable_device(
     surface: &Surface,
 ) -> Result<(vk::PhysicalDevice, PhysicalDeviceMetadata)> {
     let useable_devices: Vec<(vk::PhysicalDevice, PhysicalDeviceMetadata)> =
-        instance
-            .enumerate_devices_with_required_features()?
+        enumerate_devices_with_required_features(instance)?
             .into_iter()
             .filter(|(_, metadata)| {
                 let has_graphics =
@@ -93,4 +92,61 @@ pub(super) fn find_suitable_device(
         .first()
         .cloned()
         .context("Unable to find a suitable physical device!")
+}
+
+/// Enumerate all of the physical devices on the system.
+///
+/// Physical Devices are filtered based on their supported features to
+/// select only the ones which support the operations required by this
+/// application.
+fn enumerate_devices_with_required_features(
+    instance: &Instance,
+) -> Result<Vec<(vk::PhysicalDevice, PhysicalDeviceMetadata)>> {
+    let physical_devices =
+        unsafe { instance.ash.enumerate_physical_devices()? };
+
+    let metadata: Vec<(vk::PhysicalDevice, PhysicalDeviceMetadata)> =
+        physical_devices
+            .iter()
+            .filter_map(|&device| {
+                PhysicalDeviceMetadata::for_physical_device(
+                    &instance.ash,
+                    &device,
+                )
+                .ok()
+                .map(|meta| (device, meta))
+            })
+            .filter(|(_, metadata)| {
+                metadata.supports_features(vk::PhysicalDeviceFeatures {
+                    ..Default::default()
+                })
+            })
+            .filter(|(_, metadata)| {
+                metadata.supports_vulkan_13_features(
+                    vk::PhysicalDeviceVulkan13Features {
+                        ..Default::default()
+                    },
+                )
+            })
+            .filter(|(_, metadata)| {
+                metadata.supports_descriptor_indexing_features(
+                    vk::PhysicalDeviceDescriptorIndexingFeatures {
+                        shader_sampled_image_array_non_uniform_indexing:
+                            vk::TRUE,
+                        runtime_descriptor_array: vk::TRUE,
+                        ..Default::default()
+                    },
+                )
+            })
+            .collect();
+
+    log::info!(
+        "found devices with required features: \n{:#?}",
+        metadata
+            .iter()
+            .map(|(_, metadata)| metadata.device_name())
+            .collect::<Vec<_>>()
+    );
+
+    Ok(metadata)
 }

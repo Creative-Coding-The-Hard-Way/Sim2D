@@ -93,7 +93,7 @@ impl PhysicalDeviceMetadata {
         &self,
         requested_features: vk::PhysicalDeviceDescriptorIndexingFeatures,
     ) -> bool {
-        support::are_descriptor_indexing_features(
+        support::are_descriptor_indexing_features_supported(
             &requested_features,
             &self.descriptor_indexing_features,
         )
