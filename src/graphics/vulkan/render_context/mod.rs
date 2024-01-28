@@ -3,7 +3,6 @@ mod logical_device;
 mod physical_device;
 mod queue_families;
 mod surface;
-mod swapchain;
 
 use {anyhow::Result, ash::vk};
 pub use {
@@ -24,7 +23,9 @@ pub struct RenderContext {
     pub physical_device_metadata: PhysicalDeviceMetadata,
     pub device: ash::Device,
     pub graphics_queue: vk::Queue,
+    pub graphics_queue_index: u32,
     pub present_queue: vk::Queue,
+    pub present_queue_index: u32,
 }
 
 impl RenderContext {
@@ -55,7 +56,9 @@ impl RenderContext {
             physical_device_metadata,
             device,
             graphics_queue,
+            graphics_queue_index: queue_families.graphics_family_index,
             present_queue,
+            present_queue_index: queue_families.present_family_index,
         })
     }
 
