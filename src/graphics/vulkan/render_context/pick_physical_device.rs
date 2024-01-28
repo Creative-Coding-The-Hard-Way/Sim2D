@@ -1,6 +1,7 @@
 use {
-    crate::graphics::vulkan::instance::{
-        physical_device::PhysicalDeviceMetadata, Instance,
+    crate::graphics::vulkan::{
+        instance::{physical_device::PhysicalDeviceMetadata, Instance},
+        render_context::Surface,
     },
     anyhow::{Context, Result},
     ash::vk,
@@ -12,6 +13,7 @@ use {
 /// extensions, and queues.
 pub(super) fn find_suitable_device(
     instance: &Instance,
+    surface: &Surface,
 ) -> Result<(vk::PhysicalDevice, PhysicalDeviceMetadata)> {
     let useable_devices: Vec<(vk::PhysicalDevice, PhysicalDeviceMetadata)> =
         instance
@@ -41,6 +43,29 @@ pub(super) fn find_suitable_device(
                     has_extensions
                 );
                 has_extensions
+            })
+            .filter(|(device, _)| {
+                let has_surface_formats = unsafe {
+                    surface
+                        .loader
+                        .get_physical_device_surface_formats(
+                            *device,
+                            surface.handle,
+                        )
+                        .map(|formats| !formats.is_empty())
+                        .unwrap_or(false)
+                };
+                let has_present_modes = unsafe {
+                    surface
+                        .loader
+                        .get_physical_device_surface_present_modes(
+                            *device,
+                            surface.handle,
+                        )
+                        .map(|modes| !modes.is_empty())
+                        .unwrap_or(false)
+                };
+                has_surface_formats && has_present_modes
             })
             .collect();
 

@@ -4,7 +4,7 @@ use {crate::graphics::vulkan::instance::Instance, anyhow::Result, ash::vk};
 #[derive(Clone)]
 pub struct Surface {
     pub handle: vk::SurfaceKHR,
-    pub surface_loader: ash::extensions::khr::Surface,
+    pub loader: ash::extensions::khr::Surface,
 }
 
 impl Surface {
@@ -32,7 +32,7 @@ impl Surface {
             ash::extensions::khr::Surface::new(&instance.entry, &instance.ash);
         Ok(Self {
             handle,
-            surface_loader,
+            loader: surface_loader,
         })
     }
 
@@ -47,7 +47,7 @@ impl Surface {
     /// - The Vulkan surface must not be in use by the GPU when this method is
     ///   called.
     pub unsafe fn destroy(&mut self) {
-        self.surface_loader.destroy_surface(self.handle, None);
+        self.loader.destroy_surface(self.handle, None);
         self.handle = vk::SurfaceKHR::null();
     }
 }

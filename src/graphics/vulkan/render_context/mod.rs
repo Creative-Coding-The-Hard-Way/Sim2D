@@ -2,6 +2,7 @@ mod logical_device;
 mod pick_physical_device;
 mod queue_families;
 mod surface;
+mod swapchain;
 
 pub use surface::Surface;
 use {
@@ -32,7 +33,7 @@ impl RenderContext {
     /// Create a new RenderContext for this application.
     pub fn new(instance: Instance, surface: Surface) -> Result<Self> {
         let (physical_device, physical_device_metadata) =
-            pick_physical_device::find_suitable_device(&instance)?;
+            pick_physical_device::find_suitable_device(&instance, &surface)?;
         log::info!(
             "Chosen physical device: {}",
             physical_device_metadata.device_name()

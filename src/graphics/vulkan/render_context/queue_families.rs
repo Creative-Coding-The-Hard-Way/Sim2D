@@ -44,7 +44,7 @@ impl QueueFamilies {
                 })
                 .find(|(queue_family_index, _)| unsafe {
                     surface
-                        .surface_loader
+                        .loader
                         .get_physical_device_surface_support(
                             physical_device,
                             *queue_family_index as u32,
@@ -56,7 +56,7 @@ impl QueueFamilies {
                 metadata.queue_family_properties.iter().enumerate().find(
                     |(queue_family_index, _)| unsafe {
                         surface
-                            .surface_loader
+                            .loader
                             .get_physical_device_surface_support(
                                 physical_device,
                                 *queue_family_index as u32,
