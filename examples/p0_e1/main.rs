@@ -1,5 +1,10 @@
+mod pipeline;
+mod render_pass;
+
 use {
     anyhow::{Context, Result},
+    ash::vk,
+    pipeline::GraphicsPipeline,
     sim2d::{
         application::{glfw_application_main, GLFWApplication},
         graphics::vulkan::{
@@ -12,6 +17,8 @@ use {
 struct MyApp {
     rc: RenderContext,
     swapchain: Swapchain,
+    pipeline: pipeline::GraphicsPipeline,
+    render_pass: vk::RenderPass,
 }
 
 impl GLFWApplication for MyApp {
@@ -35,7 +42,15 @@ impl GLFWApplication for MyApp {
         let (w, h) = window.get_framebuffer_size();
         let swapchain = Swapchain::new(&rc, (w as u32, h as u32))?;
 
-        Ok(MyApp { rc, swapchain })
+        let render_pass = render_pass::create_render_pass(&rc, &swapchain)?;
+        let pipeline = pipeline::GraphicsPipeline::new(&rc, &render_pass)?;
+
+        Ok(MyApp {
+            rc,
+            swapchain,
+            pipeline,
+            render_pass,
+        })
     }
 
     fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
@@ -43,9 +58,19 @@ impl GLFWApplication for MyApp {
             unsafe {
                 self.swapchain
                     .rebuild_swapchain(&self.rc, (width as u32, height as u32))
-                    .with_context(sim2d::trace!(
-                        "Unable to resize the swapchain!"
-                    ))?;
+                    .with_context(|| "Unable to resize the swapchain!")?;
+                self.rc.device.destroy_render_pass(self.render_pass, None);
+                self.pipeline.destroy(&self.rc);
+                self.render_pass =
+                    render_pass::create_render_pass(&self.rc, &self.swapchain)
+                        .with_context(|| {
+                            "Unable to rebuild the render pass!"
+                        })?;
+                self.pipeline =
+                    GraphicsPipeline::new(&self.rc, &self.render_pass)
+                        .with_context(|| {
+                            "Unable to rebuild the graphics pipeline!"
+                        })?;
             }
         }
         Ok(())
@@ -57,6 +82,8 @@ impl GLFWApplication for MyApp {
             self.rc.device.device_wait_idle()?;
 
             // Destroy everything.
+            self.rc.device.destroy_render_pass(self.render_pass, None);
+            self.pipeline.destroy(&self.rc);
             self.swapchain.destroy(&self.rc);
             self.rc.destroy();
         };

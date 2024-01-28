@@ -10,7 +10,6 @@ pub mod graphics;
 ///
 ///     my_method()
 ///         .with_context(!trace("some error message {}", some_variable))?;
-#[macro_export]
 macro_rules! trace {
     ($($arg:tt)*) => {{
         || {
@@ -20,4 +19,4 @@ macro_rules! trace {
     }}
 }
 
-//pub(crate) use trace;
+pub(crate) use trace;
