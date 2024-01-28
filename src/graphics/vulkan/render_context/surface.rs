@@ -1,5 +1,7 @@
 use {
-    crate::graphics::vulkan::render_context::Instance, anyhow::Result, ash::vk,
+    crate::{graphics::vulkan::render_context::Instance, trace},
+    anyhow::{Context, Result},
+    ash::vk,
 };
 
 /// The Vulkan Surface.
@@ -17,17 +19,16 @@ impl Surface {
     ) -> Result<Self> {
         let handle = {
             let mut surface = ash::vk::SurfaceKHR::null();
-            let result = window.create_window_surface(
-                instance.ash.handle(),
-                std::ptr::null(),
-                &mut surface,
-            );
-            if result != ash::vk::Result::SUCCESS {
-                anyhow::bail!(
-                    "Unable to create the Vulkan SurfaceKHR with GLFW! {:?}",
-                    result
-                );
-            }
+            window
+                .create_window_surface(
+                    instance.ash.handle(),
+                    std::ptr::null(),
+                    &mut surface,
+                )
+                .result()
+                .with_context(trace!(
+                    "Unable to create the Vulkan SurfaceKHR with GLFW!"
+                ))?;
             surface
         };
         let surface_loader =

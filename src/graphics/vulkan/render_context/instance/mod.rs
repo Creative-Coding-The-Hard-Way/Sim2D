@@ -2,7 +2,8 @@ mod create_instance;
 mod debug_logging;
 
 use {
-    anyhow::Result,
+    crate::trace,
+    anyhow::{Context, Result},
     ash::{extensions::ext::DebugUtils, vk},
 };
 
@@ -30,9 +31,11 @@ impl Instance {
             extensions
         };
         let ash = unsafe {
-            create_instance::create_instance(&entry, app_name, &extensions)?
+            create_instance::create_instance(&entry, app_name, &extensions)
+                .with_context(trace!("Unable to create the Vulkan instance!"))?
         };
-        let debug_utils = debug_logging::setup_debug_logging(&entry, &ash)?;
+        let debug_utils = debug_logging::setup_debug_logging(&entry, &ash)
+            .with_context(trace!("Unable to setup debug logging!"))?;
         Ok(Self {
             entry,
             ash,

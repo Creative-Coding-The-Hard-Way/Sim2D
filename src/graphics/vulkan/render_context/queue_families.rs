@@ -1,6 +1,7 @@
 use {
-    crate::graphics::vulkan::render_context::{
-        PhysicalDeviceMetadata, Surface,
+    crate::{
+        graphics::vulkan::render_context::{PhysicalDeviceMetadata, Surface},
+        trace,
     },
     anyhow::{Context, Result},
     ash::vk,
@@ -32,7 +33,9 @@ impl QueueFamilies {
                     vk::QueueFlags::GRAPHICS | vk::QueueFlags::COMPUTE,
                 )
             })
-            .context("Unable to find a Queue Family that supports GRAPHICS")?;
+            .with_context(trace!(
+                "Unable to find a Queue Family that supports GRAPHICS"
+            ))?;
         let (present_family_index, _) = {
             let non_graphics_present_queue = metadata
                 .queue_family_properties
@@ -66,7 +69,9 @@ impl QueueFamilies {
                 );
             non_graphics_present_queue
                 .or(maybe_graphics_present_queue)
-                .context("Unable to select a present queue family!")?
+                .with_context(trace!(
+                    "Unable to find a queue family that supports presentation!"
+                ))?
         };
         Ok(Self {
             graphics_family_index: graphics_family_index as u32,

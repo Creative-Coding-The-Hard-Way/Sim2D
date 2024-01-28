@@ -1,6 +1,10 @@
 mod support;
 
-use {anyhow::Result, ash::vk};
+use {
+    crate::trace,
+    anyhow::{Context, Result},
+    ash::vk,
+};
 
 /// Represents the PhysicalDevice features and properties for a particular
 /// device.
@@ -151,8 +155,12 @@ fn get_supported_physical_device_extensions(
     ash: &ash::Instance,
     physical_device: &vk::PhysicalDevice,
 ) -> Result<Vec<String>> {
-    let extension_properties =
-        unsafe { ash.enumerate_device_extension_properties(*physical_device)? };
+    let extension_properties = unsafe {
+        ash.enumerate_device_extension_properties(*physical_device)
+            .with_context(trace!(
+                "Unable to enumerate device extension properties"
+            ))?
+    };
     let names = extension_properties
         .iter()
         .filter_map(|properties| {

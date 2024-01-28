@@ -12,7 +12,7 @@ debug = true
 opt-level = 1               # Use slightly better optimizations
 
 [dependencies]
-anyhow = "*"
+anyhow = { version = "*", features = ["std"] }
 flexi_logger = { version = "*", features = ["async"] }
 log = "*"
 regex = "*"

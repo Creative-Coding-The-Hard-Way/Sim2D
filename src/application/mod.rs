@@ -1,6 +1,7 @@
 mod logging;
 
 use {
+    crate::trace,
     anyhow::{Context, Error, Result},
     std::sync::{
         atomic::{AtomicBool, Ordering},
@@ -44,7 +45,30 @@ pub trait GLFWApplication {
     }
 }
 
-pub fn glfw_application_main<App>() -> Result<()>
+pub fn glfw_application_main<App>()
+where
+    App: GLFWApplication + Send + 'static,
+{
+    let exit_result = try_glfw_application_main::<App>();
+    if let Some(err) = exit_result.err() {
+        let result: String = err
+            .chain()
+            .skip(1)
+            .enumerate()
+            .map(|(index, err)| format!("  {}). {}\n\n", index, err))
+            .to_owned()
+            .collect();
+        log::error!(
+            "{}\n\n{}\n\nCaused by:\n{}\n\nBacktrace:\n{}",
+            "Application exited with an error!",
+            err,
+            result,
+            err.backtrace()
+        );
+    }
+}
+
+fn try_glfw_application_main<App>() -> Result<()>
 where
     App: GLFWApplication + Send + 'static,
 {
@@ -60,11 +84,12 @@ where
     // Create the Window and the event queue
     let (mut window, events) = glfw
         .create_window(800, 600, "My first window", glfw::WindowMode::Windowed)
-        .context("Unable to create the glfw window!")?;
+        .with_context(trace!("Unable to create the glfw window!"))?;
     window.set_all_polling(true);
 
     // Create the GLFW App instance.
-    let mut app = App::new(&mut window)?;
+    let mut app = App::new(&mut window)
+        .with_context(trace!("Unable to initialize the application!"))?;
 
     // A flag used to coordinate shutting down the main thread and the render
     // thread.
@@ -99,8 +124,12 @@ where
     // Join the render thread and exit.
     match render_thread.join().expect("Render thread panicked!") {
         Err((mut app, err)) => {
-            log::error!("App exited due to error {}, destroying...", err);
-            app.destroy()?;
+            app.destroy().with_context(trace!(
+                "{}\n{}\n{}",
+                "An error occured while destroying the app after another error!",
+                "The original error was:",
+                err
+            ))?;
             Err(err)
         }
         Ok(mut app) => app.destroy(),

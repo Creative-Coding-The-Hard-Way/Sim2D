@@ -44,13 +44,13 @@ impl GLFWApplication for MyApp {
             self.rc.device.device_wait_idle()?;
 
             // Destroy everything.
-            self.swapchain.destroy();
+            self.swapchain.destroy(&self.rc);
             self.rc.destroy();
         };
         Ok(())
     }
 }
 
-fn main() -> Result<()> {
-    glfw_application_main::<MyApp>()
+fn main() {
+    glfw_application_main::<MyApp>();
 }

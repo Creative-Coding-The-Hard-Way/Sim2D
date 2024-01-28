@@ -1,5 +1,5 @@
 use {
-    crate::graphics::vulkan::render_context::RenderContext,
+    crate::{graphics::vulkan::render_context::RenderContext, trace},
     anyhow::{Context, Result},
     ash::vk,
 };
@@ -10,7 +10,7 @@ pub(super) fn create_swapchain(
     loader: &ash::extensions::khr::Swapchain,
     framebuffer_size: (u32, u32),
     previous_swapchain: Option<vk::SwapchainKHR>,
-) -> Result<(vk::SwapchainKHR, vk::Extent2D)> {
+) -> Result<(vk::SwapchainKHR, vk::Extent2D, vk::SurfaceFormatKHR)> {
     let capabilities = unsafe {
         rc.surface.loader.get_physical_device_surface_capabilities(
             rc.physical_device,
@@ -18,10 +18,10 @@ pub(super) fn create_swapchain(
         )?
     };
     let extent = select_extent(&capabilities, framebuffer_size);
+    let surface_format = select_surface_format(rc)?;
     let handle = {
         let image_count = select_image_count(&capabilities);
         let present_mode = select_present_mode(rc)?;
-        let surface_format = select_surface_format(rc)?;
         let mut create_info = vk::SwapchainCreateInfoKHR {
             surface: rc.surface.handle,
             min_image_count: image_count,
@@ -50,9 +50,13 @@ pub(super) fn create_swapchain(
             create_info.queue_family_index_count =
                 queue_family_indices.len() as u32;
         };
-        unsafe { loader.create_swapchain(&create_info, None)? }
+        unsafe {
+            loader
+                .create_swapchain(&create_info, None)
+                .with_context(trace!("Unable to create the swapchain!"))?
+        }
     };
-    Ok((handle, extent))
+    Ok((handle, extent, surface_format))
 }
 
 fn select_image_count(capabilities: &vk::SurfaceCapabilitiesKHR) -> u32 {

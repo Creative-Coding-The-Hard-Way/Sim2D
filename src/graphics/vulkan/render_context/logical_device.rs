@@ -1,6 +1,9 @@
 use {
-    crate::graphics::vulkan::render_context::{
-        queue_families::QueueFamilies, Instance,
+    crate::{
+        graphics::vulkan::render_context::{
+            queue_families::QueueFamilies, Instance,
+        },
+        trace,
     },
     anyhow::{Context, Result},
     ash::vk,
@@ -54,6 +57,6 @@ pub(super) fn create_logical_device(
         instance
             .ash
             .create_device(physical_device, &create_info, None)
-            .context("Unable to create a Logical Vulkan Device!")
+            .with_context(trace!("Unable to create the Logical Device"))
     }
 }

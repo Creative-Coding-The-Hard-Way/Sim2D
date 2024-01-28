@@ -2,7 +2,10 @@ mod metadata;
 
 pub use metadata::PhysicalDeviceMetadata;
 use {
-    crate::graphics::vulkan::render_context::{Instance, Surface},
+    crate::{
+        graphics::vulkan::render_context::{Instance, Surface},
+        trace,
+    },
     anyhow::{Context, Result},
     ash::vk,
 };
@@ -16,7 +19,10 @@ pub(super) fn find_suitable_device(
     surface: &Surface,
 ) -> Result<(vk::PhysicalDevice, PhysicalDeviceMetadata)> {
     let useable_devices: Vec<(vk::PhysicalDevice, PhysicalDeviceMetadata)> =
-        enumerate_devices_with_required_features(instance)?
+        enumerate_devices_with_required_features(instance)
+            .with_context(trace!(
+                "Unable to enumerate devices with required features!"
+            ))?
             .into_iter()
             .filter(|(_, metadata)| {
                 let has_graphics =
@@ -102,8 +108,12 @@ pub(super) fn find_suitable_device(
 fn enumerate_devices_with_required_features(
     instance: &Instance,
 ) -> Result<Vec<(vk::PhysicalDevice, PhysicalDeviceMetadata)>> {
-    let physical_devices =
-        unsafe { instance.ash.enumerate_physical_devices()? };
+    let physical_devices = unsafe {
+        instance
+            .ash
+            .enumerate_physical_devices()
+            .with_context(trace!("Unable to enumerate physical devices!"))?
+    };
 
     let metadata: Vec<(vk::PhysicalDevice, PhysicalDeviceMetadata)> =
         physical_devices

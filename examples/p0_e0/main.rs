@@ -21,6 +21,6 @@ impl GLFWApplication for MyApp {
     }
 }
 
-fn main() -> Result<()> {
+fn main() {
     glfw_application_main::<MyApp>()
 }

@@ -4,10 +4,10 @@ mod physical_device;
 mod queue_families;
 mod surface;
 
-use {anyhow::Result, ash::vk};
+use {crate::trace, anyhow::Result, ash::vk};
 pub use {
-    instance::Instance, physical_device::PhysicalDeviceMetadata,
-    surface::Surface,
+    anyhow::Context, instance::Instance,
+    physical_device::PhysicalDeviceMetadata, surface::Surface,
 };
 
 /// The Vulkan rendering context.
@@ -32,7 +32,10 @@ impl RenderContext {
     /// Create a new RenderContext for this application.
     pub fn new(instance: Instance, surface: Surface) -> Result<Self> {
         let (physical_device, physical_device_metadata) =
-            physical_device::find_suitable_device(&instance, &surface)?;
+            physical_device::find_suitable_device(&instance, &surface)
+                .with_context(trace!(
+                    "Unable to find a suitable Physical Device"
+                ))?;
         log::info!(
             "Chosen physical device: {}",
             physical_device_metadata.device_name()
@@ -41,12 +44,16 @@ impl RenderContext {
             physical_device,
             &physical_device_metadata,
             &surface,
-        )?;
+        )
+        .with_context(trace!(
+            "Unable to get suitable queue families for the Render Context!"
+        ))?;
         let device = logical_device::create_logical_device(
             &instance,
             physical_device,
             &queue_families,
-        )?;
+        )
+        .with_context(trace!("Unable to create the logical device!"))?;
         let (graphics_queue, present_queue) =
             queue_families.get_queues_from_device(&device);
         Ok(Self {
