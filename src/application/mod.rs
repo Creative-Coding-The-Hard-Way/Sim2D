@@ -26,7 +26,7 @@ pub trait GLFWApplication {
     ///
     /// - `event`: The event to be processed.
     #[allow(unused_variables)]
-    fn handle_event(&mut self, event: glfw::WindowEvent) -> Result<()> {
+    fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
         Ok(())
     }
 
@@ -104,12 +104,25 @@ where
                     if event == glfw::WindowEvent::Close {
                         render_should_close.store(true, Ordering::Relaxed);
                     }
-                    if let Err(err) = app.handle_event(event) {
-                        return Err((app, err));
+                    if let Err(err) = app.handle_event(&event) {
+                        render_should_close.store(true, Ordering::Relaxed);
+                        return Err((
+                            app,
+                            err.context(trace!(
+                                "Error while handling GLFW event: {:#?}",
+                                event
+                            )()),
+                        ));
                     }
                 }
                 if let Err(err) = app.update() {
-                    return Err((app, err));
+                    render_should_close.store(true, Ordering::Relaxed);
+                    return Err((
+                        app,
+                        err.context(trace!(
+                            "Error while processing app.update()!"
+                        )()),
+                    ));
                 }
             }
             Ok(app)

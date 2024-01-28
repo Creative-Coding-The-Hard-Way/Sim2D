@@ -1,5 +1,5 @@
 use {
-    anyhow::Result,
+    anyhow::{Context, Result},
     sim2d::{
         application::{glfw_application_main, GLFWApplication},
         graphics::vulkan::{
@@ -36,6 +36,19 @@ impl GLFWApplication for MyApp {
         let swapchain = Swapchain::new(&rc, (w as u32, h as u32))?;
 
         Ok(MyApp { rc, swapchain })
+    }
+
+    fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
+        if let &glfw::WindowEvent::FramebufferSize(width, height) = event {
+            unsafe {
+                self.swapchain
+                    .rebuild_swapchain(&self.rc, (width as u32, height as u32))
+                    .with_context(sim2d::trace!(
+                        "Unable to resize the swapchain!"
+                    ))?;
+            }
+        }
+        Ok(())
     }
 
     fn destroy(&mut self) -> Result<()> {
