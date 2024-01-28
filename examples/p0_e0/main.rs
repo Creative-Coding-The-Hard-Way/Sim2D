@@ -11,7 +11,7 @@ impl GLFWApplication for MyApp {
         Ok(MyApp {})
     }
 
-    fn handle_event(&mut self, event: glfw::WindowEvent) -> Result<()> {
+    fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
         log::info!("Handled event {:?}", event);
         Ok(())
     }
