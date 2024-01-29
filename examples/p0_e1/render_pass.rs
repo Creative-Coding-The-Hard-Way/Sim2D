@@ -68,11 +68,22 @@ pub fn create_render_pass(
         p_color_attachments: &attachment_reference,
         ..Default::default()
     };
+    let subpass_dependency = vk::SubpassDependency {
+        src_subpass: vk::SUBPASS_EXTERNAL,
+        dst_subpass: 0,
+        src_stage_mask: vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
+        src_access_mask: vk::AccessFlags::empty(),
+        dst_stage_mask: vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
+        dst_access_mask: vk::AccessFlags::COLOR_ATTACHMENT_WRITE,
+        dependency_flags: vk::DependencyFlags::empty(),
+    };
     let create_info = vk::RenderPassCreateInfo {
         attachment_count: 1,
         p_attachments: &attachment_description,
         subpass_count: 1,
         p_subpasses: &subpass_description,
+        dependency_count: 1,
+        p_dependencies: &subpass_dependency,
         ..Default::default()
     };
     unsafe {

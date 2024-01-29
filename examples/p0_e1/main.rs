@@ -9,7 +9,7 @@ use {
         application::{glfw_application_main, GLFWApplication},
         graphics::vulkan::{
             render_context::{Instance, RenderContext, Surface},
-            swapchain::{AcquireImageStatus, Swapchain},
+            swapchain::{AcquireImageStatus, PresentImageStatus, Swapchain},
         },
     },
 };
@@ -138,6 +138,15 @@ impl GLFWApplication for MyApp {
     }
 
     fn update(&mut self) -> Result<()> {
+        // Rebuild the Swapchain if needed
+        if self.swapchain_needs_rebuild {
+            unsafe {
+                self.rc.device.device_wait_idle()?;
+                self.rebuild_swapchain()?
+            };
+            self.swapchain_needs_rebuild = false;
+        }
+
         // Wait for the last frame to finish
         unsafe {
             self.rc.device.wait_for_fences(
@@ -145,18 +154,6 @@ impl GLFWApplication for MyApp {
                 true,
                 std::u64::MAX,
             )?
-        }
-
-        // Rebuild the Swapchain if needed
-        if self.swapchain_needs_rebuild {
-            log::info!("swapchain needs rebuild");
-            unsafe {
-                self.rc.device.device_wait_idle()?;
-                self.rebuild_swapchain()?
-            };
-            self.swapchain_needs_rebuild = false;
-        } else {
-            log::info!("swapchain does not need rebuild");
         }
 
         // Acquire the next swapchain image
@@ -175,6 +172,7 @@ impl GLFWApplication for MyApp {
 
         // Reset the buffer
         unsafe {
+            self.rc.device.reset_fences(&[self.in_flight_fence])?;
             self.rc.device.reset_command_pool(
                 self.command_pool,
                 vk::CommandPoolResetFlags::empty(),
@@ -194,11 +192,83 @@ impl GLFWApplication for MyApp {
             }
         }
 
-        // begin render pass
-        {}
+        // Begin the render pass
+        {
+            let clear_value = vk::ClearValue {
+                color: vk::ClearColorValue {
+                    float32: [1.0, 0.0, 1.0, 1.0],
+                },
+            };
+            let render_pass_begin = vk::RenderPassBeginInfo {
+                render_pass: self.color_pass.render_pass,
+                framebuffer: self.color_pass.framebuffers[image_index as usize],
+                render_area: vk::Rect2D {
+                    offset: vk::Offset2D::default(),
+                    extent: self.swapchain.extent,
+                },
+                clear_value_count: 1,
+                p_clear_values: &clear_value,
+                ..Default::default()
+            };
+            unsafe {
+                self.rc.device.cmd_begin_render_pass(
+                    self.command_buffer,
+                    &render_pass_begin,
+                    vk::SubpassContents::INLINE,
+                );
+            }
+        }
+
+        // draw commands go here
+
+        // End the render pass
+        {
+            unsafe {
+                self.rc.device.cmd_end_render_pass(self.command_buffer);
+            }
+        }
 
         // end the command buffer
         unsafe { self.rc.device.end_command_buffer(self.command_buffer)? };
+
+        // Submit the graphics commands
+        {
+            let wait_stage = vk::PipelineStageFlags::VERTEX_SHADER;
+            let submit = vk::SubmitInfo {
+                wait_semaphore_count: 1,
+                p_wait_semaphores: &self.image_available_semaphore,
+                p_wait_dst_stage_mask: &wait_stage,
+                command_buffer_count: 1,
+                p_command_buffers: &self.command_buffer,
+                signal_semaphore_count: 1,
+                p_signal_semaphores: &self.render_finished_semaphore,
+                ..Default::default()
+            };
+            unsafe {
+                self.rc.device.queue_submit(
+                    self.rc.graphics_queue,
+                    &[submit],
+                    self.in_flight_fence,
+                )?;
+            }
+        }
+
+        // Present the image
+        {
+            let result = self
+                .swapchain
+                .present_swapchain_image(
+                    &self.rc,
+                    self.render_finished_semaphore,
+                    image_index,
+                )
+                .context("Error while presenting the image!")?;
+            if result == PresentImageStatus::NeedsRebuild {
+                self.swapchain_needs_rebuild = true;
+                return Ok(());
+            }
+        }
+
         Ok(())
     }
 

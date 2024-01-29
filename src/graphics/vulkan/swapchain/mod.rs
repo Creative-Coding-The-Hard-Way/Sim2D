@@ -9,11 +9,22 @@ use {
 };
 
 /// Returned when acquiring a swapchain image.
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum AcquireImageStatus {
     /// Indicates that the swapchain image with a given index was acquired.
     ImageAcequired(u32),
 
     /// Indicates that the swapchain needs rebuilt.
+    NeedsRebuild,
+}
+
+/// Returned when presenting a swapchain image.
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum PresentImageStatus {
+    /// Indicates that the image was queued for presentation.
+    Queued,
+
+    /// Indicates ethat the swapchain needs rebuilt.
     NeedsRebuild,
 }
 
@@ -97,6 +108,41 @@ impl Swapchain {
             }
             Err(error) => Err(error).with_context(trace!(
                 "Error while acquiring the swapchain image!"
+            )),
+        }
+    }
+
+    /// Present A Swapchain image
+    ///
+    /// # Params
+    ///
+    /// - `wait_semaphore`: The semaphore to wait on before presenting.
+    pub fn present_swapchain_image(
+        &self,
+        rc: &RenderContext,
+        wait_semaphore: vk::Semaphore,
+        image_index: u32,
+    ) -> Result<PresentImageStatus> {
+        let present_info = vk::PresentInfoKHR {
+            wait_semaphore_count: 1,
+            p_wait_semaphores: &wait_semaphore,
+            swapchain_count: 1,
+            p_swapchains: &self.handle,
+            p_image_indices: &image_index,
+            ..Default::default()
+        };
+        let result = unsafe {
+            self.loader.queue_present(rc.present_queue, &present_info)
+        };
+        match result {
+            Ok(false) => Ok(PresentImageStatus::Queued),
+            Ok(true) => Ok(PresentImageStatus::NeedsRebuild),
+            Err(vk::Result::ERROR_OUT_OF_DATE_KHR) => {
+                Ok(PresentImageStatus::NeedsRebuild)
+            }
+            Err(err) => Err(err).with_context(trace!(
+                "Unable to present swapchain image {}",
+                image_index
             )),
         }
     }
