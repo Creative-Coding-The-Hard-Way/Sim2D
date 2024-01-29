@@ -8,6 +8,15 @@ use {
     ash::vk,
 };
 
+/// Returned when acquiring a swapchain image.
+pub enum AcquireImageStatus {
+    /// Indicates that the swapchain image with a given index was acquired.
+    ImageAcequired(u32),
+
+    /// Indicates that the swapchain needs rebuilt.
+    NeedsRebuild,
+}
+
 /// The application swapchain and associated resources.
 #[derive(Clone)]
 pub struct Swapchain {
@@ -48,6 +57,48 @@ impl Swapchain {
             images,
             image_views,
         })
+    }
+
+    /// Acquire the next swapchain image.
+    ///
+    /// # Params
+    ///
+    /// - `image_available_semaphore`: A semaphore to signal when the swapchain
+    ///   image is available for rendering.
+    ///
+    /// # Returns
+    ///
+    /// An enum containing either the next swapchain index or a signal to
+    /// rebuild the swapchain.
+    pub fn acquire_swapchain_image(
+        &self,
+        image_available_semaphore: vk::Semaphore,
+    ) -> Result<AcquireImageStatus> {
+        let result = unsafe {
+            self.loader.acquire_next_image(
+                self.handle,
+                std::u64::MAX,
+                image_available_semaphore,
+                vk::Fence::null(),
+            )
+        };
+        match result {
+            Ok((index, false)) => {
+                // Image acquired and not suboptimal
+                Ok(AcquireImageStatus::ImageAcequired(index))
+            }
+            Ok((_, true)) => {
+                // Image acquired but the swapchain is suboptimal
+                log::warn!("Swapchain is suboptimal! Request a rebuild...");
+                Ok(AcquireImageStatus::NeedsRebuild)
+            }
+            Err(vk::Result::ERROR_OUT_OF_DATE_KHR) => {
+                Ok(AcquireImageStatus::NeedsRebuild)
+            }
+            Err(error) => Err(error).with_context(trace!(
+                "Error while acquiring the swapchain image!"
+            )),
+        }
     }
 
     /// Rebuild the swapchain.

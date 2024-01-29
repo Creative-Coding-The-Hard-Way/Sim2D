@@ -6,6 +6,38 @@ use {
     },
 };
 
+pub struct ColorPass {
+    pub render_pass: vk::RenderPass,
+    pub framebuffers: Vec<vk::Framebuffer>,
+}
+
+impl ColorPass {
+    pub fn new(rc: &RenderContext, swapchain: &Swapchain) -> Result<Self> {
+        let render_pass = create_render_pass(rc, swapchain)?;
+        let framebuffers = create_framebuffers(rc, swapchain, &render_pass)?;
+        Ok(Self {
+            render_pass,
+            framebuffers,
+        })
+    }
+
+    /// Destroy all resources.
+    ///
+    /// # Safety
+    ///
+    /// Unsafe because:
+    /// - The renderpass and framebuffers must not be in use by the GPU when
+    ///   they are destroyed.
+    pub unsafe fn destroy(&mut self, rc: &RenderContext) {
+        rc.device.destroy_render_pass(self.render_pass, None);
+        self.render_pass = vk::RenderPass::null();
+        for framebuffer in &self.framebuffers {
+            rc.device.destroy_framebuffer(*framebuffer, None);
+        }
+        self.framebuffers.clear();
+    }
+}
+
 /// Create a render pass which targets the swapchain images for this
 /// application.
 pub fn create_render_pass(
@@ -48,4 +80,30 @@ pub fn create_render_pass(
             .create_render_pass(&create_info, None)
             .with_context(|| "Unable to create the render pass!")
     }
+}
+
+pub fn create_framebuffers(
+    rc: &RenderContext,
+    swapchain: &Swapchain,
+    render_pass: &vk::RenderPass,
+) -> Result<Vec<vk::Framebuffer>> {
+    let mut framebuffers = Vec::with_capacity(swapchain.image_views.len());
+    for view in &swapchain.image_views {
+        let create_info = vk::FramebufferCreateInfo {
+            render_pass: *render_pass,
+            attachment_count: 1,
+            p_attachments: view,
+            width: swapchain.extent.width,
+            height: swapchain.extent.height,
+            layers: 1,
+            ..Default::default()
+        };
+        let framebuffer = unsafe {
+            rc.device
+                .create_framebuffer(&create_info, None)
+                .with_context(|| "Unable to create framebuffer!")?
+        };
+        framebuffers.push(framebuffer);
+    }
+    Ok(framebuffers)
 }
