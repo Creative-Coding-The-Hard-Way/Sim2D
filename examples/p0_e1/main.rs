@@ -196,7 +196,7 @@ impl GLFWApplication for MyApp {
         {
             let clear_value = vk::ClearValue {
                 color: vk::ClearColorValue {
-                    float32: [1.0, 0.0, 1.0, 1.0],
+                    float32: [0.0, 0.0, 0.0, 0.0],
                 },
             };
             let render_pass_begin = vk::RenderPassBeginInfo {
@@ -219,7 +219,57 @@ impl GLFWApplication for MyApp {
             }
         }
 
-        // draw commands go here
+        // Set the viewport
+        {
+            let viewports = [vk::Viewport {
+                x: 0.0,
+                y: 0.0,
+                width: self.swapchain.extent.width as f32,
+                height: self.swapchain.extent.height as f32,
+                min_depth: 0.0,
+                max_depth: 1.0,
+            }];
+            unsafe {
+                self.rc.device.cmd_set_viewport(
+                    self.command_buffer,
+                    0,
+                    &viewports,
+                );
+            }
+        }
+
+        // Set the scissor region
+        {
+            let scissors = [vk::Rect2D {
+                offset: vk::Offset2D::default(),
+                extent: self.swapchain.extent,
+            }];
+            unsafe {
+                self.rc.device.cmd_set_scissor(
+                    self.command_buffer,
+                    0,
+                    &scissors,
+                );
+            }
+        }
+
+        // Bind the graphics pipeline
+        {
+            unsafe {
+                self.rc.device.cmd_bind_pipeline(
+                    self.command_buffer,
+                    vk::PipelineBindPoint::GRAPHICS,
+                    self.pipeline.handle,
+                );
+            }
+        }
+
+        // Draw!
+        {
+            unsafe {
+                self.rc.device.cmd_draw(self.command_buffer, 3, 1, 0, 0);
+            }
+        }
 
         // End the render pass
         {
