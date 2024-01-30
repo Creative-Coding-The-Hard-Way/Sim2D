@@ -189,6 +189,20 @@ impl GLFWApplication for MyApp {
             }
         }
 
+        // Bind the vertex storage buffer
+        {
+            unsafe {
+                self.rc.device.cmd_bind_descriptor_sets(
+                    command_buffer,
+                    vk::PipelineBindPoint::GRAPHICS,
+                    self.pipeline.pipeline_layout,
+                    0,
+                    &[self.pipeline.descriptor_set],
+                    &[],
+                );
+            }
+        }
+
         // Draw!
         {
             unsafe {

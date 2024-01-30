@@ -5,6 +5,14 @@ use {
     std::ffi::CString,
 };
 
+#[derive(Debug, Copy, Clone, Default)]
+#[repr(packed)]
+pub struct Vertex {
+    pub rgba: [f32; 4],
+    pub pos: [f32; 2],
+    pub pad: [f32; 2],
+}
+
 /// Store bytes in a newtype aligned to 32 bytes.
 ///
 /// This means we can always count on the included bytes being properly aligned.
@@ -37,6 +45,11 @@ static VERTEX: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
 pub struct GraphicsPipeline {
     pub handle: vk::Pipeline,
     pub pipeline_layout: vk::PipelineLayout,
+    pub descriptor_set_layout: vk::DescriptorSetLayout,
+    pub descriptor_pool: vk::DescriptorPool,
+    pub descriptor_set: vk::DescriptorSet,
+    pub storage_buffer: vk::Buffer,
+    pub buffer_memory: vk::DeviceMemory,
 }
 
 impl GraphicsPipeline {
@@ -45,11 +58,160 @@ impl GraphicsPipeline {
         rc: &RenderContext,
         render_pass: &vk::RenderPass,
     ) -> Result<Self> {
+        // Create the descriptor set layout
+        let descriptor_set_layout = {
+            let binding = vk::DescriptorSetLayoutBinding {
+                binding: 0,
+                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
+                descriptor_count: 1,
+                stage_flags: vk::ShaderStageFlags::VERTEX,
+                p_immutable_samplers: std::ptr::null(),
+            };
+            let create_info = vk::DescriptorSetLayoutCreateInfo {
+                binding_count: 1,
+                p_bindings: &binding,
+                ..Default::default()
+            };
+            unsafe {
+                rc.device.create_descriptor_set_layout(&create_info, None)?
+            }
+        };
+
+        let descriptor_pool = {
+            let pool_sizes = [vk::DescriptorPoolSize {
+                ty: vk::DescriptorType::STORAGE_BUFFER,
+                descriptor_count: 1,
+            }];
+            let create_info = vk::DescriptorPoolCreateInfo {
+                max_sets: 1,
+                pool_size_count: pool_sizes.len() as u32,
+                p_pool_sizes: pool_sizes.as_ptr(),
+                ..Default::default()
+            };
+            unsafe { rc.device.create_descriptor_pool(&create_info, None)? }
+        };
+
+        let descriptor_set = {
+            let allocate_info = vk::DescriptorSetAllocateInfo {
+                descriptor_pool,
+                descriptor_set_count: 1,
+                p_set_layouts: &descriptor_set_layout,
+                ..Default::default()
+            };
+            unsafe { rc.device.allocate_descriptor_sets(&allocate_info)?[0] }
+        };
+
+        let memory_size = (std::mem::size_of::<Vertex>() * 3) as u64;
+
+        // create the storage buffer
+        let storage_buffer = {
+            let create_info = vk::BufferCreateInfo {
+                size: memory_size,
+                usage: vk::BufferUsageFlags::STORAGE_BUFFER,
+                sharing_mode: vk::SharingMode::EXCLUSIVE,
+                queue_family_index_count: 1,
+                p_queue_family_indices: &rc.graphics_queue_index,
+                ..Default::default()
+            };
+            unsafe { rc.device.create_buffer(&create_info, None)? }
+        };
+
+        // Allocate memory for the buffer
+        let buffer_memory = {
+            let memory_requirements = unsafe {
+                rc.device.get_buffer_memory_requirements(storage_buffer)
+            };
+            let memory_properties = unsafe {
+                rc.instance
+                    .ash
+                    .get_physical_device_memory_properties(rc.physical_device)
+            };
+            let memory_type_index = memory_properties
+                .memory_types
+                .iter()
+                .enumerate()
+                .find(|(index, &memory_type)| {
+                    let type_bits = 1 << *index;
+                    let is_required_type =
+                        type_bits & memory_requirements.memory_type_bits != 0;
+                    let has_required_properties =
+                        memory_type.property_flags.contains(
+                            vk::MemoryPropertyFlags::HOST_COHERENT
+                                | vk::MemoryPropertyFlags::HOST_VISIBLE,
+                        );
+                    is_required_type && has_required_properties
+                })
+                .map(|(index, _memory_type)| index)
+                .context("Unable to get suitable memory type")?;
+            let allocate_info = vk::MemoryAllocateInfo {
+                allocation_size: memory_size,
+                memory_type_index: memory_type_index as u32,
+                ..Default::default()
+            };
+            unsafe { rc.device.allocate_memory(&allocate_info, None)? }
+        };
+
+        // Bind the memory to the buffer
+        let mapped_buffer_ptr = {
+            unsafe {
+                rc.device.bind_buffer_memory(
+                    storage_buffer,
+                    buffer_memory,
+                    0,
+                )?;
+            }
+            unsafe {
+                rc.device.map_memory(
+                    buffer_memory,
+                    0,
+                    memory_size,
+                    vk::MemoryMapFlags::empty(),
+                )?
+            }
+        };
+
+        // Write some data into the buffer
+        unsafe {
+            let slice = std::slice::from_raw_parts_mut(
+                mapped_buffer_ptr as *mut Vertex,
+                memory_size as usize / std::mem::size_of::<Vertex>(),
+            );
+            slice[0].rgba = [1.0, 0.0, 0.0, 1.0];
+            slice[0].pos = [0.0, -0.5];
+
+            slice[1].rgba = [0.0, 1.0, 0.0, 1.0];
+            slice[1].pos = [0.5, 0.5];
+
+            slice[2].rgba = [0.0, 0.0, 1.0, 1.0];
+            slice[2].pos = [-0.5, 0.5];
+        }
+
+        // Update the descriptor set to refer to the buffer
+        {
+            let buffer_info = vk::DescriptorBufferInfo {
+                buffer: storage_buffer,
+                offset: 0,
+                range: vk::WHOLE_SIZE,
+            };
+            let descriptor_writes = [vk::WriteDescriptorSet {
+                dst_set: descriptor_set,
+                dst_binding: 0,
+                descriptor_count: 1,
+                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
+                p_buffer_info: &buffer_info,
+                ..Default::default()
+            }];
+            unsafe {
+                rc.device.update_descriptor_sets(&descriptor_writes, &[]);
+            }
+        }
+
         // create the pipeline layout
         let pipeline_layout = {
             let create_info = vk::PipelineLayoutCreateInfo {
-                set_layout_count: 0,
                 push_constant_range_count: 0,
+                set_layout_count: 1,
+                p_set_layouts: &descriptor_set_layout,
                 ..Default::default()
             };
             unsafe { rc.device.create_pipeline_layout(&create_info, None)? }
@@ -196,6 +358,11 @@ impl GraphicsPipeline {
         Ok(Self {
             handle,
             pipeline_layout,
+            descriptor_set_layout,
+            descriptor_pool,
+            descriptor_set,
+            storage_buffer,
+            buffer_memory,
         })
     }
 
@@ -210,7 +377,13 @@ impl GraphicsPipeline {
     /// - destroy() should only be called once, even if there are many clones of
     ///   the pipeline.
     pub unsafe fn destroy(&mut self, rc: &RenderContext) {
+        rc.device.destroy_buffer(self.storage_buffer, None);
+        rc.device.free_memory(self.buffer_memory, None);
         rc.device.destroy_pipeline(self.handle, None);
+        rc.device
+            .destroy_descriptor_pool(self.descriptor_pool, None);
+        rc.device
+            .destroy_descriptor_set_layout(self.descriptor_set_layout, None);
         rc.device
             .destroy_pipeline_layout(self.pipeline_layout, None)
     }
