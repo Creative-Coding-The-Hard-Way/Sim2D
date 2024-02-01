@@ -42,33 +42,53 @@ pub(super) fn find_suitable_device(
                 let has_extensions = metadata
                     .supported_extensions
                     .contains(&swapchain_extension_name);
-                log::trace!(
-                    "{} has required extensions? {}",
-                    metadata.device_name(),
-                    has_extensions
-                );
+                if has_extensions {
+                    log::trace!(
+                        "{} has required extensions!",
+                        metadata.device_name()
+                    );
+                } else {
+                    log::trace!(
+                        "{} is missing extensions!\n\n{}: {:#?}\n\n{}: {:#?}",
+                        metadata.device_name(),
+                        "Required",
+                        &[swapchain_extension_name],
+                        "Available",
+                        metadata.supported_extensions,
+                    );
+                }
                 has_extensions
             })
-            .filter(|(device, _)| {
+            .filter(|(device, metadata)| {
                 let has_surface_formats = unsafe {
-                    surface
+                    let formats = surface
                         .loader
                         .get_physical_device_surface_formats(
                             *device,
                             surface.handle,
                         )
-                        .map(|formats| !formats.is_empty())
-                        .unwrap_or(false)
+                        .unwrap_or_default();
+                    log::trace!(
+                        "{} has surface formats:\n{:#?}",
+                        metadata.device_name(),
+                        formats
+                    );
+                    !formats.is_empty()
                 };
                 let has_present_modes = unsafe {
-                    surface
+                    let modes = surface
                         .loader
                         .get_physical_device_surface_present_modes(
                             *device,
                             surface.handle,
                         )
-                        .map(|modes| !modes.is_empty())
-                        .unwrap_or(false)
+                        .unwrap_or_default();
+                    log::trace!(
+                        "{} has presentation modes:\n{:#?}",
+                        metadata.device_name(),
+                        modes
+                    );
+                    !modes.is_empty()
                 };
                 has_surface_formats && has_present_modes
             })
@@ -144,6 +164,14 @@ fn enumerate_devices_with_required_features(
                         shader_sampled_image_array_non_uniform_indexing:
                             vk::TRUE,
                         runtime_descriptor_array: vk::TRUE,
+                        ..Default::default()
+                    },
+                )
+            })
+            .filter(|(_, metadata)| {
+                metadata.supports_buffer_device_address_features(
+                    vk::PhysicalDeviceBufferDeviceAddressFeatures {
+                        buffer_device_address: vk::TRUE,
                         ..Default::default()
                     },
                 )

@@ -4,7 +4,7 @@ mod render_pass;
 use {
     anyhow::{Context, Result},
     ash::vk,
-    pipeline::GraphicsPipeline,
+    pipeline::{GraphicsPipeline, PushConstants},
     sim2d::{
         application::{glfw_application_main, GLFWApplication},
         graphics::vulkan::{
@@ -199,16 +199,25 @@ impl GLFWApplication for MyApp {
             }
         }
 
-        // Bind the vertex storage buffer
+        // Set push constants
         {
+            let constants = PushConstants {
+                vertex_buffer_addr: self
+                    .pipeline
+                    .vertex_buffer
+                    .device_buffer_addr,
+            };
             unsafe {
-                self.rc.device.cmd_bind_descriptor_sets(
+                let constants_ptr = std::slice::from_raw_parts(
+                    &constants as *const PushConstants as *const u8,
+                    std::mem::size_of::<PushConstants>(),
+                );
+                self.rc.device.cmd_push_constants(
                     command_buffer,
-                    vk::PipelineBindPoint::GRAPHICS,
                     self.pipeline.pipeline_layout,
+                    vk::ShaderStageFlags::VERTEX,
                     0,
-                    &[self.pipeline.descriptor_set],
-                    &[],
+                    constants_ptr,
                 );
             }
         }

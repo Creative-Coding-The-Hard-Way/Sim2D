@@ -13,6 +13,8 @@ pub struct PhysicalDeviceMetadata {
     pub queue_family_properties: Vec<vk::QueueFamilyProperties>,
     pub supported_extensions: Vec<String>,
     pub physical_device_features: vk::PhysicalDeviceFeatures,
+    pub physical_device_buffer_device_address_features:
+        vk::PhysicalDeviceBufferDeviceAddressFeatures,
     pub physical_device_vulkan_13_features: vk::PhysicalDeviceVulkan13Features,
     pub descriptor_indexing_features:
         vk::PhysicalDeviceDescriptorIndexingFeatures,
@@ -34,6 +36,7 @@ impl PhysicalDeviceMetadata {
     ) -> Result<Self> {
         let (
             physical_device_features,
+            physical_device_buffer_device_address_features,
             physical_device_vulkan_13_features,
             descriptor_indexing_features,
         ) = get_physical_device_features(ash, physical_device);
@@ -51,6 +54,7 @@ impl PhysicalDeviceMetadata {
                 physical_device,
             ),
             physical_device_features,
+            physical_device_buffer_device_address_features,
             physical_device_vulkan_13_features,
             descriptor_indexing_features,
         })
@@ -102,6 +106,17 @@ impl PhysicalDeviceMetadata {
             &self.descriptor_indexing_features,
         )
     }
+
+    /// Returns true when all of the requested features are supported.
+    pub fn supports_buffer_device_address_features(
+        &self,
+        requested_features: vk::PhysicalDeviceBufferDeviceAddressFeatures,
+    ) -> bool {
+        support::are_physical_device_buffer_device_address_features_supported(
+            &requested_features,
+            &self.physical_device_buffer_device_address_features,
+        )
+    }
 }
 
 /// Get the physical device properties for a device.
@@ -122,9 +137,12 @@ fn get_physical_device_features(
     physical_device: &vk::PhysicalDevice,
 ) -> (
     vk::PhysicalDeviceFeatures,
+    vk::PhysicalDeviceBufferDeviceAddressFeatures,
     vk::PhysicalDeviceVulkan13Features,
     vk::PhysicalDeviceDescriptorIndexingFeatures,
 ) {
+    let mut physical_device_buffer_device_address_features =
+        vk::PhysicalDeviceBufferDeviceAddressFeatures::default();
     let mut physical_device_vulkan_13_features =
         vk::PhysicalDeviceVulkan13Features::default();
     let mut descriptor_indexing_features =
@@ -132,20 +150,25 @@ fn get_physical_device_features(
     let mut features2 = vk::PhysicalDeviceFeatures2::default();
 
     unsafe {
+        features2.p_next = &mut descriptor_indexing_features as *mut _
+            as *mut std::ffi::c_void;
         descriptor_indexing_features.p_next =
             &mut physical_device_vulkan_13_features as *mut _
                 as *mut std::ffi::c_void;
-        features2.p_next = &mut descriptor_indexing_features as *mut _
-            as *mut std::ffi::c_void;
+        physical_device_vulkan_13_features.p_next =
+            &mut physical_device_buffer_device_address_features as *mut _
+                as *mut std::ffi::c_void;
 
         ash.get_physical_device_features2(*physical_device, &mut features2);
 
+        physical_device_vulkan_13_features.p_next = std::ptr::null_mut();
         descriptor_indexing_features.p_next = std::ptr::null_mut();
         features2.p_next = std::ptr::null_mut();
     }
 
     (
         features2.features,
+        physical_device_buffer_device_address_features,
         physical_device_vulkan_13_features,
         descriptor_indexing_features,
     )

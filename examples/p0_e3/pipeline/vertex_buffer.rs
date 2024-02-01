@@ -17,6 +17,7 @@ pub struct Vertex {
 #[derive(Copy, Clone)]
 pub struct VertexBuffer {
     pub vertex_buffer: vk::Buffer,
+    pub device_buffer_addr: vk::DeviceAddress,
     pub memory: vk::DeviceMemory,
     mapped_ptr: *mut std::ffi::c_void,
 }
@@ -40,7 +41,7 @@ impl VertexBuffer {
         let vertex_buffer = {
             let create_info = vk::BufferCreateInfo {
                 size: size_in_bytes,
-                usage: vk::BufferUsageFlags::STORAGE_BUFFER,
+                usage: vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
                 sharing_mode: vk::SharingMode::EXCLUSIVE,
                 queue_family_index_count: 1,
                 p_queue_family_indices: &rc.graphics_queue_index,
@@ -57,6 +58,7 @@ impl VertexBuffer {
                 requirements,
                 vk::MemoryPropertyFlags::HOST_VISIBLE
                     | vk::MemoryPropertyFlags::HOST_COHERENT,
+                vk::MemoryAllocateFlags::DEVICE_ADDRESS,
             )?
         };
         unsafe {
@@ -70,8 +72,16 @@ impl VertexBuffer {
                 vk::MemoryMapFlags::empty(),
             )?
         };
+        let device_buffer_addr = {
+            let info = vk::BufferDeviceAddressInfo {
+                buffer: vertex_buffer,
+                ..Default::default()
+            };
+            unsafe { rc.device.get_buffer_device_address(&info) }
+        };
         Ok(Self {
             vertex_buffer,
+            device_buffer_addr,
             memory,
             mapped_ptr,
         })

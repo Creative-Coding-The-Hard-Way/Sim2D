@@ -40,12 +40,15 @@ static VERTEX: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
 
 use vertex_buffer::Vertex;
 
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct PushConstants {
+    pub vertex_buffer_addr: vk::DeviceAddress,
+}
+
 pub struct GraphicsPipeline {
     pub handle: vk::Pipeline,
     pub pipeline_layout: vk::PipelineLayout,
-    pub descriptor_set_layout: vk::DescriptorSetLayout,
-    pub descriptor_pool: vk::DescriptorPool,
-    pub descriptor_set: vk::DescriptorSet,
     pub vertex_buffer: vertex_buffer::VertexBuffer,
 }
 
@@ -56,49 +59,6 @@ impl GraphicsPipeline {
         allocator: &DeviceAllocator,
         render_pass: &vk::RenderPass,
     ) -> Result<Self> {
-        // Create the descriptor set layout
-        let descriptor_set_layout = {
-            let binding = vk::DescriptorSetLayoutBinding {
-                binding: 0,
-                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
-                descriptor_count: 1,
-                stage_flags: vk::ShaderStageFlags::VERTEX,
-                p_immutable_samplers: std::ptr::null(),
-            };
-            let create_info = vk::DescriptorSetLayoutCreateInfo {
-                binding_count: 1,
-                p_bindings: &binding,
-                ..Default::default()
-            };
-            unsafe {
-                rc.device.create_descriptor_set_layout(&create_info, None)?
-            }
-        };
-
-        let descriptor_pool = {
-            let pool_sizes = [vk::DescriptorPoolSize {
-                ty: vk::DescriptorType::STORAGE_BUFFER,
-                descriptor_count: 1,
-            }];
-            let create_info = vk::DescriptorPoolCreateInfo {
-                max_sets: 1,
-                pool_size_count: pool_sizes.len() as u32,
-                p_pool_sizes: pool_sizes.as_ptr(),
-                ..Default::default()
-            };
-            unsafe { rc.device.create_descriptor_pool(&create_info, None)? }
-        };
-
-        let descriptor_set = {
-            let allocate_info = vk::DescriptorSetAllocateInfo {
-                descriptor_pool,
-                descriptor_set_count: 1,
-                p_set_layouts: &descriptor_set_layout,
-                ..Default::default()
-            };
-            unsafe { rc.device.allocate_descriptor_sets(&allocate_info)?[0] }
-        };
-
         // Create the vertex buffer
         let mut vertex_buffer =
             vertex_buffer::VertexBuffer::new(rc, allocator)?;
@@ -124,32 +84,18 @@ impl GraphicsPipeline {
             ]);
         }
 
-        // Update the descriptor set to refer to the buffer
-        {
-            let buffer_info = vk::DescriptorBufferInfo {
-                buffer: vertex_buffer.vertex_buffer,
-                offset: 0,
-                range: vk::WHOLE_SIZE,
-            };
-            let descriptor_writes = [vk::WriteDescriptorSet {
-                dst_set: descriptor_set,
-                dst_binding: 0,
-                descriptor_count: 1,
-                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
-                p_buffer_info: &buffer_info,
-                ..Default::default()
-            }];
-            unsafe {
-                rc.device.update_descriptor_sets(&descriptor_writes, &[]);
-            }
-        }
-
         // create the pipeline layout
         let pipeline_layout = {
+            let push_constant_range = vk::PushConstantRange {
+                stage_flags: vk::ShaderStageFlags::VERTEX,
+                offset: 0,
+                size: std::mem::size_of::<PushConstants>() as u32,
+            };
             let create_info = vk::PipelineLayoutCreateInfo {
-                push_constant_range_count: 0,
-                set_layout_count: 1,
-                p_set_layouts: &descriptor_set_layout,
+                push_constant_range_count: 1,
+                p_push_constant_ranges: &push_constant_range,
+                set_layout_count: 0,
+                p_set_layouts: std::ptr::null(),
                 ..Default::default()
             };
             unsafe { rc.device.create_pipeline_layout(&create_info, None)? }
@@ -296,9 +242,6 @@ impl GraphicsPipeline {
         Ok(Self {
             handle,
             pipeline_layout,
-            descriptor_set_layout,
-            descriptor_pool,
-            descriptor_set,
             vertex_buffer,
         })
     }
@@ -316,10 +259,6 @@ impl GraphicsPipeline {
     pub unsafe fn destroy(&mut self, rc: &RenderContext) {
         self.vertex_buffer.destroy(rc);
         rc.device.destroy_pipeline(self.handle, None);
-        rc.device
-            .destroy_descriptor_pool(self.descriptor_pool, None);
-        rc.device
-            .destroy_descriptor_set_layout(self.descriptor_set_layout, None);
         rc.device
             .destroy_pipeline_layout(self.pipeline_layout, None)
     }

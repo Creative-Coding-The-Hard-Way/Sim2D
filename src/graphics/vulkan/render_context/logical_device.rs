@@ -23,6 +23,11 @@ pub(super) fn create_logical_device(
 
     // Pick Device Features
     // ALSO UPDATE: physical_device::enumerate_devices_with_required_features
+    let mut physical_device_buffer_device_address_features =
+        vk::PhysicalDeviceBufferDeviceAddressFeatures {
+            buffer_device_address: vk::TRUE,
+            ..Default::default()
+        };
     let mut physical_device_vulkan_13_features =
         vk::PhysicalDeviceVulkan13Features {
             ..Default::default()
@@ -40,6 +45,8 @@ pub(super) fn create_logical_device(
     features2.p_next = &mut descriptor_indexing_features as *mut _ as *mut _;
     descriptor_indexing_features.p_next =
         &mut physical_device_vulkan_13_features as *mut _ as *mut _;
+    physical_device_vulkan_13_features.p_next =
+        &mut physical_device_buffer_device_address_features as *mut _ as *mut _;
 
     unsafe {
         // Create the device

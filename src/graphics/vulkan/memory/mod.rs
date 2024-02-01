@@ -28,6 +28,7 @@ impl DeviceAllocator {
         rc: &RenderContext,
         memory_requirements: vk::MemoryRequirements,
         property_flags: vk::MemoryPropertyFlags,
+        memory_allocate_flags: vk::MemoryAllocateFlags,
     ) -> Result<vk::DeviceMemory> {
         let memory_type_index = self
             .memory_properties
@@ -44,7 +45,12 @@ impl DeviceAllocator {
             })
             .map(|(index, _memory_type)| index)
             .with_context(trace!("Unable to get suitable memory type"))?;
+        let allocate_flags_info = vk::MemoryAllocateFlagsInfo {
+            flags: memory_allocate_flags,
+            ..Default::default()
+        };
         let allocate_info = vk::MemoryAllocateInfo {
+            p_next: &allocate_flags_info as *const _ as *const _,
             allocation_size: memory_requirements.size,
             memory_type_index: memory_type_index as u32,
             ..Default::default()

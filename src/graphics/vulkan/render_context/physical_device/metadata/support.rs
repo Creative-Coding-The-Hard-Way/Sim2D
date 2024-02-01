@@ -6,6 +6,31 @@ fn is_requested_and_not_available(requested: u32, available: u32) -> bool {
 }
 
 #[rustfmt::skip]
+pub(super) fn are_physical_device_buffer_device_address_features_supported(
+    requested: &vk::PhysicalDeviceBufferDeviceAddressFeatures,
+    available: &vk::PhysicalDeviceBufferDeviceAddressFeatures,
+) -> bool {
+    macro_rules! check_support {
+        ($property:ident) => {
+            if is_requested_and_not_available(
+                requested.$property,
+                available.$property,
+            ) {
+                log::warn!(
+                    "PhysicalDeviceBufferDeviceAddressFeatures.{} is not supported by this device",
+                    stringify!($property)
+                );
+                return false;
+            }
+        };
+    }
+    check_support!(buffer_device_address);
+    check_support!(buffer_device_address_capture_replay);
+    check_support!(buffer_device_address_multi_device);
+    true
+}
+
+#[rustfmt::skip]
 pub(super) fn are_descriptor_indexing_features_supported(
     requested: &vk::PhysicalDeviceDescriptorIndexingFeatures,
     available: &vk::PhysicalDeviceDescriptorIndexingFeatures,
