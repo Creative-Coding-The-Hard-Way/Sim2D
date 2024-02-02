@@ -88,7 +88,11 @@ impl GLFWApplication for MyApp {
             pipeline::GraphicsPipeline::new(&rc, &color_pass.render_pass)?;
 
         let frames_in_flight = FramesInFlight::new(&rc, 3)?;
-        let vertices = StreamableVerticies::new(&rc, &allocator, 2)?;
+        let vertices = StreamableVerticies::new(
+            &rc,
+            &allocator,
+            frames_in_flight.count() + 1,
+        )?;
 
         Ok(MyApp {
             rc,

@@ -68,6 +68,11 @@ impl FramesInFlight {
         self.current_frame.command_buffer
     }
 
+    /// The maximum total frames in flight.
+    pub fn count(&self) -> usize {
+        self.frames.len()
+    }
+
     /// Begin the next frame in flight.
     pub fn begin_frame(
         &mut self,
