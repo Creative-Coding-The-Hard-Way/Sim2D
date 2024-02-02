@@ -1,5 +1,6 @@
 mod pipeline;
 mod render_pass;
+mod streamable_vertices;
 
 use {
     anyhow::{Context, Result},
@@ -16,17 +17,20 @@ use {
             swapchain::Swapchain,
         },
     },
+    std::time::Instant,
+    streamable_vertices::{StreamableVerticies, Vertex},
 };
 
 struct MyApp {
     rc: RenderContext,
-    allocator: DeviceAllocator,
     swapchain: Swapchain,
     pipeline: pipeline::GraphicsPipeline,
     color_pass: render_pass::ColorPass,
     swapchain_needs_rebuild: bool,
     framebuffer_size: (u32, u32),
     frames_in_flight: FramesInFlight,
+    start_time: std::time::Instant,
+    vertices: StreamableVerticies,
 }
 
 impl MyApp {
@@ -50,12 +54,9 @@ impl MyApp {
         // Rebuild swapchain-dependent resources
         self.color_pass =
             render_pass::ColorPass::new(&self.rc, &self.swapchain)?;
-        self.pipeline = GraphicsPipeline::new(
-            &self.rc,
-            &self.allocator,
-            &self.color_pass.render_pass,
-        )
-        .with_context(|| "Unable to rebuild the graphics pipeline!")?;
+        self.pipeline =
+            GraphicsPipeline::new(&self.rc, &self.color_pass.render_pass)
+                .with_context(|| "Unable to rebuild the graphics pipeline!")?;
         Ok(())
     }
 }
@@ -83,23 +84,22 @@ impl GLFWApplication for MyApp {
         let swapchain = Swapchain::new(&rc, (w as u32, h as u32))?;
 
         let color_pass = render_pass::ColorPass::new(&rc, &swapchain)?;
-        let pipeline = pipeline::GraphicsPipeline::new(
-            &rc,
-            &allocator,
-            &color_pass.render_pass,
-        )?;
+        let pipeline =
+            pipeline::GraphicsPipeline::new(&rc, &color_pass.render_pass)?;
 
         let frames_in_flight = FramesInFlight::new(&rc, 3)?;
+        let vertices = StreamableVerticies::new(&rc, &allocator, 2)?;
 
         Ok(MyApp {
             rc,
-            allocator,
             swapchain,
             pipeline,
             color_pass,
             swapchain_needs_rebuild: false,
             framebuffer_size: (w as u32, h as u32),
             frames_in_flight,
+            start_time: Instant::now(),
+            vertices,
         })
     }
 
@@ -131,6 +131,49 @@ impl GLFWApplication for MyApp {
                 return Ok(());
             }
         };
+
+        {
+            if let Some(mut vertex_buffer) =
+                self.vertices.try_get_writable_buffer()
+            {
+                let t = Instant::now()
+                    .duration_since(self.start_time)
+                    .as_secs_f32();
+                let a0 = t * std::f32::consts::TAU / 10.0;
+                let a1 = a0 + std::f32::consts::TAU / 3.0;
+                let a2 = a1 + std::f32::consts::TAU / 3.0;
+                let r = 0.75;
+                unsafe {
+                    vertex_buffer.write_vertex_data(&[
+                        Vertex {
+                            rgba: [1.0, 0.0, 0.0, 1.0],
+                            pos: [r * a0.cos(), r * a0.sin()],
+                            ..Default::default()
+                        },
+                        Vertex {
+                            rgba: [0.0, 1.0, 0.0, 1.0],
+                            pos: [r * a1.cos(), r * a1.sin()],
+                            ..Default::default()
+                        },
+                        Vertex {
+                            rgba: [0.0, 0.0, 1.0, 1.0],
+                            pos: [r * a2.cos(), r * a2.sin()],
+                            ..Default::default()
+                        },
+                    ]);
+                }
+                self.vertices.publish_update(vertex_buffer);
+                log::info!(
+                    "Frame {}: got buffer",
+                    self.frames_in_flight.current_frame_index()
+                );
+            } else {
+                log::info!(
+                    "Frame {}: no buffer available!",
+                    self.frames_in_flight.current_frame_index()
+                );
+            }
+        }
 
         // Begin the render pass
         {
@@ -203,8 +246,10 @@ impl GLFWApplication for MyApp {
         {
             let constants = PushConstants {
                 vertex_buffer_addr: self
-                    .pipeline
-                    .vertex_buffer
+                    .vertices
+                    .get_read_buffer(
+                        self.frames_in_flight.current_frame_index(),
+                    )
                     .device_buffer_addr,
             };
             unsafe {
@@ -249,9 +294,11 @@ impl GLFWApplication for MyApp {
     fn destroy(&mut self) -> Result<()> {
         unsafe {
             // Wait for all operations to finish.
+            self.frames_in_flight.wait_for_all_frames(&self.rc)?;
             self.rc.device.device_wait_idle()?;
 
             // Destroy everything.
+            self.vertices.destroy(&self.rc);
             self.frames_in_flight.destroy(&self.rc);
             self.color_pass.destroy(&self.rc);
             self.pipeline.destroy(&self.rc);

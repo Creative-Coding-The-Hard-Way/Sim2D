@@ -1,11 +1,7 @@
-mod vertex_buffer;
-
 use {
     anyhow::{Context, Result},
     ash::vk,
-    sim2d::graphics::vulkan::{
-        memory::DeviceAllocator, render_context::RenderContext,
-    },
+    sim2d::graphics::vulkan::render_context::RenderContext,
     std::ffi::CString,
 };
 
@@ -32,13 +28,11 @@ impl U32AlignedShaderSource<[u8]> {
 }
 
 static FRAGMENT: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
-    data: *include_bytes!("../shaders/triangle.frag.spv"),
+    data: *include_bytes!("shaders/triangle.frag.spv"),
 };
 static VERTEX: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
-    data: *include_bytes!("../shaders/triangle.vert.spv"),
+    data: *include_bytes!("shaders/triangle.vert.spv"),
 };
-
-use vertex_buffer::Vertex;
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -49,41 +43,14 @@ pub struct PushConstants {
 pub struct GraphicsPipeline {
     pub handle: vk::Pipeline,
     pub pipeline_layout: vk::PipelineLayout,
-    pub vertex_buffer: vertex_buffer::VertexBuffer,
 }
 
 impl GraphicsPipeline {
     /// Create a new graphics pipeline.
     pub fn new(
         rc: &RenderContext,
-        allocator: &DeviceAllocator,
         render_pass: &vk::RenderPass,
     ) -> Result<Self> {
-        // Create the vertex buffer
-        let mut vertex_buffer =
-            vertex_buffer::VertexBuffer::new(rc, allocator)?;
-
-        // Write some data into the buffer
-        unsafe {
-            vertex_buffer.write_vertex_data(&[
-                Vertex {
-                    rgba: [1.0, 0.0, 0.0, 1.0],
-                    pos: [0.0, -0.5],
-                    ..Default::default()
-                },
-                Vertex {
-                    rgba: [0.0, 1.0, 0.0, 1.0],
-                    pos: [0.5, 0.5],
-                    ..Default::default()
-                },
-                Vertex {
-                    rgba: [0.0, 0.0, 1.0, 1.0],
-                    pos: [-0.5, 0.5],
-                    ..Default::default()
-                },
-            ]);
-        }
-
         // create the pipeline layout
         let pipeline_layout = {
             let push_constant_range = vk::PushConstantRange {
@@ -242,7 +209,6 @@ impl GraphicsPipeline {
         Ok(Self {
             handle,
             pipeline_layout,
-            vertex_buffer,
         })
     }
 
@@ -257,7 +223,6 @@ impl GraphicsPipeline {
     /// - destroy() should only be called once, even if there are many clones of
     ///   the pipeline.
     pub unsafe fn destroy(&mut self, rc: &RenderContext) {
-        self.vertex_buffer.destroy(rc);
         rc.device.destroy_pipeline(self.handle, None);
         rc.device
             .destroy_pipeline_layout(self.pipeline_layout, None)
