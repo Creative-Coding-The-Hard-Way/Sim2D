@@ -1,5 +1,5 @@
 use {
-    anyhow::{bail, Context, Result},
+    anyhow::{Context, Result},
     sim2d::{
         application::{glfw_application_main, GLFWApplication},
         graphics::{
@@ -10,11 +10,11 @@ use {
     std::{
         sync::{
             atomic::{AtomicBool, Ordering},
-            mpsc::{Receiver, Sender, SyncSender, TryRecvError},
+            mpsc::{Receiver, SyncSender},
             Arc,
         },
         thread::JoinHandle,
-        time::{Duration, Instant},
+        time::Instant,
     },
 };
 
@@ -55,10 +55,12 @@ impl GLFWApplication for MyApp {
             let running = render_thread_running.clone();
             let rc2 = rc.clone();
             let (w, h) = window.get_framebuffer_size();
-            let mut triangles = Triangles::new(rc2, (w as u32, h as u32))?;
 
             (
                 std::thread::spawn(move || -> Result<()> {
+                    let mut triangles =
+                        Triangles::new(rc2, (w as u32, h as u32))?;
+
                     while running.load(Ordering::Relaxed) {
                         if let Some(vertices) =
                             triangles.try_get_writable_buffer()
@@ -73,6 +75,7 @@ impl GLFWApplication for MyApp {
 
                         triangles.draw()?;
                     }
+
                     triangles.destroy()?;
                     Ok(())
                 }),
@@ -103,11 +106,16 @@ impl GLFWApplication for MyApp {
             .recv()
             .context("Unable to get writable vertex buffer!")?;
 
+        let t = (Instant::now() - self.start_time).as_secs_f32();
+        let a0 = t * std::f32::consts::TAU / 10.0;
+        let a1 = a0 + std::f32::consts::TAU / 3.0;
+        let a2 = a1 + std::f32::consts::TAU / 3.0;
+        let r = 1.0;
         unsafe {
             writable.write_vertex_data(&[
-                Vertex::new(0.0, 1.0, 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(-1.0, -1.0, 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(1.0, -1.0, 1.0, 0.0, 0.0, 1.0),
+                Vertex::new(r * a0.cos(), r * a0.sin(), 1.0, 0.0, 0.0, 1.0),
+                Vertex::new(r * a1.cos(), r * a1.sin(), 1.0, 0.0, 0.0, 1.0),
+                Vertex::new(r * a2.cos(), r * a2.sin(), 1.0, 0.0, 0.0, 1.0),
             ]);
         }
 
