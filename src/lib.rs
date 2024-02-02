@@ -8,8 +8,8 @@ pub mod graphics;
 ///
 /// Given a method which returns an anyhow result:
 ///
-///     my_method()
-///         .with_context(!trace("some error message {}", some_variable))?;
+/// my_method()
+///     .with_context(!trace("some error message {}", some_variable))?;
 macro_rules! trace {
     ($($arg:tt)*) => {{
         || {
