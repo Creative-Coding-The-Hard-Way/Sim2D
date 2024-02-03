@@ -1,31 +1,14 @@
 use {
-    crate::{graphics::vulkan::render_context::RenderContext, trace},
+    crate::{
+        graphics::vulkan::{
+            raii, render_context::RenderContext, U32AlignedShaderSource,
+        },
+        trace,
+    },
     anyhow::{Context, Result},
     ash::vk,
     std::ffi::CString,
 };
-
-/// Store bytes in a newtype aligned to 32 bytes.
-///
-/// This means we can always count on the included bytes being properly aligned.
-#[repr(C, align(32))]
-struct U32AlignedShaderSource<Bytes: ?Sized> {
-    pub data: Bytes,
-}
-
-impl U32AlignedShaderSource<[u8]> {
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - It's only safe to use this method for static instances.
-    pub unsafe fn get_create_info(&self) -> vk::ShaderModuleCreateInfo {
-        vk::ShaderModuleCreateInfo {
-            code_size: self.data.len(),
-            p_code: self.data.as_ptr() as *const u32,
-            ..Default::default()
-        }
-    }
-}
 
 static FRAGMENT: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
     data: *include_bytes!("shaders/triangle.frag.spv"),
@@ -41,8 +24,8 @@ pub struct PushConstants {
 }
 
 pub struct GraphicsPipeline {
-    pub handle: vk::Pipeline,
-    pub pipeline_layout: vk::PipelineLayout,
+    pub pipeline: raii::PipelineArc,
+    pub pipeline_layout: raii::PipelineLayoutArc,
 }
 
 impl GraphicsPipeline {
@@ -65,31 +48,34 @@ impl GraphicsPipeline {
                 p_set_layouts: std::ptr::null(),
                 ..Default::default()
             };
-            unsafe {
-                rc.device
-                    .create_pipeline_layout(&create_info, None)
-                    .with_context(trace!("Unable to create pipeline layout!"))?
-            }
+            raii::PipelineLayout::new(rc.device.clone(), &create_info)
+                .with_context(trace!("Unable to create pipeline layout!"))?
         };
 
         // Create the shader modules
         let vertex_shader = {
-            unsafe {
-                rc.device
-                    .create_shader_module(&VERTEX.get_create_info(), None)
-                    .with_context(trace!(
-                        "Unable to create vertex shader module!"
-                    ))?
-            }
+            let create_info = vk::ShaderModuleCreateInfo {
+                code_size: VERTEX.data.len(),
+                p_code: VERTEX.data.as_ptr() as *const u32,
+                ..Default::default()
+            };
+            raii::ShaderModule::new_single_owner(
+                rc.device.clone(),
+                &create_info,
+            )
+            .with_context(trace!("Unable to create vertex shader module!"))?
         };
         let fragment_shader = {
-            unsafe {
-                rc.device
-                    .create_shader_module(&FRAGMENT.get_create_info(), None)
-                    .with_context(trace!(
-                        "Unable to create fragment shader module!"
-                    ))?
-            }
+            let create_info = vk::ShaderModuleCreateInfo {
+                code_size: FRAGMENT.data.len(),
+                p_code: FRAGMENT.data.as_ptr() as *const u32,
+                ..Default::default()
+            };
+            raii::ShaderModule::new_single_owner(
+                rc.device.clone(),
+                &create_info,
+            )
+            .with_context(trace!("Unable to create fragment shader module!"))?
         };
 
         // Assign shader modules to appropriate stages
@@ -97,13 +83,13 @@ impl GraphicsPipeline {
         let shader_stages = [
             vk::PipelineShaderStageCreateInfo {
                 stage: vk::ShaderStageFlags::VERTEX,
-                module: vertex_shader,
+                module: vertex_shader.raw,
                 p_name: entrypoint.as_ptr(),
                 ..Default::default()
             },
             vk::PipelineShaderStageCreateInfo {
                 stage: vk::ShaderStageFlags::FRAGMENT,
-                module: fragment_shader,
+                module: fragment_shader.raw,
                 p_name: entrypoint.as_ptr(),
                 ..Default::default()
             },
@@ -189,52 +175,23 @@ impl GraphicsPipeline {
             p_multisample_state: &multisample_create_info,
             p_color_blend_state: &blend_state_create_info,
             p_dynamic_state: &dynamic_state_create_info,
-            layout: pipeline_layout,
+            layout: pipeline_layout.raw,
             render_pass: *render_pass,
             subpass: 0,
             ..Default::default()
         };
 
-        let handle = unsafe {
-            match rc.device.create_graphics_pipelines(
-                vk::PipelineCache::null(),
-                &[create_info],
-                None,
-            ) {
-                Ok(pipelines) => pipelines[0],
-                Err((pipelines, err)) => {
-                    err.result().with_context(trace!(
-                        "Unable to create graphics pipeline!"
-                    ))?;
-                    pipelines[0]
-                }
-            }
-        };
+        let pipeline = raii::Pipeline::create_graphics_pipelines(
+            rc.device.clone(),
+            &[create_info],
+        )
+        .with_context(trace!("Unable to create the triangles pipeline!"))?
+        .pop()
+        .with_context(trace!("Expected exactly one graphics pipeline!"))?;
 
-        // Cleanup
-        unsafe {
-            rc.device.destroy_shader_module(vertex_shader, None);
-            rc.device.destroy_shader_module(fragment_shader, None);
-        }
         Ok(Self {
-            handle,
+            pipeline,
             pipeline_layout,
         })
-    }
-
-    /// Destroy the graphics pipeline.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - The graphics pipeline must not be in-use by the GPU when it is
-    ///   destroyed.
-    /// - The graphics pipeline must not be used after being destroyed.
-    /// - destroy() should only be called once, even if there are many clones of
-    ///   the pipeline.
-    pub unsafe fn destroy(&mut self, rc: &RenderContext) {
-        rc.device.destroy_pipeline(self.handle, None);
-        rc.device
-            .destroy_pipeline_layout(self.pipeline_layout, None)
     }
 }

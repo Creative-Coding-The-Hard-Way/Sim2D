@@ -4,7 +4,10 @@ use {
         application::{glfw_application_main, GLFWApplication},
         graphics::{
             renderer::triangles::{Triangles, Vertex, VertexBuffer},
-            vulkan::render_context::{Instance, RenderContext, Surface},
+            vulkan::{
+                raii,
+                render_context::{Instance, RenderContext},
+            },
         },
     },
     std::{
@@ -19,7 +22,6 @@ use {
 };
 
 struct MyApp {
-    rc: RenderContext,
     render_thread_handle: Option<JoinHandle<Result<()>>>,
     render_thread_running: Arc<AtomicBool>,
     writable_vertex_rcv: Receiver<VertexBuffer>,
@@ -40,10 +42,9 @@ impl GLFWApplication for MyApp {
         )?;
         log::info!("Vulkan Instance created! \n{:#?}", instance);
 
-        let rc = RenderContext::new(
-            instance.clone(),
-            Surface::from_glfw_window(window, &instance)?,
-        )?;
+        let surface =
+            raii::Surface::from_glfw_window(instance.ash.clone(), window)?;
+        let rc = RenderContext::new(instance, surface)?;
 
         let render_thread_running = Arc::new(AtomicBool::new(true));
         let (render_thread_handle, writable_vertex_rcv, publish_vertices_send) = {
@@ -85,7 +86,6 @@ impl GLFWApplication for MyApp {
         };
 
         Ok(MyApp {
-            rc,
             render_thread_handle: Some(render_thread_handle),
             render_thread_running,
             writable_vertex_rcv,

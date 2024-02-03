@@ -1,5 +1,8 @@
 use {
-    crate::{graphics::vulkan::render_context::RenderContext, trace},
+    crate::{
+        graphics::vulkan::{raii, render_context::RenderContext},
+        trace,
+    },
     anyhow::{Context, Result},
     ash::vk,
 };
@@ -7,14 +10,13 @@ use {
 /// Create a new swapchain.
 pub(super) fn create_swapchain(
     rc: &RenderContext,
-    loader: &ash::extensions::khr::Swapchain,
     framebuffer_size: (u32, u32),
     previous_swapchain: Option<vk::SwapchainKHR>,
-) -> Result<(vk::SwapchainKHR, vk::Extent2D, vk::SurfaceFormatKHR)> {
+) -> Result<(raii::SwapchainArc, vk::Extent2D, vk::SurfaceFormatKHR)> {
     let capabilities = unsafe {
-        rc.surface.loader.get_physical_device_surface_capabilities(
+        rc.surface.ext.get_physical_device_surface_capabilities(
             rc.physical_device,
-            rc.surface.handle,
+            rc.surface.raw,
         )?
     };
     let extent = select_extent(&capabilities, framebuffer_size);
@@ -23,7 +25,7 @@ pub(super) fn create_swapchain(
         let image_count = select_image_count(&capabilities);
         let present_mode = select_present_mode(rc)?;
         let mut create_info = vk::SwapchainCreateInfoKHR {
-            surface: rc.surface.handle,
+            surface: rc.surface.raw,
             min_image_count: image_count,
             image_format: surface_format.format,
             image_color_space: surface_format.color_space,
@@ -50,11 +52,8 @@ pub(super) fn create_swapchain(
             create_info.queue_family_index_count =
                 queue_family_indices.len() as u32;
         };
-        unsafe {
-            loader
-                .create_swapchain(&create_info, None)
-                .with_context(trace!("Unable to create the swapchain!"))?
-        }
+        raii::Swapchain::new(rc.device.clone(), &create_info)
+            .with_context(trace!("Unable to create the swapchain!"))?
     };
     Ok((handle, extent, surface_format))
 }
@@ -92,12 +91,10 @@ fn select_extent(
 
 fn select_present_mode(rc: &RenderContext) -> Result<vk::PresentModeKHR> {
     let present_modes = unsafe {
-        rc.surface
-            .loader
-            .get_physical_device_surface_present_modes(
-                rc.physical_device,
-                rc.surface.handle,
-            )?
+        rc.surface.ext.get_physical_device_surface_present_modes(
+            rc.physical_device,
+            rc.surface.raw,
+        )?
     };
 
     if let Some(preferred_mode) = present_modes
@@ -113,9 +110,9 @@ fn select_present_mode(rc: &RenderContext) -> Result<vk::PresentModeKHR> {
 
 fn select_surface_format(rc: &RenderContext) -> Result<vk::SurfaceFormatKHR> {
     let surface_formats = unsafe {
-        rc.surface.loader.get_physical_device_surface_formats(
+        rc.surface.ext.get_physical_device_surface_formats(
             rc.physical_device,
-            rc.surface.handle,
+            rc.surface.raw,
         )?
     };
 

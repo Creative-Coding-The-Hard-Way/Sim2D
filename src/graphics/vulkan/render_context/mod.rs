@@ -2,12 +2,18 @@ mod instance;
 mod logical_device;
 mod physical_device;
 mod queue_families;
-mod surface;
 
-use {crate::trace, anyhow::Result, ash::vk};
+use {
+    crate::{
+        graphics::vulkan::{memory::DeviceAllocator, raii},
+        trace,
+    },
+    anyhow::Result,
+    ash::vk,
+};
 pub use {
     anyhow::Context, instance::Instance,
-    physical_device::PhysicalDeviceMetadata, surface::Surface,
+    physical_device::PhysicalDeviceMetadata,
 };
 
 /// The Vulkan rendering context.
@@ -15,22 +21,23 @@ pub use {
 /// The context contains all of the core resources required by most Vulkan
 /// graphics applications. This includes the logical device, the physical
 /// device, the surface, and the relevant queue handles.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct RenderContext {
-    pub instance: Instance,
-    pub surface: Surface,
+    pub surface: raii::SurfaceArc,
     pub physical_device: vk::PhysicalDevice,
     pub physical_device_metadata: PhysicalDeviceMetadata,
-    pub device: ash::Device,
     pub graphics_queue: vk::Queue,
     pub graphics_queue_index: u32,
     pub present_queue: vk::Queue,
     pub present_queue_index: u32,
+    pub device: raii::DeviceArc,
+    pub instance: Instance,
+    pub allocator: DeviceAllocator,
 }
 
 impl RenderContext {
     /// Create a new RenderContext for this application.
-    pub fn new(instance: Instance, surface: Surface) -> Result<Self> {
+    pub fn new(instance: Instance, surface: raii::SurfaceArc) -> Result<Self> {
         let (physical_device, physical_device_metadata) =
             physical_device::find_suitable_device(&instance, &surface)
                 .with_context(trace!(
@@ -49,16 +56,17 @@ impl RenderContext {
             "Unable to get suitable queue families for the Render Context!"
         ))?;
         let device = logical_device::create_logical_device(
-            &instance,
+            instance.ash.clone(),
             physical_device,
             &queue_families,
         )
         .with_context(trace!("Unable to create the logical device!"))?;
         let (graphics_queue, present_queue) =
             queue_families.get_queues_from_device(&device);
+        let allocator = DeviceAllocator::new(device.clone(), physical_device);
         Ok(Self {
-            instance,
             surface,
+            instance,
             physical_device,
             physical_device_metadata,
             device,
@@ -66,22 +74,7 @@ impl RenderContext {
             graphics_queue_index: queue_families.graphics_family_index,
             present_queue,
             present_queue_index: queue_families.present_family_index,
+            allocator,
         })
-    }
-
-    /// Destroy the context.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - This method must be called only once, regardless of how many clones
-    ///   exist. (e.g. if there are 3 clones, destroy should be called 1 time
-    ///   with only one of the clones).
-    /// - All GPU resources created with the instance and logical device must be
-    ///   destroyed before calling this method.
-    pub unsafe fn destroy(&mut self) {
-        self.device.destroy_device(None);
-        self.surface.destroy();
-        self.instance.destroy();
     }
 }

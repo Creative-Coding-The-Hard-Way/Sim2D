@@ -22,3 +22,17 @@ pub unsafe fn to_os_ptrs(
         .collect::<Vec<*const c_char>>();
     (cstrings, ptrs)
 }
+
+/// Store bytes in a newtype aligned to 32 bytes.
+///
+/// This means we can always count on the included bytes being properly aligned.
+///
+/// # Usage
+///
+/// static FRAGMENT: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
+///    data: *include_bytes!("shaders/triangle.frag.spv"),
+/// };
+#[repr(C, align(32))]
+pub struct U32AlignedShaderSource<Bytes: ?Sized> {
+    pub data: Bytes,
+}

@@ -2,17 +2,17 @@ mod create_instance;
 mod debug_logging;
 
 use {
-    crate::trace,
+    crate::{graphics::vulkan::raii, trace},
     anyhow::{Context, Result},
-    ash::{extensions::ext::DebugUtils, vk},
+    ash::extensions::ext::DebugUtils,
 };
 
+/// The Vulkan library instance and associated information.
 #[derive(Clone)]
 pub struct Instance {
-    pub entry: ash::Entry,
-    pub ash: ash::Instance,
+    pub ash: raii::InstanceArc,
     extensions: Vec<String>,
-    debug_utils: Option<(DebugUtils, vk::DebugUtilsMessengerEXT)>,
+    _debug_utils: Option<raii::DebugUtilsArc>,
 }
 
 impl Instance {
@@ -21,7 +21,6 @@ impl Instance {
     where
         S: AsRef<str>,
     {
-        let entry = unsafe { ash::Entry::load()? };
         let extensions = {
             let mut extensions = required_extensions.to_vec();
             if cfg!(debug_assertions) {
@@ -31,41 +30,22 @@ impl Instance {
             extensions
         };
         let ash = unsafe {
-            create_instance::create_instance(&entry, app_name, &extensions)
+            create_instance::create_instance(app_name, &extensions)
                 .with_context(trace!("Unable to create the Vulkan instance!"))?
         };
-        let debug_utils = debug_logging::setup_debug_logging(&entry, &ash)
+        let debug_utils = debug_logging::setup_debug_logging(ash.clone())
             .with_context(trace!("Unable to setup debug logging!"))?;
         Ok(Self {
-            entry,
             ash,
             extensions,
-            debug_utils,
+            _debug_utils: debug_utils,
         })
-    }
-
-    /// Destroy the Vulkan instance.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - Any and all resources created with the instance must be destroyed
-    ///   before this method is called.
-    /// - The Instance should only be destroyed once. (e.g. if there are many
-    ///   clone()s, only one should call destroy().)
-    /// - It is invalid to use the instance after destroy() has been called.
-    pub unsafe fn destroy(&mut self) {
-        if let Some((debug_utils, messenger)) = self.debug_utils.take() {
-            debug_utils.destroy_debug_utils_messenger(messenger, None);
-        }
-        self.ash.destroy_instance(None);
     }
 }
 
 impl std::fmt::Debug for Instance {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Instance")
-            .field("entry", &"<Vulkan Library Entrypoint>")
             .field("ash", &"<Ash Library Instance>")
             .field("extensions", &self.extensions)
             .finish()

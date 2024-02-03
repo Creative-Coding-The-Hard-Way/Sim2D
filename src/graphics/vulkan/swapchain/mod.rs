@@ -2,8 +2,10 @@ mod create;
 mod image_views;
 
 use {
-    super::render_context::RenderContext,
-    crate::trace,
+    crate::{
+        graphics::vulkan::{raii, render_context::RenderContext},
+        trace,
+    },
     anyhow::{Context, Result},
     ash::vk,
 };
@@ -29,14 +31,13 @@ pub enum PresentImageStatus {
 }
 
 /// The application swapchain and associated resources.
-#[derive(Clone)]
 pub struct Swapchain {
-    pub handle: vk::SwapchainKHR,
-    pub loader: ash::extensions::khr::Swapchain,
     pub extent: vk::Extent2D,
     pub surface_format: vk::SurfaceFormatKHR,
     pub images: Vec<vk::Image>,
-    pub image_views: Vec<vk::ImageView>,
+    pub image_views: Vec<raii::ImageViewArc>,
+    pub swapchain: raii::SwapchainArc,
+    pub surface: raii::SurfaceArc,
 }
 
 impl Swapchain {
@@ -45,14 +46,13 @@ impl Swapchain {
         rc: &RenderContext,
         framebuffer_size: (u32, u32),
     ) -> Result<Self> {
-        let loader =
-            ash::extensions::khr::Swapchain::new(&rc.instance.ash, &rc.device);
-        let (handle, extent, surface_format) =
-            create::create_swapchain(rc, &loader, framebuffer_size, None)
+        let (swapchain, extent, surface_format) =
+            create::create_swapchain(rc, framebuffer_size, None)
                 .with_context(trace!("Unable to initialize the swapchain!"))?;
         let images = unsafe {
-            loader
-                .get_swapchain_images(handle)
+            swapchain
+                .ext
+                .get_swapchain_images(swapchain.raw)
                 .with_context(trace!("Unable to get swapchain images!"))?
         };
         let image_views =
@@ -61,12 +61,12 @@ impl Swapchain {
                     "Unable to create swapchain image views!"
                 ))?;
         Ok(Self {
-            handle,
-            loader,
+            surface: rc.surface.clone(),
             extent,
             surface_format,
             images,
             image_views,
+            swapchain,
         })
     }
 
@@ -86,8 +86,8 @@ impl Swapchain {
         image_available_semaphore: vk::Semaphore,
     ) -> Result<AcquireImageStatus> {
         let result = unsafe {
-            self.loader.acquire_next_image(
-                self.handle,
+            self.swapchain.ext.acquire_next_image(
+                self.swapchain.raw,
                 std::u64::MAX,
                 image_available_semaphore,
                 vk::Fence::null(),
@@ -127,12 +127,14 @@ impl Swapchain {
             wait_semaphore_count: 1,
             p_wait_semaphores: &wait_semaphore,
             swapchain_count: 1,
-            p_swapchains: &self.handle,
+            p_swapchains: &self.swapchain.raw,
             p_image_indices: &image_index,
             ..Default::default()
         };
         let result = unsafe {
-            self.loader.queue_present(rc.present_queue, &present_info)
+            self.swapchain
+                .ext
+                .queue_present(rc.present_queue, &present_info)
         };
         match result {
             Ok(false) => Ok(PresentImageStatus::Queued),
@@ -163,23 +165,21 @@ impl Swapchain {
         rc: &RenderContext,
         framebuffer_size: (u32, u32),
     ) -> Result<()> {
-        let (handle, extent, surface_format) = create::create_swapchain(
+        let (swapchain, extent, surface_format) = create::create_swapchain(
             rc,
-            &self.loader,
             framebuffer_size,
-            Some(self.handle),
+            Some(self.swapchain.raw),
         )
         .with_context(trace!("Unable to rebuild the swapchain!"))?;
 
-        unsafe { self.destroy(rc) };
-
-        self.handle = handle;
+        self.swapchain = swapchain;
         self.extent = extent;
         self.surface_format = surface_format;
 
         self.images = unsafe {
-            self.loader
-                .get_swapchain_images(handle)
+            self.swapchain
+                .ext
+                .get_swapchain_images(self.swapchain.raw)
                 .with_context(trace!("Unable to get swapchain images!"))?
         };
         self.image_views = image_views::create_image_views(
@@ -190,27 +190,5 @@ impl Swapchain {
         .with_context(trace!("Unable to create swapchain image views!"))?;
 
         Ok(())
-    }
-
-    /// Destroy the swapchain.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - The swapchain must not be in use by the GPU when it is destroyed.
-    /// - Destroy must only be called on a single swapchain instance, even if
-    ///   there are multiple clones.
-    /// - The swapchain must not be used after calling destroy.
-    pub unsafe fn destroy(&mut self, rc: &RenderContext) {
-        image_views::destroy_image_views(rc, &self.image_views);
-        self.image_views.clear();
-        self.images.clear();
-
-        self.loader.destroy_swapchain(self.handle, None);
-        self.handle = vk::SwapchainKHR::null();
-        self.extent = vk::Extent2D {
-            width: 0,
-            height: 0,
-        };
     }
 }

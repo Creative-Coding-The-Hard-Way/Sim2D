@@ -2,9 +2,7 @@ mod vertex_buffer;
 
 pub use vertex_buffer::VertexBuffer;
 use {
-    crate::graphics::vulkan::{
-        memory::DeviceAllocator, render_context::RenderContext, sync::NBuffer,
-    },
+    crate::graphics::vulkan::{render_context::RenderContext, sync::NBuffer},
     anyhow::{Context, Result},
 };
 
@@ -16,16 +14,12 @@ pub struct StreamableVerticies {
 }
 
 impl StreamableVerticies {
-    pub fn new(
-        rc: &RenderContext,
-        allocator: &DeviceAllocator,
-        count: usize,
-    ) -> Result<Self> {
+    pub fn new(rc: &RenderContext, count: usize) -> Result<Self> {
         assert!(count >= 2, "Must be at least double buffered!");
 
         let mut vertex_buffers = Vec::with_capacity(count);
         for _ in 0..count {
-            let vertex_buffer = VertexBuffer::new(rc, allocator)
+            let vertex_buffer = VertexBuffer::new(rc)
                 .context("Unable to create vertex buffer!")?;
             vertex_buffers.push(vertex_buffer);
         }

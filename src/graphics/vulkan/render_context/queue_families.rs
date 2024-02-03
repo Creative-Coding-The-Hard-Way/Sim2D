@@ -1,6 +1,6 @@
 use {
     crate::{
-        graphics::vulkan::render_context::{PhysicalDeviceMetadata, Surface},
+        graphics::vulkan::{raii, render_context::PhysicalDeviceMetadata},
         trace,
     },
     anyhow::{Context, Result},
@@ -22,7 +22,7 @@ impl QueueFamilies {
     pub fn new(
         physical_device: vk::PhysicalDevice,
         metadata: &PhysicalDeviceMetadata,
-        surface: &Surface,
+        surface: &raii::Surface,
     ) -> Result<Self> {
         let (graphics_family_index, _) = metadata
             .queue_family_properties
@@ -46,11 +46,11 @@ impl QueueFamilies {
                 })
                 .find(|(queue_family_index, _)| unsafe {
                     surface
-                        .loader
+                        .ext
                         .get_physical_device_surface_support(
                             physical_device,
                             *queue_family_index as u32,
-                            surface.handle,
+                            surface.raw,
                         )
                         .unwrap_or(false)
                 });
@@ -58,11 +58,11 @@ impl QueueFamilies {
                 metadata.queue_family_properties.iter().enumerate().find(
                     |(queue_family_index, _)| unsafe {
                         surface
-                            .loader
+                            .ext
                             .get_physical_device_surface_support(
                                 physical_device,
                                 *queue_family_index as u32,
-                                surface.handle,
+                                surface.raw,
                             )
                             .unwrap_or(false)
                     },

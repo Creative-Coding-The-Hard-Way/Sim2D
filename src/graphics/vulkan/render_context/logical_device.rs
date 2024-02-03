@@ -1,7 +1,7 @@
 use {
     crate::{
-        graphics::vulkan::render_context::{
-            queue_families::QueueFamilies, Instance,
+        graphics::vulkan::{
+            raii, render_context::queue_families::QueueFamilies,
         },
         trace,
     },
@@ -10,10 +10,10 @@ use {
 };
 
 pub(super) fn create_logical_device(
-    instance: &Instance,
+    instance: raii::InstanceArc,
     physical_device: vk::PhysicalDevice,
     queue_families: &QueueFamilies,
-) -> Result<ash::Device> {
+) -> Result<raii::DeviceArc> {
     // Pick Queues
     let queue_create_infos = queue_families.get_queue_create_info();
 
@@ -48,22 +48,18 @@ pub(super) fn create_logical_device(
     physical_device_vulkan_13_features.p_next =
         &mut physical_device_buffer_device_address_features as *mut _ as *mut _;
 
-    unsafe {
-        // Create the device
-        let create_info = vk::DeviceCreateInfo {
-            p_next: &mut features2 as *mut _ as *mut std::ffi::c_void,
-            queue_create_info_count: queue_create_infos.len() as u32,
-            p_queue_create_infos: queue_create_infos.as_ptr(),
-            enabled_extension_count: extensions.len() as u32,
-            pp_enabled_extension_names: extensions.as_ptr(),
+    // Create the device
+    let create_info = vk::DeviceCreateInfo {
+        p_next: &mut features2 as *mut _ as *mut std::ffi::c_void,
+        queue_create_info_count: queue_create_infos.len() as u32,
+        p_queue_create_infos: queue_create_infos.as_ptr(),
+        enabled_extension_count: extensions.len() as u32,
+        pp_enabled_extension_names: extensions.as_ptr(),
 
-            // Null because p_next contains the physical device features
-            p_enabled_features: std::ptr::null(),
-            ..Default::default()
-        };
-        instance
-            .ash
-            .create_device(physical_device, &create_info, None)
-            .with_context(trace!("Unable to create the Logical Device"))
-    }
+        // Null because p_next contains the physical device features
+        p_enabled_features: std::ptr::null(),
+        ..Default::default()
+    };
+    Ok(raii::Device::new(instance, physical_device, &create_info)
+        .with_context(trace!("Unable to create the Logical Device"))?)
 }

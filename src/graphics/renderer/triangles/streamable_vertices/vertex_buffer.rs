@@ -1,9 +1,6 @@
 use {
     super::super::Vertex,
-    crate::graphics::vulkan::{
-        memory::DeviceAllocator, render_context::RenderContext,
-    },
-    anyhow::Result,
+    crate::graphics::vulkan::render_context::RenderContext, anyhow::Result,
     ash::vk,
 };
 
@@ -25,10 +22,7 @@ unsafe impl Send for VertexBuffer {}
 unsafe impl Sync for VertexBuffer {}
 
 impl VertexBuffer {
-    pub fn new(
-        rc: &RenderContext,
-        allocator: &DeviceAllocator,
-    ) -> Result<Self> {
+    pub fn new(rc: &RenderContext) -> Result<Self> {
         let vertex_capacity = 3;
         let size_in_bytes =
             (std::mem::size_of::<Vertex>() * vertex_capacity) as u64;
@@ -47,8 +41,7 @@ impl VertexBuffer {
             let requirements = unsafe {
                 rc.device.get_buffer_memory_requirements(vertex_buffer)
             };
-            allocator.allocate_memory(
-                rc,
+            rc.allocator.allocate_memory(
                 requirements,
                 vk::MemoryPropertyFlags::HOST_VISIBLE
                     | vk::MemoryPropertyFlags::HOST_COHERENT,
@@ -106,6 +99,6 @@ impl VertexBuffer {
     ///   vertex buffer.
     pub unsafe fn destroy(&mut self, rc: &RenderContext) {
         rc.device.destroy_buffer(self.vertex_buffer, None);
-        rc.device.free_memory(self.memory, None);
+        rc.allocator.free_memory(self.memory);
     }
 }

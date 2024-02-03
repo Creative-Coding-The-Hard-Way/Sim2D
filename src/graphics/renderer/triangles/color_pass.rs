@@ -1,7 +1,7 @@
 use {
     crate::{
         graphics::vulkan::{
-            render_context::RenderContext, swapchain::Swapchain,
+            raii, render_context::RenderContext, swapchain::Swapchain,
         },
         trace,
     },
@@ -12,8 +12,8 @@ use {
 /// All of the resources representing a single renderpass which output to
 /// the swapcahin framebuffer color attachment.
 pub struct ColorPass {
-    pub render_pass: vk::RenderPass,
-    pub framebuffers: Vec<vk::Framebuffer>,
+    pub render_pass: raii::RenderPassArc,
+    pub framebuffers: Vec<raii::FramebufferArc>,
 }
 
 impl ColorPass {
@@ -27,22 +27,6 @@ impl ColorPass {
             framebuffers,
         })
     }
-
-    /// Destroy all resources.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - The renderpass and framebuffers must not be in use by the GPU when
-    ///   they are destroyed.
-    pub unsafe fn destroy(&mut self, rc: &RenderContext) {
-        rc.device.destroy_render_pass(self.render_pass, None);
-        self.render_pass = vk::RenderPass::null();
-        for framebuffer in &self.framebuffers {
-            rc.device.destroy_framebuffer(*framebuffer, None);
-        }
-        self.framebuffers.clear();
-    }
 }
 
 /// Create a render pass which targets the swapchain images for this
@@ -50,7 +34,7 @@ impl ColorPass {
 pub fn create_render_pass(
     rc: &RenderContext,
     swapchain: &Swapchain,
-) -> Result<vk::RenderPass> {
+) -> Result<raii::RenderPassArc> {
     let attachment_description = vk::AttachmentDescription {
         format: swapchain.surface_format.format,
         samples: vk::SampleCountFlags::TYPE_1,
@@ -93,37 +77,32 @@ pub fn create_render_pass(
         p_dependencies: &subpass_dependency,
         ..Default::default()
     };
-    unsafe {
-        rc.device
-            .create_render_pass(&create_info, None)
-            .with_context(trace!("Unable to create the render pass!"))
-    }
+    raii::RenderPass::new(rc.device.clone(), &create_info)
+        .with_context(trace!("Unable to create the render pass!"))
 }
 
 pub fn create_framebuffers(
     rc: &RenderContext,
     swapchain: &Swapchain,
     render_pass: &vk::RenderPass,
-) -> Result<Vec<vk::Framebuffer>> {
+) -> Result<Vec<raii::FramebufferArc>> {
     let mut framebuffers = Vec::with_capacity(swapchain.image_views.len());
     for view in &swapchain.image_views {
         let create_info = vk::FramebufferCreateInfo {
             render_pass: *render_pass,
             attachment_count: 1,
-            p_attachments: view,
+            p_attachments: &view.raw,
             width: swapchain.extent.width,
             height: swapchain.extent.height,
             layers: 1,
             ..Default::default()
         };
-        let framebuffer = unsafe {
-            rc.device
-                .create_framebuffer(&create_info, None)
+        framebuffers.push(
+            raii::Framebuffer::new(rc.device.clone(), &create_info)
                 .with_context(trace!(
                     "Unable to create framebuffer for swapchain image!"
-                ))?
-        };
-        framebuffers.push(framebuffer);
+                ))?,
+        );
     }
     Ok(framebuffers)
 }

@@ -31,7 +31,6 @@ pub enum EndFrameStatus {
 pub struct FramesInFlight {
     frames: Vec<Frame>,
     current_frame_index: usize,
-    current_frame: Frame,
     swapchain_image_index: u32,
 }
 
@@ -46,7 +45,6 @@ impl FramesInFlight {
             );
         }
         Ok(Self {
-            current_frame: frames[0],
             frames,
             current_frame_index: 0,
             swapchain_image_index: 0,
@@ -65,7 +63,7 @@ impl FramesInFlight {
 
     /// Get the command buffer for the frame that is currently in-flight.
     pub fn command_buffer(&self) -> vk::CommandBuffer {
-        self.current_frame.command_buffer
+        self.current_frame().command_buffer
     }
 
     /// The maximum total frames in flight.
@@ -82,13 +80,12 @@ impl FramesInFlight {
         // Update the current frame index
         self.current_frame_index =
             (self.current_frame_index + 1) % self.frames.len();
-        self.current_frame = self.frames[self.current_frame_index];
 
         // Make sure the frame's last command submission has finished
         unsafe {
             rc.device
                 .wait_for_fences(
-                    &[self.current_frame.graphics_commands_finished],
+                    &[*self.current_frame().graphics_commands_finished],
                     true,
                     std::u64::MAX,
                 )
@@ -102,7 +99,7 @@ impl FramesInFlight {
         self.swapchain_image_index = {
             let result = swapchain
                 .acquire_swapchain_image(
-                    self.current_frame.swapchain_image_available,
+                    *self.current_frame().swapchain_image_available,
                 )
                 .with_context(trace!(
                     "Unable to get the next swapchain image!"
@@ -118,11 +115,13 @@ impl FramesInFlight {
         // Reset Frame resources
         unsafe {
             rc.device
-                .reset_fences(&[self.current_frame.graphics_commands_finished])
+                .reset_fences(&[*self
+                    .current_frame()
+                    .graphics_commands_finished])
                 .with_context(trace!("Unable to reset frame graphics fence"))?;
             rc.device
                 .reset_command_pool(
-                    self.current_frame.command_pool,
+                    *self.current_frame().command_pool,
                     vk::CommandPoolResetFlags::empty(),
                 )
                 .with_context(trace!("Unable to reset frame command pool"))?;
@@ -137,7 +136,7 @@ impl FramesInFlight {
             unsafe {
                 rc.device
                     .begin_command_buffer(
-                        self.current_frame.command_buffer,
+                        self.current_frame().command_buffer,
                         &begin_info,
                     )
                     .with_context(trace!(
@@ -147,7 +146,7 @@ impl FramesInFlight {
         }
 
         Ok(BeginFrameStatus::Acquired(
-            self.current_frame.command_buffer,
+            self.current_frame().command_buffer,
         ))
     }
 
@@ -160,7 +159,7 @@ impl FramesInFlight {
         // end the command buffer
         unsafe {
             rc.device
-                .end_command_buffer(self.current_frame.command_buffer)
+                .end_command_buffer(self.current_frame().command_buffer)
                 .with_context(trace!(
                     "Unable to end the frame's command buffer!"
                 ))?
@@ -172,15 +171,17 @@ impl FramesInFlight {
             let submit = vk::SubmitInfo {
                 wait_semaphore_count: 1,
                 p_wait_semaphores: &self
-                    .current_frame
-                    .swapchain_image_available,
+                    .current_frame()
+                    .swapchain_image_available
+                    .raw,
                 p_wait_dst_stage_mask: &wait_stage,
                 command_buffer_count: 1,
-                p_command_buffers: &self.current_frame.command_buffer,
+                p_command_buffers: &self.current_frame().command_buffer,
                 signal_semaphore_count: 1,
                 p_signal_semaphores: &self
-                    .current_frame
-                    .graphics_submission_finished,
+                    .current_frame()
+                    .graphics_submission_finished
+                    .raw,
                 ..Default::default()
             };
             unsafe {
@@ -188,7 +189,7 @@ impl FramesInFlight {
                     .queue_submit(
                         rc.graphics_queue,
                         &[submit],
-                        self.current_frame.graphics_commands_finished,
+                        self.current_frame().graphics_commands_finished.raw,
                     )
                     .with_context(trace!(
                         "Unable to submit graphics commands for frame!"
@@ -201,7 +202,7 @@ impl FramesInFlight {
             let result = swapchain
                 .present_swapchain_image(
                     rc,
-                    self.current_frame.graphics_submission_finished,
+                    self.current_frame().graphics_submission_finished.raw,
                     self.swapchain_image_index,
                 )
                 .with_context(trace!(
@@ -222,7 +223,7 @@ impl FramesInFlight {
         let fences: Vec<vk::Fence> = self
             .frames
             .iter()
-            .map(|frame| frame.graphics_commands_finished)
+            .map(|frame| *frame.graphics_commands_finished)
             .collect();
         unsafe {
             rc.device
@@ -234,19 +235,7 @@ impl FramesInFlight {
         Ok(())
     }
 
-    /// Destroy all frame resources.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - The caller must entule that no frame resources are being used when
-    ///   they are destroyed (either by waiting for all frames or by waiting for
-    ///   idle).
-    pub unsafe fn destroy(&mut self, rc: &RenderContext) {
-        for mut frame in self.frames.drain(0..) {
-            unsafe {
-                frame.destroy(rc);
-            }
-        }
+    fn current_frame(&self) -> &Frame {
+        &self.frames[self.current_frame_index]
     }
 }

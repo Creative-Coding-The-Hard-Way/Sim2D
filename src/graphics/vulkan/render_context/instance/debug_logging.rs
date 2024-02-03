@@ -1,11 +1,9 @@
 use {
+    crate::graphics::vulkan::raii,
     anyhow::Result,
-    ash::{
-        extensions::ext::DebugUtils,
-        vk::{
-            self, DebugUtilsMessageSeverityFlagsEXT,
-            DebugUtilsMessageTypeFlagsEXT, DebugUtilsMessengerCallbackDataEXT,
-        },
+    ash::vk::{
+        self, DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT,
+        DebugUtilsMessengerCallbackDataEXT,
     },
     std::{borrow::Cow, ffi::CStr},
 };
@@ -14,30 +12,24 @@ use {
 ///
 /// This is a no-op if the debug_asserts are not enabled.
 pub(super) fn setup_debug_logging(
-    entry: &ash::Entry,
-    ash: &ash::Instance,
-) -> Result<Option<(DebugUtils, vk::DebugUtilsMessengerEXT)>> {
+    instance: raii::InstanceArc,
+) -> Result<Option<raii::DebugUtilsArc>> {
     if !cfg!(debug_assertions) {
         return Ok(None);
     }
 
-    let debug_utils = DebugUtils::new(entry, ash);
-    let debug_messenger = unsafe {
-        let create_info = vk::DebugUtilsMessengerCreateInfoEXT {
-            message_severity: vk::DebugUtilsMessageSeverityFlagsEXT::VERBOSE
-                | vk::DebugUtilsMessageSeverityFlagsEXT::INFO
-                | vk::DebugUtilsMessageSeverityFlagsEXT::WARNING
-                | vk::DebugUtilsMessageSeverityFlagsEXT::ERROR,
-            message_type: vk::DebugUtilsMessageTypeFlagsEXT::GENERAL
-                | vk::DebugUtilsMessageTypeFlagsEXT::VALIDATION
-                | vk::DebugUtilsMessageTypeFlagsEXT::PERFORMANCE,
-            pfn_user_callback: Some(debug_callback),
-            ..Default::default()
-        };
-        debug_utils.create_debug_utils_messenger(&create_info, None)?
+    let create_info = vk::DebugUtilsMessengerCreateInfoEXT {
+        message_severity: vk::DebugUtilsMessageSeverityFlagsEXT::VERBOSE
+            | vk::DebugUtilsMessageSeverityFlagsEXT::INFO
+            | vk::DebugUtilsMessageSeverityFlagsEXT::WARNING
+            | vk::DebugUtilsMessageSeverityFlagsEXT::ERROR,
+        message_type: vk::DebugUtilsMessageTypeFlagsEXT::GENERAL
+            | vk::DebugUtilsMessageTypeFlagsEXT::VALIDATION
+            | vk::DebugUtilsMessageTypeFlagsEXT::PERFORMANCE,
+        pfn_user_callback: Some(debug_callback),
+        ..Default::default()
     };
-
-    Ok(Some((debug_utils, debug_messenger)))
+    Ok(Some(raii::DebugUtils::new(instance, &create_info)?))
 }
 
 unsafe extern "system" fn debug_callback(

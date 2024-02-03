@@ -1,23 +1,33 @@
 use {
-    crate::{graphics::vulkan::render_context::RenderContext, trace},
+    crate::{graphics::vulkan::raii, trace},
     anyhow::{Context, Result},
     ash::vk,
 };
 
 /// A memory allocator which directly allocates memory from the logical device.
+#[derive(Debug, Clone)]
 pub struct DeviceAllocator {
     memory_properties: vk::PhysicalDeviceMemoryProperties,
+    pub physical_device: vk::PhysicalDevice,
+    pub device: raii::DeviceArc,
 }
 
 impl DeviceAllocator {
     /// Create a new allocator instance.
-    pub fn new(rc: &RenderContext) -> Self {
+    pub fn new(
+        device: raii::DeviceArc,
+        physical_device: vk::PhysicalDevice,
+    ) -> Self {
         let memory_properties = unsafe {
-            rc.instance
-                .ash
-                .get_physical_device_memory_properties(rc.physical_device)
+            device
+                .instance
+                .get_physical_device_memory_properties(physical_device)
         };
-        Self { memory_properties }
+        Self {
+            memory_properties,
+            physical_device,
+            device,
+        }
     }
 
     /// Allocate memory based on the provided requirements and properties.
@@ -25,7 +35,6 @@ impl DeviceAllocator {
     /// The caller must free the memory from the device before it is destroyed.
     pub fn allocate_memory(
         &self,
-        rc: &RenderContext,
         memory_requirements: vk::MemoryRequirements,
         property_flags: vk::MemoryPropertyFlags,
         memory_allocate_flags: vk::MemoryAllocateFlags,
@@ -56,9 +65,14 @@ impl DeviceAllocator {
             ..Default::default()
         };
         unsafe {
-            rc.device
+            self.device
                 .allocate_memory(&allocate_info, None)
                 .with_context(trace!("Unable to allocate memory!"))
         }
+    }
+
+    /// Free previously-allocated Vulkan device memory.
+    pub fn free_memory(&self, memory: vk::DeviceMemory) {
+        unsafe { self.device.free_memory(memory, None) }
     }
 }

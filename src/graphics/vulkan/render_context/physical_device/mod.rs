@@ -3,7 +3,7 @@ mod metadata;
 pub use metadata::PhysicalDeviceMetadata;
 use {
     crate::{
-        graphics::vulkan::render_context::{Instance, Surface},
+        graphics::vulkan::{raii, render_context::Instance},
         trace,
     },
     anyhow::{Context, Result},
@@ -16,7 +16,7 @@ use {
 /// extensions, and queues.
 pub(super) fn find_suitable_device(
     instance: &Instance,
-    surface: &Surface,
+    surface: &raii::Surface,
 ) -> Result<(vk::PhysicalDevice, PhysicalDeviceMetadata)> {
     let useable_devices: Vec<(vk::PhysicalDevice, PhysicalDeviceMetadata)> =
         enumerate_devices_with_required_features(instance)
@@ -62,10 +62,10 @@ pub(super) fn find_suitable_device(
             .filter(|(device, metadata)| {
                 let has_surface_formats = unsafe {
                     let formats = surface
-                        .loader
+                        .ext
                         .get_physical_device_surface_formats(
                             *device,
-                            surface.handle,
+                            surface.raw,
                         )
                         .unwrap_or_default();
                     log::trace!(
@@ -77,10 +77,10 @@ pub(super) fn find_suitable_device(
                 };
                 let has_present_modes = unsafe {
                     let modes = surface
-                        .loader
+                        .ext
                         .get_physical_device_surface_present_modes(
                             *device,
-                            surface.handle,
+                            surface.raw,
                         )
                         .unwrap_or_default();
                     log::trace!(

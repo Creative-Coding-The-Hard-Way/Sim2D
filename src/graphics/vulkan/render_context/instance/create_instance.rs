@@ -1,14 +1,10 @@
-use {
-    anyhow::{Context, Result},
-    ash::vk,
-};
+use {crate::graphics::vulkan::raii, anyhow::Result, ash::vk};
 
 /// Create an Ash Instance.
 pub(super) unsafe fn create_instance<S>(
-    entry: &ash::Entry,
     app_name: S,
     extensions: &[String],
-) -> Result<ash::Instance>
+) -> Result<raii::InstanceArc>
 where
     S: AsRef<str>,
 {
@@ -32,7 +28,5 @@ where
         pp_enabled_extension_names: extension_str_ptrs.as_ptr(),
         ..Default::default()
     };
-    entry
-        .create_instance(&create_info, None)
-        .context("Unable to create the Vulkan instance.")
+    Ok(raii::Instance::new(&create_info)?)
 }

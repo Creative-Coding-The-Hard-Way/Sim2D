@@ -14,7 +14,6 @@ use {
             frames_in_flight::{
                 BeginFrameStatus, EndFrameStatus, FramesInFlight,
             },
-            memory::DeviceAllocator,
             render_context::RenderContext,
             swapchain::Swapchain,
         },
@@ -38,8 +37,8 @@ pub struct Triangles {
     swapchain_needs_rebuild: bool,
     framebuffer_size: (u32, u32),
 
-    frames_in_flight: FramesInFlight,
     vertices: StreamableVerticies,
+    frames_in_flight: FramesInFlight,
 }
 
 impl Triangles {
@@ -55,13 +54,11 @@ impl Triangles {
             .with_context(trace!("Unable to create the graphics pipeline!"))?;
         let frames_in_flight = FramesInFlight::new(&rc, 2)
             .with_context(trace!("Unable to create frames in flight!"))?;
-        let allocator = DeviceAllocator::new(&rc);
-        let mut vertices = StreamableVerticies::new(
-            &rc,
-            &allocator,
-            frames_in_flight.count() + 1,
-        )
-        .with_context(trace!("Unable to create streamable vertices!"))?;
+        let mut vertices =
+            StreamableVerticies::new(&rc, frames_in_flight.count() + 1)
+                .with_context(trace!(
+                    "Unable to create streamable vertices!"
+                ))?;
 
         unsafe {
             let mut vertex_buffer = vertices.try_get_writable_buffer().unwrap();
@@ -93,10 +90,6 @@ impl Triangles {
     /// - The swapchain and dependent resources must not be in use when they are
     ///   rebuilt.
     pub unsafe fn rebuild_swapchain(&mut self) -> Result<()> {
-        // destroy swapchain dependent resources
-        self.color_pass.destroy(&self.rc);
-        self.pipeline.destroy(&self.rc);
-
         // rebuild the swapchain
         self.swapchain
             .rebuild_swapchain(&self.rc, self.framebuffer_size)
@@ -150,9 +143,10 @@ impl Triangles {
                 },
             };
             let render_pass_begin = vk::RenderPassBeginInfo {
-                render_pass: self.color_pass.render_pass,
+                render_pass: self.color_pass.render_pass.raw,
                 framebuffer: self.color_pass.framebuffers
-                    [self.frames_in_flight.swapchain_image_index()],
+                    [self.frames_in_flight.swapchain_image_index()]
+                .raw,
                 render_area: vk::Rect2D {
                     offset: vk::Offset2D::default(),
                     extent: self.swapchain.extent,
@@ -204,7 +198,7 @@ impl Triangles {
                 self.rc.device.cmd_bind_pipeline(
                     command_buffer,
                     vk::PipelineBindPoint::GRAPHICS,
-                    self.pipeline.handle,
+                    self.pipeline.pipeline.raw,
                 );
             }
         }
@@ -226,7 +220,7 @@ impl Triangles {
                 );
                 self.rc.device.cmd_push_constants(
                     command_buffer,
-                    self.pipeline.pipeline_layout,
+                    self.pipeline.pipeline_layout.raw,
                     vk::ShaderStageFlags::VERTEX,
                     0,
                     constants_ptr,
@@ -265,10 +259,7 @@ impl Triangles {
             self.rc.device.device_wait_idle()?;
 
             //
-            self.frames_in_flight.destroy(&self.rc);
-            self.color_pass.destroy(&self.rc);
-            self.swapchain.destroy(&self.rc);
-            self.pipeline.destroy(&self.rc);
+            self.vertices.destroy(&self.rc);
         }
         Ok(())
     }
