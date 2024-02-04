@@ -3,7 +3,10 @@ use {
     sim2d::{
         application::{glfw_application_main, GLFWApplication},
         graphics::{
-            renderer::triangles::{Triangles, Vertex, VertexBuffer},
+            renderer::{
+                triangles::{Triangles, Vertex, VertexBuffer},
+                RenderEvents,
+            },
             vulkan::{
                 raii,
                 render_context::{Instance, RenderContext},
@@ -13,7 +16,7 @@ use {
     std::{
         sync::{
             atomic::{AtomicBool, Ordering},
-            mpsc::{Receiver, SyncSender},
+            mpsc::{Receiver, Sender, SyncSender},
             Arc,
         },
         thread::JoinHandle,
@@ -26,6 +29,7 @@ struct MyApp {
     render_thread_running: Arc<AtomicBool>,
     writable_vertex_rcv: Receiver<VertexBuffer>,
     publish_vertices_send: SyncSender<VertexBuffer>,
+    render_events_send: Sender<RenderEvents>,
     start_time: Instant,
 }
 
@@ -47,11 +51,18 @@ impl GLFWApplication for MyApp {
         let rc = RenderContext::new(instance, surface)?;
 
         let render_thread_running = Arc::new(AtomicBool::new(true));
-        let (render_thread_handle, writable_vertex_rcv, publish_vertices_send) = {
+        let (
+            render_thread_handle,
+            writable_vertex_rcv,
+            publish_vertices_send,
+            render_events_send,
+        ) = {
             let (writable_vertex_send, writable_vertex_rcv) =
                 std::sync::mpsc::channel::<VertexBuffer>();
             let (publish_vertices_send, publish_vertices_rcv) =
                 std::sync::mpsc::sync_channel::<VertexBuffer>(1);
+            let (render_events_send, render_events_rcv) =
+                std::sync::mpsc::channel::<RenderEvents>();
 
             let running = render_thread_running.clone();
             let rc2 = rc.clone();
@@ -74,14 +85,21 @@ impl GLFWApplication for MyApp {
                             triangles.publish_update(vertices);
                         }
 
+                        if let Ok(RenderEvents::FramebufferResized(w, h)) =
+                            render_events_rcv.try_recv()
+                        {
+                            triangles.rebuild_swapchain((w, h))?
+                        }
+
                         triangles.draw()?;
                     }
 
-                    triangles.destroy()?;
+                    triangles.shut_down()?;
                     Ok(())
                 }),
                 writable_vertex_rcv,
                 publish_vertices_send,
+                render_events_send,
             )
         };
 
@@ -90,13 +108,19 @@ impl GLFWApplication for MyApp {
             render_thread_running,
             writable_vertex_rcv,
             publish_vertices_send,
+            render_events_send,
             start_time: Instant::now(),
         })
     }
 
-    fn handle_event(&mut self, _event: &glfw::WindowEvent) -> Result<()> {
-        //if let &glfw::WindowEvent::FramebufferSize(width, height) = event {
-        //}
+    fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
+        if let &glfw::WindowEvent::FramebufferSize(width, height) = event {
+            self.render_events_send
+                .send(RenderEvents::FramebufferResized(
+                    width as u32,
+                    height as u32,
+                ))?;
+        }
         Ok(())
     }
 

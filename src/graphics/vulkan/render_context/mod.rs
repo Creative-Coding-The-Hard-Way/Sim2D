@@ -5,7 +5,10 @@ mod queue_families;
 
 use {
     crate::{
-        graphics::vulkan::{memory::DeviceAllocator, raii},
+        graphics::vulkan::{
+            memory::{create_system_allocator, SharedAllocator},
+            raii,
+        },
         trace,
     },
     anyhow::Result,
@@ -32,7 +35,7 @@ pub struct RenderContext {
     pub present_queue_index: u32,
     pub device: raii::DeviceArc,
     pub instance: Instance,
-    pub allocator: DeviceAllocator,
+    pub allocator: SharedAllocator,
 }
 
 impl RenderContext {
@@ -63,7 +66,8 @@ impl RenderContext {
         .with_context(trace!("Unable to create the logical device!"))?;
         let (graphics_queue, present_queue) =
             queue_families.get_queues_from_device(&device);
-        let allocator = DeviceAllocator::new(device.clone(), physical_device);
+        let allocator =
+            create_system_allocator(device.clone(), physical_device);
         Ok(Self {
             surface,
             instance,

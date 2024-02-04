@@ -83,17 +83,20 @@ impl Triangles {
     }
 
     /// Rebuild the swapchain and dependent resources
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - The swapchain and dependent resources must not be in use when they are
-    ///   rebuilt.
-    pub unsafe fn rebuild_swapchain(&mut self) -> Result<()> {
+    pub fn rebuild_swapchain(
+        &mut self,
+        framebuffer_size: (u32, u32),
+    ) -> Result<()> {
+        // finish all frames in flight before rebuilding
+        self.frames_in_flight.wait_for_all_frames(&self.rc)?;
+
         // rebuild the swapchain
-        self.swapchain
-            .rebuild_swapchain(&self.rc, self.framebuffer_size)
-            .with_context(trace!("Unable to resize the swapchain!"))?;
+        unsafe {
+            self.framebuffer_size = framebuffer_size;
+            self.swapchain
+                .rebuild_swapchain(&self.rc, self.framebuffer_size)
+                .with_context(trace!("Unable to resize the swapchain!"))?
+        };
 
         // Rebuild swapchain-dependent resources
         self.color_pass = ColorPass::new(&self.rc, &self.swapchain)
@@ -103,6 +106,8 @@ impl Triangles {
                 .with_context(trace!(
                     "Unable to rebuild the graphics pipeline!"
                 ))?;
+
+        self.swapchain_needs_rebuild = false;
         Ok(())
     }
 
@@ -117,11 +122,7 @@ impl Triangles {
     pub fn draw(&mut self) -> Result<()> {
         // Rebuild the Swapchain if needed
         if self.swapchain_needs_rebuild {
-            unsafe {
-                self.frames_in_flight.wait_for_all_frames(&self.rc)?;
-                self.rebuild_swapchain()?
-            };
-            self.swapchain_needs_rebuild = false;
+            self.rebuild_swapchain(self.framebuffer_size)?;
         }
 
         let command_buffer = match self
@@ -252,14 +253,11 @@ impl Triangles {
         Ok(())
     }
 
-    pub fn destroy(&mut self) -> Result<()> {
+    /// Wait for frames to finish and all GPU device operations to complete.
+    pub fn shut_down(&mut self) -> Result<()> {
         unsafe {
-            // stall everything before destroying
             self.frames_in_flight.wait_for_all_frames(&self.rc)?;
             self.rc.device.device_wait_idle()?;
-
-            //
-            self.vertices.destroy(&self.rc);
         }
         Ok(())
     }

@@ -10,7 +10,6 @@ use {
 /// screen.
 pub struct StreamableVerticies {
     sync: NBuffer<VertexBuffer>,
-    owned_vertex_buffers: Vec<VertexBuffer>,
 }
 
 impl StreamableVerticies {
@@ -24,12 +23,9 @@ impl StreamableVerticies {
             vertex_buffers.push(vertex_buffer);
         }
 
-        let sync = NBuffer::new(&vertex_buffers);
+        let sync = NBuffer::new(vertex_buffers);
 
-        Ok(Self {
-            sync,
-            owned_vertex_buffers: vertex_buffers,
-        })
+        Ok(Self { sync })
     }
 
     pub fn try_get_writable_buffer(&mut self) -> Option<VertexBuffer> {
@@ -41,14 +37,7 @@ impl StreamableVerticies {
         self.sync.make_current(vertex_buffer);
     }
 
-    pub fn get_read_buffer(&mut self, frame_index: usize) -> VertexBuffer {
+    pub fn get_read_buffer(&mut self, frame_index: usize) -> &mut VertexBuffer {
         self.sync.get_current(frame_index)
-    }
-
-    pub unsafe fn destroy(&mut self, rc: &RenderContext) {
-        for vertex_buffer in &mut self.owned_vertex_buffers {
-            vertex_buffer.destroy(rc);
-        }
-        self.sync.destroy();
     }
 }

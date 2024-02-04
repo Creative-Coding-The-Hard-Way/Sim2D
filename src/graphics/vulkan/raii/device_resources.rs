@@ -79,6 +79,15 @@ macro_rules! device_resource {
 }
 
 device_resource!(
+    Buffer,
+    BufferArc,
+    vk::Buffer,
+    vk::BufferCreateInfo,
+    create_buffer,
+    destroy_buffer
+);
+
+device_resource!(
     ImageView,
     ImageViewArc,
     vk::ImageView,
@@ -201,5 +210,25 @@ impl Pipeline {
             ))?;
         }
         Ok(pipelines)
+    }
+}
+
+device_resource_struct!(
+    DeviceMemory,
+    DeviceMemoryArc,
+    vk::DeviceMemory,
+    free_memory
+);
+
+impl DeviceMemory {
+    pub fn new(device: raii::DeviceArc, raw: vk::DeviceMemory) -> Arc<Self> {
+        Arc::new(Self::new_single_owner(device, raw))
+    }
+
+    pub fn new_single_owner(
+        device: raii::DeviceArc,
+        raw: vk::DeviceMemory,
+    ) -> Self {
+        Self { raw, device }
     }
 }

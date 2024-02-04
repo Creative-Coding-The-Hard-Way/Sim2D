@@ -1,18 +1,21 @@
 use crate::graphics::vulkan::sync::FrameMask;
 
 /// Represents a resource that is being used by frames in flight.
-#[derive(Clone, Copy)]
-struct UsedByFrames<T: Copy + Clone> {
+struct UsedByFrames<T> {
     resource: T,
     frame_mask: FrameMask,
 }
 
-impl<T: Copy + Clone> UsedByFrames<T> {
+impl<T> UsedByFrames<T> {
     fn new(resource: T) -> Self {
         Self {
             resource,
             frame_mask: FrameMask::empty(),
         }
+    }
+
+    fn release(self) -> T {
+        self.resource
     }
 }
 
@@ -24,13 +27,13 @@ impl<T: Copy + Clone> UsedByFrames<T> {
 /// becomes current and the previously-current resource is marked as "in_use".
 /// When all of the frames using an in_us resource have completed, then it
 /// becomes "free" and can be used as a write target again.
-pub struct NBuffer<T: Copy + Clone> {
+pub struct NBuffer<T> {
     current: UsedByFrames<T>,
     free: Vec<T>,
     in_use: Vec<UsedByFrames<T>>,
 }
 
-impl<Resource: Copy + Clone> NBuffer<Resource> {
+impl<Resource> NBuffer<Resource> {
     /// Manage a collection of resources.
     ///
     /// # Ownership
@@ -42,12 +45,12 @@ impl<Resource: Copy + Clone> NBuffer<Resource> {
     /// The N-Buffer is strictly for managing the bookeeping associated with
     /// preventing resources from being written while in-flight frames still
     /// reference them.
-    pub fn new(resources: &[Resource]) -> Self {
+    pub fn new(mut resources: Vec<Resource>) -> Self {
         assert!(resources.len() >= 2);
 
-        let current = UsedByFrames::new(*resources.first().unwrap());
-        let free = resources[1..].to_vec();
-        let in_use = Vec::with_capacity(resources.len() - 1);
+        let current = UsedByFrames::new(resources.pop().unwrap());
+        let free = resources;
+        let in_use = Vec::with_capacity(free.len());
 
         Self {
             current,
@@ -57,26 +60,33 @@ impl<Resource: Copy + Clone> NBuffer<Resource> {
     }
 
     /// Get the current readable resource for the given frame index.
-    pub fn get_current(&mut self, frame_index: usize) -> Resource {
+    pub fn get_current(&mut self, frame_index: usize) -> &mut Resource {
         self.current.frame_mask.add_frame(frame_index as u32);
 
-        for in_use in &mut self.in_use {
-            in_use.frame_mask.remove_frame(frame_index as u32);
-            if in_use.frame_mask.is_empty() {
-                self.free.push(in_use.resource)
+        {
+            let mut in_use_update = Vec::with_capacity(self.in_use.len());
+            for mut in_use in self.in_use.drain(0..) {
+                in_use.frame_mask.remove_frame(frame_index as u32);
+                if in_use.frame_mask.is_empty() {
+                    self.free.push(in_use.release());
+                } else {
+                    in_use_update.push(in_use);
+                }
             }
+            self.in_use = in_use_update;
         }
-        self.in_use
-            .retain(|used_by_frames| !used_by_frames.frame_mask.is_empty());
 
-        self.current.resource
+        &mut self.current.resource
     }
 
     /// Make the given resource current.
     pub fn make_current(&mut self, resource: Resource) {
-        // Move the current resource into the in_use buffer.
-        self.in_use.push(self.current);
-        self.current = UsedByFrames::new(resource);
+        let old_current = {
+            let mut new_value = UsedByFrames::new(resource);
+            std::mem::swap(&mut self.current, &mut new_value);
+            new_value
+        };
+        self.in_use.push(old_current);
     }
 
     /// Attempt to get a free resource. If all resources are in_use by frames,
@@ -103,27 +113,27 @@ mod test {
     #[test]
     fn create_n_buffered_resources() {
         let resources = (0..3).map(FakeResource).collect::<Vec<_>>();
-        let _n_buffered = NBuffer::new(&resources);
+        let _n_buffered = NBuffer::new(resources);
     }
 
     #[test]
     fn get_current_should_update_the_current_frame_mask() {
         let resources = (0..3).map(FakeResource).collect::<Vec<_>>();
-        let mut n_buffered = NBuffer::new(&resources);
+        let mut n_buffered = NBuffer::new(resources);
 
         let fake_resource = n_buffered.get_current(1);
-        assert_eq!(fake_resource, FakeResource(0));
+        assert_eq!(*fake_resource, FakeResource(2));
         assert!(n_buffered.current.frame_mask.contains(1));
     }
 
     #[test]
     fn make_current_should_make_the_new_resource_current() {
         let resources = (0..3).map(FakeResource).collect::<Vec<_>>();
-        let mut n_buffered = NBuffer::new(&resources);
+        let mut n_buffered = NBuffer::new(resources);
 
-        let initially_current = n_buffered.get_current(1);
         let writable = n_buffered.try_get_free_resource().unwrap();
-        assert_ne!(initially_current, writable);
+        let initially_current = n_buffered.get_current(1);
+        assert_ne!(*initially_current, writable);
 
         n_buffered.make_current(writable);
 
@@ -136,40 +146,19 @@ mod test {
 
     #[test]
     fn get_free_should_return_none_when_all_resources_are_in_use() {
-        let resources = [FakeResource(0), FakeResource(1)];
-        let mut double_buffered = NBuffer::new(&resources);
+        let resources = vec![FakeResource(0), FakeResource(1)];
+        let mut double_buffered = NBuffer::new(resources);
 
         // Frame 0
         {
             let frame0_update =
                 double_buffered.try_get_free_resource().unwrap();
-            assert!(frame0_update == FakeResource(1));
+            assert!(frame0_update == FakeResource(0));
 
             // update frame 0 in some way
             double_buffered.make_current(frame0_update);
             // "draw"
-            assert!(double_buffered.get_current(0) == frame0_update);
-            assert!(double_buffered.in_use.is_empty());
-        }
-
-        // Frame 1
-        {
-            let frame1_update =
-                double_buffered.try_get_free_resource().unwrap();
-            assert!(frame1_update == FakeResource(0));
-
-            // update frame 1 in some way
-            double_buffered.make_current(frame1_update);
-            // "draw"
-            assert!(double_buffered.get_current(1) == frame1_update);
-            assert!(double_buffered.in_use.len() == 1);
-        }
-
-        // Frame 0
-        {
-            assert!(double_buffered.try_get_free_resource().is_none());
-            // "draw"
-            assert!(double_buffered.get_current(0) == FakeResource(0));
+            assert!(*double_buffered.get_current(0) == frame0_update);
             assert!(double_buffered.in_use.is_empty());
         }
 
@@ -182,7 +171,7 @@ mod test {
             // update frame 1 in some way
             double_buffered.make_current(frame1_update);
             // "draw"
-            assert!(double_buffered.get_current(1) == frame1_update);
+            assert!(*double_buffered.get_current(1) == frame1_update);
             assert!(double_buffered.in_use.len() == 1);
         }
 
@@ -190,7 +179,28 @@ mod test {
         {
             assert!(double_buffered.try_get_free_resource().is_none());
             // "draw"
-            assert!(double_buffered.get_current(0) == FakeResource(1));
+            assert!(*double_buffered.get_current(0) == FakeResource(1));
+            assert!(double_buffered.in_use.is_empty());
+        }
+
+        // Frame 1
+        {
+            let frame1_update =
+                double_buffered.try_get_free_resource().unwrap();
+            assert!(frame1_update == FakeResource(0));
+
+            // update frame 1 in some way
+            double_buffered.make_current(frame1_update);
+            // "draw"
+            assert!(*double_buffered.get_current(1) == frame1_update);
+            assert!(double_buffered.in_use.len() == 1);
+        }
+
+        // Frame 0
+        {
+            assert!(double_buffered.try_get_free_resource().is_none());
+            // "draw"
+            assert!(*double_buffered.get_current(0) == FakeResource(0));
             assert!(double_buffered.in_use.is_empty());
         }
     }

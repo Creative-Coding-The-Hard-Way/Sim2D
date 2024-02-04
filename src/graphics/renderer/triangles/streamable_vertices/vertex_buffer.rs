@@ -1,25 +1,15 @@
 use {
     super::super::Vertex,
-    crate::graphics::vulkan::render_context::RenderContext, anyhow::Result,
+    crate::graphics::vulkan::{memory, raii, render_context::RenderContext},
+    anyhow::Result,
     ash::vk,
 };
 
-#[derive(Copy, Clone)]
 pub struct VertexBuffer {
-    pub vertex_buffer: vk::Buffer,
     pub device_buffer_addr: vk::DeviceAddress,
-    pub memory: vk::DeviceMemory,
-    mapped_ptr: *mut std::ffi::c_void,
+    pub vertex_buffer: raii::BufferArc,
+    pub memory: memory::OwnedBlock,
 }
-
-/// # Safety
-///
-/// Safe because:
-/// - The VertexBuffer includes a mapped pointer to the underlying device
-///   memory. It is okay to send the pointer to other threads, but the
-///   application must still synchronize access to the underlying GPU resources.
-unsafe impl Send for VertexBuffer {}
-unsafe impl Sync for VertexBuffer {}
 
 impl VertexBuffer {
     pub fn new(rc: &RenderContext) -> Result<Self> {
@@ -35,13 +25,13 @@ impl VertexBuffer {
                 p_queue_family_indices: &rc.graphics_queue_index,
                 ..Default::default()
             };
-            unsafe { rc.device.create_buffer(&create_info, None)? }
+            raii::Buffer::new(rc.device.clone(), &create_info)?
         };
-        let memory = {
+        let block = {
             let requirements = unsafe {
-                rc.device.get_buffer_memory_requirements(vertex_buffer)
+                rc.device.get_buffer_memory_requirements(vertex_buffer.raw)
             };
-            rc.allocator.allocate_memory(
+            rc.allocator.allocate(
                 requirements,
                 vk::MemoryPropertyFlags::HOST_VISIBLE
                     | vk::MemoryPropertyFlags::HOST_COHERENT,
@@ -49,19 +39,15 @@ impl VertexBuffer {
             )?
         };
         unsafe {
-            rc.device.bind_buffer_memory(vertex_buffer, memory, 0)?;
-        }
-        let mapped_ptr = unsafe {
-            rc.device.map_memory(
-                memory,
+            rc.device.bind_buffer_memory(
+                vertex_buffer.raw,
+                block.memory.raw,
                 0,
-                size_in_bytes,
-                vk::MemoryMapFlags::empty(),
-            )?
-        };
+            )?;
+        }
         let device_buffer_addr = {
             let info = vk::BufferDeviceAddressInfo {
-                buffer: vertex_buffer,
+                buffer: vertex_buffer.raw,
                 ..Default::default()
             };
             unsafe { rc.device.get_buffer_device_address(&info) }
@@ -69,8 +55,7 @@ impl VertexBuffer {
         Ok(Self {
             vertex_buffer,
             device_buffer_addr,
-            memory,
-            mapped_ptr,
+            memory: block,
         })
     }
 
@@ -82,23 +67,10 @@ impl VertexBuffer {
     /// - It is not safe to write vertex data while the buffer is in use by the
     ///   GPU.
     pub unsafe fn write_vertex_data(&mut self, vertices: &[Vertex; 3]) {
-        let slice =
-            std::slice::from_raw_parts_mut(self.mapped_ptr as *mut Vertex, 3);
+        let slice = std::slice::from_raw_parts_mut(
+            self.memory.mapped_ptr as *mut Vertex,
+            3,
+        );
         slice.copy_from_slice(vertices);
-    }
-
-    /// Destroy the vertex buffer and backing memory.
-    ///
-    /// # Safety
-    ///
-    /// Unsafe because:
-    /// - The VertexBuffer must not be used after calling this method.
-    /// - This method must only be called once, even if the vertex buffer has
-    ///   been cloned or copied many times.
-    /// - It is unsafe to call this method while the GPU is still using the
-    ///   vertex buffer.
-    pub unsafe fn destroy(&mut self, rc: &RenderContext) {
-        rc.device.destroy_buffer(self.vertex_buffer, None);
-        rc.allocator.free_memory(self.memory);
     }
 }
