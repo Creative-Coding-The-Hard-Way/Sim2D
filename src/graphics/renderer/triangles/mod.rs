@@ -23,7 +23,10 @@ use {
     ash::vk,
 };
 
-pub use self::{streamable_vertices::VertexBuffer, vertex::Vertex};
+pub use self::{
+    streamable_vertices::{VertexBuffer, WritableVertices},
+    vertex::Vertex,
+};
 
 pub type IsRunning = std::sync::Arc<std::sync::atomic::AtomicBool>;
 
@@ -45,7 +48,7 @@ impl Triangles {
     pub fn new(
         rc: RenderContext,
         framebuffer_size: (u32, u32),
-    ) -> Result<Self> {
+    ) -> Result<(Self, WritableVertices)> {
         let swapchain = Swapchain::new(&rc, framebuffer_size)
             .with_context(trace!("Unable to create the swapchain!"))?;
         let color_pass = ColorPass::new(&rc, &swapchain)
@@ -54,23 +57,13 @@ impl Triangles {
             .with_context(trace!("Unable to create the graphics pipeline!"))?;
         let frames_in_flight = FramesInFlight::new(&rc, 2)
             .with_context(trace!("Unable to create frames in flight!"))?;
-        let mut vertices =
+        let (vertices, writable) =
             StreamableVerticies::new(&rc, frames_in_flight.count() + 1)
                 .with_context(trace!(
                     "Unable to create streamable vertices!"
                 ))?;
 
-        unsafe {
-            let mut vertex_buffer = vertices.try_get_writable_buffer().unwrap();
-            vertex_buffer.write_vertex_data(&[
-                Vertex::new(0.0, 0.0, 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(0.0, 0.0, 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(0.0, 0.0, 1.0, 0.0, 0.0, 1.0),
-            ]);
-            vertices.publish_update(vertex_buffer);
-        }
-
-        Ok(Self {
+        let triangles = Self {
             rc,
             swapchain,
             color_pass,
@@ -79,7 +72,8 @@ impl Triangles {
             framebuffer_size,
             frames_in_flight,
             vertices,
-        })
+        };
+        Ok((triangles, writable))
     }
 
     /// Rebuild the swapchain and dependent resources
@@ -109,14 +103,6 @@ impl Triangles {
 
         self.swapchain_needs_rebuild = false;
         Ok(())
-    }
-
-    pub fn try_get_writable_buffer(&mut self) -> Option<VertexBuffer> {
-        self.vertices.try_get_writable_buffer()
-    }
-
-    pub fn publish_update(&mut self, vertices: VertexBuffer) {
-        self.vertices.publish_update(vertices);
     }
 
     pub fn draw(&mut self) -> Result<()> {
@@ -204,15 +190,13 @@ impl Triangles {
             }
         }
 
+        let vertex_buffer = self
+            .vertices
+            .get_read_buffer(self.frames_in_flight.current_frame_index())?;
         // Set push constants
         {
             let constants = PushConstants {
-                vertex_buffer_addr: self
-                    .vertices
-                    .get_read_buffer(
-                        self.frames_in_flight.current_frame_index(),
-                    )
-                    .device_buffer_addr,
+                vertex_buffer_addr: vertex_buffer.buffer_address,
             };
             unsafe {
                 let constants_ptr = std::slice::from_raw_parts(
@@ -232,7 +216,13 @@ impl Triangles {
         // Draw!
         {
             unsafe {
-                self.rc.device.cmd_draw(command_buffer, 3, 1, 0, 0);
+                self.rc.device.cmd_draw(
+                    command_buffer,
+                    vertex_buffer.vertex_count,
+                    1,
+                    0,
+                    0,
+                );
             }
         }
 

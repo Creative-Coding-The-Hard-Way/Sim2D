@@ -1,23 +1,4 @@
-use crate::graphics::vulkan::sync::FrameMask;
-
-/// Represents a resource that is being used by frames in flight.
-struct UsedByFrames<T> {
-    resource: T,
-    frame_mask: FrameMask,
-}
-
-impl<T> UsedByFrames<T> {
-    fn new(resource: T) -> Self {
-        Self {
-            resource,
-            frame_mask: FrameMask::empty(),
-        }
-    }
-
-    fn release(self) -> T {
-        self.resource
-    }
-}
+use crate::graphics::vulkan::sync::UsedByFrames;
 
 /// An NBuffer is a generalization of the concept of double buffering and
 /// tripple buffering.

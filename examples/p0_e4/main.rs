@@ -1,10 +1,10 @@
 use {
-    anyhow::{Context, Result},
+    anyhow::Result,
     sim2d::{
         application::{glfw_application_main, GLFWApplication},
         graphics::{
             renderer::{
-                triangles::{Triangles, Vertex, VertexBuffer},
+                triangles::{Triangles, Vertex, WritableVertices},
                 RenderEvents,
             },
             vulkan::{
@@ -16,7 +16,7 @@ use {
     std::{
         sync::{
             atomic::{AtomicBool, Ordering},
-            mpsc::{Receiver, Sender, SyncSender},
+            mpsc::Sender,
             Arc,
         },
         thread::JoinHandle,
@@ -25,10 +25,10 @@ use {
 };
 
 struct MyApp {
+    rc: RenderContext,
     render_thread_handle: Option<JoinHandle<Result<()>>>,
     render_thread_running: Arc<AtomicBool>,
-    writable_vertex_rcv: Receiver<VertexBuffer>,
-    publish_vertices_send: SyncSender<VertexBuffer>,
+    writable_vertices: WritableVertices,
     render_events_send: Sender<RenderEvents>,
     start_time: Instant,
 }
@@ -51,40 +51,19 @@ impl GLFWApplication for MyApp {
         let rc = RenderContext::new(instance, surface)?;
 
         let render_thread_running = Arc::new(AtomicBool::new(true));
-        let (
-            render_thread_handle,
-            writable_vertex_rcv,
-            publish_vertices_send,
-            render_events_send,
-        ) = {
-            let (writable_vertex_send, writable_vertex_rcv) =
-                std::sync::mpsc::channel::<VertexBuffer>();
-            let (publish_vertices_send, publish_vertices_rcv) =
-                std::sync::mpsc::sync_channel::<VertexBuffer>(1);
+        let (render_thread_handle, writable_vertices, render_events_send) = {
             let (render_events_send, render_events_rcv) =
                 std::sync::mpsc::channel::<RenderEvents>();
 
             let running = render_thread_running.clone();
             let rc2 = rc.clone();
             let (w, h) = window.get_framebuffer_size();
+            let (mut triangles, writable_vertices) =
+                Triangles::new(rc2, (w as u32, h as u32))?;
 
             (
                 std::thread::spawn(move || -> Result<()> {
-                    let mut triangles =
-                        Triangles::new(rc2, (w as u32, h as u32))?;
-
                     while running.load(Ordering::Relaxed) {
-                        if let Some(vertices) =
-                            triangles.try_get_writable_buffer()
-                        {
-                            // a vertex buffer is available for writing
-                            writable_vertex_send.send(vertices)?;
-                        }
-
-                        if let Ok(vertices) = publish_vertices_rcv.try_recv() {
-                            triangles.publish_update(vertices);
-                        }
-
                         if let Ok(RenderEvents::FramebufferResized(w, h)) =
                             render_events_rcv.try_recv()
                         {
@@ -97,17 +76,16 @@ impl GLFWApplication for MyApp {
                     triangles.shut_down()?;
                     Ok(())
                 }),
-                writable_vertex_rcv,
-                publish_vertices_send,
+                writable_vertices,
                 render_events_send,
             )
         };
 
         Ok(MyApp {
+            rc,
             render_thread_handle: Some(render_thread_handle),
             render_thread_running,
-            writable_vertex_rcv,
-            publish_vertices_send,
+            writable_vertices,
             render_events_send,
             start_time: Instant::now(),
         })
@@ -125,27 +103,32 @@ impl GLFWApplication for MyApp {
     }
 
     fn update(&mut self) -> Result<()> {
-        let mut writable = self
-            .writable_vertex_rcv
-            .recv()
-            .context("Unable to get writable vertex buffer!")?;
+        let mut writable = self.writable_vertices.wait_for_vertex_buffer()?;
 
         let t = (Instant::now() - self.start_time).as_secs_f32();
         let a0 = t * std::f32::consts::TAU / 10.0;
         let a1 = a0 + std::f32::consts::TAU / 3.0;
         let a2 = a1 + std::f32::consts::TAU / 3.0;
         let r = 1.0;
-        unsafe {
-            writable.write_vertex_data(&[
+        writable.write_vertex_data(
+            &self.rc,
+            &[
+                // 1
                 Vertex::new(r * a0.cos(), r * a0.sin(), 1.0, 0.0, 0.0, 1.0),
                 Vertex::new(r * a1.cos(), r * a1.sin(), 1.0, 0.0, 0.0, 1.0),
                 Vertex::new(r * a2.cos(), r * a2.sin(), 1.0, 0.0, 0.0, 1.0),
-            ]);
-        }
+                // 2
+                Vertex::new(r * a0.cos(), r * a0.sin(), 1.0, 0.0, 0.0, 1.0),
+                Vertex::new(r * a1.cos(), r * a1.sin(), 1.0, 0.0, 0.0, 1.0),
+                Vertex::new(r * a2.cos(), r * a2.sin(), 1.0, 0.0, 0.0, 1.0),
+                // 3
+                Vertex::new(r * a0.cos(), r * a0.sin(), 1.0, 0.0, 0.0, 1.0),
+                Vertex::new(r * a1.cos(), r * a1.sin(), 1.0, 0.0, 0.0, 1.0),
+                Vertex::new(r * a2.cos(), r * a2.sin(), 1.0, 0.0, 0.0, 1.0),
+            ],
+        )?;
 
-        self.publish_vertices_send
-            .send(writable)
-            .context("Error while publishing vertex updates!")?;
+        self.writable_vertices.publish_update(writable)?;
 
         Ok(())
     }

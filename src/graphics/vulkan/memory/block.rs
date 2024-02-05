@@ -9,6 +9,7 @@ pub struct Block {
     /// always points to the beginning of the block.
     pub mapped_ptr: *mut std::ffi::c_void,
     pub memory: raii::DeviceMemoryArc,
+    pub size_in_bytes: u64,
 }
 
 unsafe impl Send for Block {}

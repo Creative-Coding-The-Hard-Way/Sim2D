@@ -14,6 +14,10 @@ pub use self::{
     shared_allocator::{OwnedBlock, SharedAllocator},
 };
 
+pub const KB: u64 = 1024;
+pub const MB: u64 = KB * 1024;
+pub const GB: u64 = MB * 1024;
+
 /// Create the system allocator which behaves reasonably well for this
 /// application.
 pub fn create_system_allocator(

@@ -48,10 +48,11 @@ impl Allocator for DeviceAllocator {
         Ok(Block {
             mapped_ptr,
             memory: device_memory,
+            size_in_bytes: memory_requirements.size,
         })
     }
 
-    fn free(&mut self, block: &Block) {
+    fn free(&mut self, _block: &Block) {
         // no-op! When the block is dropped, the backing memory is freed
     }
 }

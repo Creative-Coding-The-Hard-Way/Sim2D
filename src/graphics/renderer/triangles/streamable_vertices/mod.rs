@@ -2,18 +2,41 @@ mod vertex_buffer;
 
 pub use vertex_buffer::VertexBuffer;
 use {
-    crate::graphics::vulkan::{render_context::RenderContext, sync::NBuffer},
+    crate::{
+        graphics::vulkan::{
+            render_context::RenderContext,
+            sync::{AsyncNBuffer, AsyncNBufferClient},
+        },
+        trace,
+    },
     anyhow::{Context, Result},
 };
+
+pub struct WritableVertices {
+    client: AsyncNBufferClient<VertexBuffer>,
+}
+
+impl WritableVertices {
+    pub fn wait_for_vertex_buffer(&self) -> Result<VertexBuffer> {
+        self.client.wait_for_free_resource()
+    }
+
+    pub fn publish_update(&self, vertex_buffer: VertexBuffer) -> Result<()> {
+        self.client.make_resource_current(vertex_buffer)
+    }
+}
 
 /// Maintains a queue of Vertex Buffers that can be used to present to the
 /// screen.
 pub struct StreamableVerticies {
-    sync: NBuffer<VertexBuffer>,
+    sync: AsyncNBuffer<VertexBuffer>,
 }
 
 impl StreamableVerticies {
-    pub fn new(rc: &RenderContext, count: usize) -> Result<Self> {
+    pub fn new(
+        rc: &RenderContext,
+        count: usize,
+    ) -> Result<(Self, WritableVertices)> {
         assert!(count >= 2, "Must be at least double buffered!");
 
         let mut vertex_buffers = Vec::with_capacity(count);
@@ -23,21 +46,20 @@ impl StreamableVerticies {
             vertex_buffers.push(vertex_buffer);
         }
 
-        let sync = NBuffer::new(vertex_buffers);
+        let (sync, client) = AsyncNBuffer::new(vertex_buffers)?;
 
-        Ok(Self { sync })
+        let streamable = Self { sync };
+        let client = WritableVertices { client };
+
+        Ok((streamable, client))
     }
 
-    pub fn try_get_writable_buffer(&mut self) -> Option<VertexBuffer> {
-        self.sync.try_get_free_resource()
-    }
-
-    /// This must be a buffer previously given by try_get_writable_buffer
-    pub fn publish_update(&mut self, vertex_buffer: VertexBuffer) {
-        self.sync.make_current(vertex_buffer);
-    }
-
-    pub fn get_read_buffer(&mut self, frame_index: usize) -> &mut VertexBuffer {
-        self.sync.get_current(frame_index)
+    pub fn get_read_buffer(
+        &mut self,
+        frame_index: usize,
+    ) -> Result<&mut VertexBuffer> {
+        self.sync.get_current(frame_index).with_context(trace!(
+            "Unable to get readable buffer for the current frame!"
+        ))
     }
 }
