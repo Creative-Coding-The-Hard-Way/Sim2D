@@ -133,7 +133,7 @@ impl GLFWApplication for MyApp {
         Ok(())
     }
 
-    fn destroy(&mut self) -> Result<()> {
+    fn shut_down(&mut self) -> Result<()> {
         self.render_thread_running.store(false, Ordering::Relaxed);
         self.render_thread_handle.take().unwrap().join().unwrap()?;
         Ok(())

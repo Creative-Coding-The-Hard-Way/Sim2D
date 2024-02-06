@@ -37,10 +37,10 @@ pub trait GLFWApplication {
         Ok(())
     }
 
-    /// Destroy the application.
+    /// Shut down the application.
     ///
     /// This is always called before the application exits.
-    fn destroy(&mut self) -> Result<()> {
+    fn shut_down(&mut self) -> Result<()> {
         Ok(())
     }
 }
@@ -137,7 +137,7 @@ where
     // Join the render thread and exit.
     match render_thread.join().expect("Render thread panicked!") {
         Err((mut app, err)) => {
-            app.destroy().with_context(trace!(
+            app.shut_down().with_context(trace!(
                 "{}\n{}\n{}",
                 "An error occured while destroying the app after another error!",
                 "The original error was:",
@@ -145,6 +145,6 @@ where
             ))?;
             Err(err)
         }
-        Ok(mut app) => app.destroy(),
+        Ok(mut app) => app.shut_down(),
     }
 }
