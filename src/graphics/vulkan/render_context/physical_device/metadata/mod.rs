@@ -1,3 +1,5 @@
+use std::ffi::CStr;
+
 mod support;
 
 use {
@@ -63,14 +65,12 @@ impl PhysicalDeviceMetadata {
     /// Returns a readable copy of the Device Name.
     pub fn device_name(&self) -> String {
         unsafe {
-            String::from_utf8_unchecked(
-                self.physical_device_properties
-                    .device_name
-                    .iter()
-                    .filter(|&c| *c != 0)
-                    .map(|&c| c as u8)
-                    .collect(),
+            CStr::from_ptr(
+                &self.physical_device_properties.device_name as *const i8,
             )
+            .to_str()
+            .unwrap()
+            .to_string()
         }
     }
 
@@ -186,16 +186,11 @@ fn get_supported_physical_device_extensions(
     };
     let names = extension_properties
         .iter()
-        .filter_map(|properties| {
-            String::from_utf8(
-                properties
-                    .extension_name
-                    .iter()
-                    .filter(|&c| *c != 0)
-                    .map(|c| *c as u8)
-                    .collect::<Vec<u8>>(),
-            )
-            .ok()
+        .filter_map(|properties| unsafe {
+            CStr::from_ptr((&properties.extension_name) as *const i8)
+                .to_str()
+                .ok()
+                .map(|str| str.to_string())
         })
         .collect();
     Ok(names)
