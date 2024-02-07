@@ -5,7 +5,7 @@ use {
         graphics::{
             renderer::{
                 triangles::{Triangles, Vertex, WritableVertices},
-                RenderEvents,
+                JoinableRenderer, RenderEvents,
             },
             vulkan::{
                 raii,
@@ -26,10 +26,8 @@ use {
 
 struct MyApp {
     rc: RenderContext,
-    render_thread_handle: Option<JoinHandle<Result<()>>>,
-    render_thread_running: Arc<AtomicBool>,
     writable_vertices: WritableVertices,
-    render_events_send: Sender<RenderEvents>,
+    renderer: JoinableRenderer,
     start_time: Instant,
 }
 
@@ -50,55 +48,18 @@ impl GLFWApplication for MyApp {
             raii::Surface::from_glfw_window(instance.ash.clone(), window)?;
         let rc = RenderContext::new(instance, surface)?;
 
-        let render_thread_running = Arc::new(AtomicBool::new(true));
-        let (render_thread_handle, writable_vertices, render_events_send) = {
-            let (render_events_send, render_events_rcv) =
-                std::sync::mpsc::channel::<RenderEvents>();
-
-            let running = render_thread_running.clone();
-            let rc2 = rc.clone();
-            let (w, h) = window.get_framebuffer_size();
-            let (mut triangles, writable_vertices) =
-                Triangles::new(rc2, (w as u32, h as u32))?;
-
-            (
-                std::thread::spawn(move || -> Result<()> {
-                    while running.load(Ordering::Relaxed) {
-                        if let Ok(RenderEvents::FramebufferResized(w, h)) =
-                            render_events_rcv.try_recv()
-                        {
-                            triangles.rebuild_swapchain((w, h))?
-                        }
-
-                        triangles.draw()?;
-                    }
-
-                    triangles.shut_down()?;
-                    Ok(())
-                }),
-                writable_vertices,
-                render_events_send,
-            )
-        };
+        let (renderer, writable_vertices) =
+            JoinableRenderer::new::<Triangles>(&rc)?;
 
         Ok(MyApp {
             rc,
-            render_thread_handle: Some(render_thread_handle),
-            render_thread_running,
             writable_vertices,
-            render_events_send,
+            renderer,
             start_time: Instant::now(),
         })
     }
 
-    fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
-        if let &glfw::WindowEvent::FramebufferSize(width, height) = event {
-            self.render_events_send
-                .send(RenderEvents::FramebufferResized(
-                    width as u32,
-                    height as u32,
-                ))?;
-        }
+    fn handle_event(&mut self, _event: &glfw::WindowEvent) -> Result<()> {
         Ok(())
     }
 
@@ -134,8 +95,7 @@ impl GLFWApplication for MyApp {
     }
 
     fn shut_down(&mut self) -> Result<()> {
-        self.render_thread_running.store(false, Ordering::Relaxed);
-        self.render_thread_handle.take().unwrap().join().unwrap()?;
+        self.renderer.shut_down()?;
         Ok(())
     }
 }

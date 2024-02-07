@@ -1,7 +1,13 @@
 use {
     crate::{graphics::vulkan::render_context::RenderContext, trace},
     anyhow::{Context, Result},
-    std::{sync::atomic::AtomicBool, thread::JoinHandle},
+    std::{
+        sync::{
+            atomic::{AtomicBool, Ordering},
+            Arc,
+        },
+        thread::JoinHandle,
+    },
 };
 
 pub mod triangles;
@@ -24,17 +30,43 @@ pub trait Renderer {
 }
 
 pub struct JoinableRenderer {
-    thread_handle: JoinHandle<Result<()>>,
-    running: AtomicBool,
+    thread_handle: Option<JoinHandle<Result<()>>>,
+    running: Arc<AtomicBool>,
 }
 
 impl JoinableRenderer {
     pub fn new<R>(rc: &RenderContext) -> Result<(Self, R::ClientApi)>
     where
-        R: Renderer,
+        R: Renderer + Send + 'static,
     {
-        let (renderer, api) = R::new(rc)
+        let (mut renderer, api) = R::new(rc)
             .with_context(trace!("Unable to create the renderer!"))?;
-        todo!()
+
+        let running = Arc::new(AtomicBool::new(true));
+
+        let thread_handle = {
+            let renderer_running = running.clone();
+            std::thread::spawn(move || -> Result<()> {
+                while renderer_running.load(Ordering::Relaxed) {
+                    renderer.draw_frame()?;
+                }
+                renderer.shut_down()?;
+                Ok(())
+            })
+        };
+
+        Ok((
+            Self {
+                thread_handle: Some(thread_handle),
+                running,
+            },
+            api,
+        ))
+    }
+
+    pub fn shut_down(&mut self) -> Result<()> {
+        self.running.store(false, Ordering::Relaxed);
+        self.thread_handle.take().unwrap().join().unwrap()?;
+        Ok(())
     }
 }

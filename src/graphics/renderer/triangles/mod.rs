@@ -9,6 +9,7 @@ use {
         pipeline::{GraphicsPipeline, PushConstants},
         streamable_vertices::StreamableVerticies,
     },
+    super::Renderer,
     crate::{
         graphics::vulkan::{
             frames_in_flight::{
@@ -44,12 +45,14 @@ pub struct Triangles {
     frames_in_flight: FramesInFlight,
 }
 
-impl Triangles {
-    pub fn new(
-        rc: RenderContext,
-        framebuffer_size: (u32, u32),
-    ) -> Result<(Self, WritableVertices)> {
-        let swapchain = Swapchain::new(&rc, framebuffer_size)
+impl Renderer for Triangles {
+    type ClientApi = WritableVertices;
+
+    fn new(rc: &RenderContext) -> Result<(Self, Self::ClientApi)>
+    where
+        Self: Sized,
+    {
+        let swapchain = Swapchain::new(&rc, (1, 1))
             .with_context(trace!("Unable to create the swapchain!"))?;
         let color_pass = ColorPass::new(&rc, &swapchain)
             .with_context(trace!("Unable to create the color pass!"))?;
@@ -64,20 +67,34 @@ impl Triangles {
                 ))?;
 
         let triangles = Self {
-            rc,
+            rc: rc.clone(),
             swapchain,
             color_pass,
             pipeline,
             swapchain_needs_rebuild: false,
-            framebuffer_size,
+            framebuffer_size: (1, 1),
             frames_in_flight,
             vertices,
         };
         Ok((triangles, writable))
     }
 
+    fn draw_frame(&mut self) -> Result<()> {
+        self.draw()
+    }
+
+    fn shut_down(&mut self) -> Result<()> {
+        unsafe {
+            self.frames_in_flight.wait_for_all_frames(&self.rc)?;
+            self.rc.device.device_wait_idle()?;
+        }
+        Ok(())
+    }
+}
+
+impl Triangles {
     /// Rebuild the swapchain and dependent resources
-    pub fn rebuild_swapchain(
+    fn rebuild_swapchain(
         &mut self,
         framebuffer_size: (u32, u32),
     ) -> Result<()> {
@@ -240,15 +257,6 @@ impl Triangles {
             return Ok(());
         }
 
-        Ok(())
-    }
-
-    /// Wait for frames to finish and all GPU device operations to complete.
-    pub fn shut_down(&mut self) -> Result<()> {
-        unsafe {
-            self.frames_in_flight.wait_for_all_frames(&self.rc)?;
-            self.rc.device.device_wait_idle()?;
-        }
         Ok(())
     }
 }
