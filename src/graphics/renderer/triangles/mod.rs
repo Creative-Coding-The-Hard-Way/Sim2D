@@ -117,18 +117,12 @@ impl Renderer for Triangles {
     }
 
     fn draw_frame(&mut self) -> Result<()> {
-        while match self.framebuffer_size_reciever.try_recv() {
-            Ok(framebuffer_size) => {
-                self.framebuffer_size = framebuffer_size;
-                self.swapchain_needs_rebuild = true;
-                true
-            }
-            Err(TryRecvError::Empty) => false,
-            Err(TryRecvError::Disconnected) => {
-                log::error!("Framebuffer size sender disconnected!");
-                false
-            }
-        } {}
+        while let Ok(framebuffer_size) =
+            self.framebuffer_size_reciever.try_recv()
+        {
+            self.framebuffer_size = framebuffer_size;
+            self.swapchain_needs_rebuild = true;
+        }
 
         // Rebuild the Swapchain if needed
         if self.swapchain_needs_rebuild {

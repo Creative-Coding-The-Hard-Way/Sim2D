@@ -26,6 +26,7 @@ struct MyApp {
 impl GLFWApplication for MyApp {
     fn new(window: &mut glfw::Window) -> Result<Self> {
         window.set_title("Example 01");
+        window.set_size(1920, 1080);
 
         let instance = Instance::new(
             "Example 01",
