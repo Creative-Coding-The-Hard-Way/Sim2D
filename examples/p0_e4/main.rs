@@ -4,8 +4,8 @@ use {
         application::{glfw_application_main, GLFWApplication},
         graphics::{
             renderer::{
-                triangles::{Triangles, Vertex, WritableVertices},
-                JoinableRenderer, RenderEvents,
+                triangles::{Triangles, TrianglesApi, Vertex},
+                JoinableRenderer,
             },
             vulkan::{
                 raii,
@@ -13,20 +13,12 @@ use {
             },
         },
     },
-    std::{
-        sync::{
-            atomic::{AtomicBool, Ordering},
-            mpsc::Sender,
-            Arc,
-        },
-        thread::JoinHandle,
-        time::Instant,
-    },
+    std::time::Instant,
 };
 
 struct MyApp {
     rc: RenderContext,
-    writable_vertices: WritableVertices,
+    triangles: TrianglesApi,
     renderer: JoinableRenderer,
     start_time: Instant,
 }
@@ -48,23 +40,25 @@ impl GLFWApplication for MyApp {
             raii::Surface::from_glfw_window(instance.ash.clone(), window)?;
         let rc = RenderContext::new(instance, surface)?;
 
-        let (renderer, writable_vertices) =
-            JoinableRenderer::new::<Triangles>(&rc)?;
+        let (renderer, triangles) = JoinableRenderer::new::<Triangles>(&rc)?;
 
         Ok(MyApp {
             rc,
-            writable_vertices,
+            triangles,
             renderer,
             start_time: Instant::now(),
         })
     }
 
-    fn handle_event(&mut self, _event: &glfw::WindowEvent) -> Result<()> {
+    fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
+        if let glfw::WindowEvent::FramebufferSize(w, h) = event {
+            self.triangles.framebuffer_resized((*w as u32, *h as u32))?;
+        }
         Ok(())
     }
 
     fn update(&mut self) -> Result<()> {
-        let mut writable = self.writable_vertices.wait_for_vertex_buffer()?;
+        let mut writable = self.triangles.wait_for_writable_vertices()?;
 
         let t = (Instant::now() - self.start_time).as_secs_f32();
         let a0 = t * std::f32::consts::TAU / 10.0;
@@ -89,7 +83,7 @@ impl GLFWApplication for MyApp {
             ],
         )?;
 
-        self.writable_vertices.publish_update(writable)?;
+        self.triangles.publish_vertices(writable)?;
 
         Ok(())
     }

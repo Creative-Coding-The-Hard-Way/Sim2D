@@ -98,10 +98,10 @@ impl Swapchain {
                 // Image acquired and not suboptimal
                 Ok(AcquireImageStatus::ImageAcequired(index))
             }
-            Ok((_, true)) => {
+            Ok((index, true)) => {
                 // Image acquired but the swapchain is suboptimal
                 log::warn!("Swapchain is suboptimal! Request a rebuild...");
-                Ok(AcquireImageStatus::NeedsRebuild)
+                Ok(AcquireImageStatus::ImageAcequired(index))
             }
             Err(vk::Result::ERROR_OUT_OF_DATE_KHR) => {
                 Ok(AcquireImageStatus::NeedsRebuild)

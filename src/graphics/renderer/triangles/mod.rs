@@ -1,13 +1,13 @@
 mod color_pass;
 mod pipeline;
-mod streamable_vertices;
 mod vertex;
+mod vertex_buffer;
 
 use {
     self::{
         color_pass::ColorPass,
         pipeline::{GraphicsPipeline, PushConstants},
-        streamable_vertices::StreamableVerticies,
+        vertex_buffer::VertexBuffer,
     },
     super::Renderer,
     crate::{
@@ -17,19 +17,46 @@ use {
             },
             render_context::RenderContext,
             swapchain::Swapchain,
+            sync::{AsyncNBuffer, AsyncNBufferClient},
         },
         trace,
     },
     anyhow::{Context, Result},
     ash::vk,
+    std::sync::mpsc::{Receiver, Sender, TryRecvError},
 };
 
-pub use self::{
-    streamable_vertices::{VertexBuffer, WritableVertices},
-    vertex::Vertex,
-};
+pub use self::{vertex::Vertex, vertex_buffer::WritableVertexBuffer};
 
-pub type IsRunning = std::sync::Arc<std::sync::atomic::AtomicBool>;
+pub struct TrianglesApi {
+    client: AsyncNBufferClient<VertexBuffer>,
+    framebuffer_size_sender: Sender<(u32, u32)>,
+}
+
+impl TrianglesApi {
+    pub fn wait_for_writable_vertices(
+        &mut self,
+    ) -> Result<WritableVertexBuffer> {
+        let vertex_buffer = self.client.wait_for_free_resource()?;
+        Ok(WritableVertexBuffer::new(vertex_buffer))
+    }
+
+    pub fn publish_vertices(
+        &mut self,
+        writable_vertices: WritableVertexBuffer,
+    ) -> Result<()> {
+        self.client
+            .make_resource_current(writable_vertices.release())
+    }
+
+    pub fn framebuffer_resized(
+        &mut self,
+        framebuffer_size: (u32, u32),
+    ) -> Result<()> {
+        self.framebuffer_size_sender.send(framebuffer_size)?;
+        Ok(())
+    }
+}
 
 /// A renderer for streaming colored triangles.
 pub struct Triangles {
@@ -41,12 +68,13 @@ pub struct Triangles {
     swapchain_needs_rebuild: bool,
     framebuffer_size: (u32, u32),
 
-    vertices: StreamableVerticies,
+    framebuffer_size_reciever: Receiver<(u32, u32)>,
+    vertices: AsyncNBuffer<VertexBuffer>,
     frames_in_flight: FramesInFlight,
 }
 
 impl Renderer for Triangles {
-    type ClientApi = WritableVertices;
+    type ClientApi = TrianglesApi;
 
     fn new(rc: &RenderContext) -> Result<(Self, Self::ClientApi)>
     where
@@ -60,27 +88,54 @@ impl Renderer for Triangles {
             .with_context(trace!("Unable to create the graphics pipeline!"))?;
         let frames_in_flight = FramesInFlight::new(&rc, 2)
             .with_context(trace!("Unable to create frames in flight!"))?;
-        let (vertices, writable) =
-            StreamableVerticies::new(&rc, frames_in_flight.count() + 1)
+        let (vertices, vertices_client) =
+            VertexBuffer::create_n_buffered(&rc, frames_in_flight.count() + 1)
                 .with_context(trace!(
                     "Unable to create streamable vertices!"
                 ))?;
 
-        let triangles = Self {
-            rc: rc.clone(),
-            swapchain,
-            color_pass,
-            pipeline,
-            swapchain_needs_rebuild: false,
-            framebuffer_size: (1, 1),
-            frames_in_flight,
-            vertices,
-        };
-        Ok((triangles, writable))
+        let (framebuffer_size_sender, framebuffer_size_reciever) =
+            std::sync::mpsc::channel::<(u32, u32)>();
+
+        Ok((
+            Self {
+                rc: rc.clone(),
+                swapchain,
+                color_pass,
+                pipeline,
+                swapchain_needs_rebuild: false,
+                framebuffer_size: (1, 1),
+                frames_in_flight,
+                framebuffer_size_reciever,
+                vertices,
+            },
+            Self::ClientApi {
+                client: vertices_client,
+                framebuffer_size_sender,
+            },
+        ))
     }
 
     fn draw_frame(&mut self) -> Result<()> {
-        self.draw()
+        while match self.framebuffer_size_reciever.try_recv() {
+            Ok(framebuffer_size) => {
+                self.framebuffer_size = framebuffer_size;
+                self.swapchain_needs_rebuild = true;
+                true
+            }
+            Err(TryRecvError::Empty) => false,
+            Err(TryRecvError::Disconnected) => {
+                log::error!("Framebuffer size sender disconnected!");
+                false
+            }
+        } {}
+
+        // Rebuild the Swapchain if needed
+        if self.swapchain_needs_rebuild {
+            return self.rebuild_swapchain(self.framebuffer_size);
+        }
+
+        self.present_frame()
     }
 
     fn shut_down(&mut self) -> Result<()> {
@@ -122,12 +177,7 @@ impl Triangles {
         Ok(())
     }
 
-    pub fn draw(&mut self) -> Result<()> {
-        // Rebuild the Swapchain if needed
-        if self.swapchain_needs_rebuild {
-            self.rebuild_swapchain(self.framebuffer_size)?;
-        }
-
+    pub fn present_frame(&mut self) -> Result<()> {
         let command_buffer = match self
             .frames_in_flight
             .begin_frame(&self.rc, &self.swapchain)?
@@ -209,7 +259,7 @@ impl Triangles {
 
         let vertex_buffer = self
             .vertices
-            .get_read_buffer(self.frames_in_flight.current_frame_index())?;
+            .get_current(self.frames_in_flight.current_frame_index())?;
         // Set push constants
         {
             let constants = PushConstants {

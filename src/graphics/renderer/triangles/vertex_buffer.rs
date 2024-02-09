@@ -1,6 +1,10 @@
 use {
-    super::super::Vertex,
-    crate::graphics::vulkan::{memory, raii, render_context::RenderContext},
+    super::Vertex,
+    crate::graphics::vulkan::{
+        memory, raii,
+        render_context::RenderContext,
+        sync::{AsyncNBuffer, AsyncNBufferClient},
+    },
     anyhow::Result,
     ash::vk,
 };
@@ -12,8 +16,52 @@ pub struct VertexBuffer {
     pub block: memory::OwnedBlock,
 }
 
+pub struct WritableVertexBuffer(VertexBuffer);
+
+impl WritableVertexBuffer {
+    pub(super) fn new(vertex_buffer: VertexBuffer) -> Self {
+        Self(vertex_buffer)
+    }
+
+    pub(super) fn release(self) -> VertexBuffer {
+        self.0
+    }
+
+    /// Write vertex data into the buffer.
+    pub fn write_vertex_data(
+        &mut self,
+        rc: &RenderContext,
+        vertices: &[Vertex],
+    ) -> Result<()> {
+        if vertices.len() > self.0.vertex_capacity() {
+            self.0.grow_vertex_capacity(rc, vertices.len() as u32)?;
+        }
+
+        unsafe {
+            let slice = std::slice::from_raw_parts_mut(
+                self.0.block.mapped_ptr as *mut Vertex,
+                vertices.len(),
+            );
+            slice.copy_from_slice(vertices);
+        }
+        self.0.vertex_count = vertices.len() as u32;
+        Ok(())
+    }
+}
+
 impl VertexBuffer {
-    pub fn new(rc: &RenderContext) -> Result<Self> {
+    pub fn create_n_buffered(
+        rc: &RenderContext,
+        count: usize,
+    ) -> Result<(AsyncNBuffer<Self>, AsyncNBufferClient<Self>)> {
+        let mut vertex_buffers = Vec::with_capacity(count);
+        for _ in 0..count {
+            vertex_buffers.push(Self::new(rc)?);
+        }
+        Ok(AsyncNBuffer::new(vertex_buffers)?)
+    }
+
+    fn new(rc: &RenderContext) -> Result<Self> {
         let initial_capacity =
             (memory::MB as u32 / std::mem::size_of::<Vertex>() as u32) + 1;
         let (buffer, block, buffer_address) =
@@ -24,27 +72,6 @@ impl VertexBuffer {
             block,
             vertex_count: 0,
         })
-    }
-
-    /// Write vertex data into the buffer.
-    pub fn write_vertex_data(
-        &mut self,
-        rc: &RenderContext,
-        vertices: &[Vertex],
-    ) -> Result<()> {
-        if vertices.len() > self.vertex_capacity() {
-            self.grow_vertex_capacity(rc, vertices.len() as u32)?;
-        }
-
-        unsafe {
-            let slice = std::slice::from_raw_parts_mut(
-                self.block.mapped_ptr as *mut Vertex,
-                vertices.len(),
-            );
-            slice.copy_from_slice(vertices);
-        }
-        self.vertex_count = vertices.len() as u32;
-        Ok(())
     }
 
     // Private API
