@@ -1,5 +1,6 @@
 mod color_pass;
 mod pipeline;
+mod transform;
 mod vertex;
 mod vertex_buffer;
 
@@ -23,7 +24,7 @@ use {
     },
     anyhow::{Context, Result},
     ash::vk,
-    std::sync::mpsc::{Receiver, Sender, TryRecvError},
+    std::sync::mpsc::{Receiver, Sender},
 };
 
 pub use self::{vertex::Vertex, vertex_buffer::WritableVertexBuffer};

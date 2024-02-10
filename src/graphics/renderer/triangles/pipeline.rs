@@ -26,6 +26,7 @@ pub struct PushConstants {
 pub struct GraphicsPipeline {
     pub pipeline: raii::PipelineArc,
     pub pipeline_layout: raii::PipelineLayoutArc,
+    pub descriptor_set_layout: raii::DescriptorSetLayoutArc,
 }
 
 impl GraphicsPipeline {
@@ -34,6 +35,21 @@ impl GraphicsPipeline {
         rc: &RenderContext,
         render_pass: &vk::RenderPass,
     ) -> Result<Self> {
+        let descriptor_set_layout = {
+            let binding = vk::DescriptorSetLayoutBinding {
+                binding: 0,
+                descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
+                descriptor_count: 1,
+                stage_flags: vk::ShaderStageFlags::VERTEX,
+                p_immutable_samplers: std::ptr::null(),
+            };
+            let create_info = vk::DescriptorSetLayoutCreateInfo {
+                binding_count: 1,
+                p_bindings: &binding,
+                ..Default::default()
+            };
+            raii::DescriptorSetLayout::new(rc.device.clone(), &create_info)?
+        };
         // create the pipeline layout
         let pipeline_layout = {
             let push_constant_range = vk::PushConstantRange {
@@ -192,6 +208,7 @@ impl GraphicsPipeline {
         Ok(Self {
             pipeline,
             pipeline_layout,
+            descriptor_set_layout,
         })
     }
 }

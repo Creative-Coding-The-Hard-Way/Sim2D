@@ -159,6 +159,24 @@ device_resource!(
     destroy_shader_module
 );
 
+device_resource!(
+    DescriptorPool,
+    DescriptorPoolArc,
+    vk::DescriptorPool,
+    vk::DescriptorPoolCreateInfo,
+    create_descriptor_pool,
+    destroy_descriptor_pool
+);
+
+device_resource!(
+    DescriptorSetLayout,
+    DescriptorSetLayoutArc,
+    vk::DescriptorSetLayout,
+    vk::DescriptorSetLayoutCreateInfo,
+    create_descriptor_set_layout,
+    destroy_descriptor_set_layout
+);
+
 device_resource_struct!(Pipeline, PipelineArc, vk::Pipeline, destroy_pipeline);
 
 impl Pipeline {
