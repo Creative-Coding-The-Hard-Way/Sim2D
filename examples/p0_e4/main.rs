@@ -1,5 +1,7 @@
 use {
     anyhow::Result,
+    rand::prelude::*,
+    rayon::prelude::*,
     sim2d::{
         application::{glfw_application_main, GLFWApplication},
         graphics::{
@@ -7,20 +9,51 @@ use {
                 triangles::{Triangles, TrianglesApi, Vertex},
                 JoinableRenderer,
             },
-            vulkan::{
-                raii,
-                render_context::{Instance, RenderContext},
-            },
+            vulkan::render_context::RenderContext,
         },
     },
     std::time::Instant,
 };
 
+type Vec2 = nalgebra::Vector2<f32>;
+
+fn vec2(x: f32, y: f32) -> Vec2 {
+    Vec2::new(x, y)
+}
+
+struct Particle {
+    pub pos: Vec2,
+    vel: Vec2,
+}
+
+impl Particle {
+    pub fn new(pos: Vec2) -> Self {
+        Self {
+            pos,
+            vel: vec2(0.0, 0.0),
+        }
+    }
+
+    pub fn integrate(&mut self, acceleration: Vec2, dt: f32) {
+        self.vel += acceleration * dt;
+        self.vel *= 0.99999;
+        self.pos += self.vel * dt;
+    }
+
+    pub fn vertex(&self) -> Vertex {
+        Vertex::new(self.pos.into(), self.vel.into(), [1.0, 1.0, 1.0, 0.1])
+    }
+}
+
 struct MyApp {
     rc: RenderContext,
     triangles: TrianglesApi,
     renderer: JoinableRenderer,
-    start_time: Instant,
+    last_update: Instant,
+    particles: Vec<Particle>,
+    mouse_pos: Vec2,
+    screen_size: Vec2,
+    done: bool,
 }
 
 impl GLFWApplication for MyApp {
@@ -28,63 +61,98 @@ impl GLFWApplication for MyApp {
         window.set_title("Example 01");
         window.set_size(1920, 1080);
 
-        let instance = Instance::new(
-            "Example 01",
-            &window
-                .glfw
-                .get_required_instance_extensions()
-                .unwrap_or_default(),
-        )?;
-        log::info!("Vulkan Instance created! \n{:#?}", instance);
-
-        let surface =
-            raii::Surface::from_glfw_window(instance.ash.clone(), window)?;
-        let rc = RenderContext::new(instance, surface)?;
-
+        let rc = RenderContext::frow_glfw_window(window)?;
         let (renderer, triangles) = JoinableRenderer::new::<Triangles>(&rc)?;
+
+        let w = 1920.0 / 2.0;
+        let h = 1080.0 / 2.0;
+        let mut rng = rand::thread_rng();
+        let mut particles = vec![];
+        for _ in 0..20_000_000 {
+            let x = rng.gen_range(-w..w);
+            let y = rng.gen_range(-h..h);
+            particles.push(Particle::new(vec2(x, y)));
+        }
 
         Ok(MyApp {
             rc,
             triangles,
             renderer,
-            start_time: Instant::now(),
+            last_update: Instant::now(),
+            mouse_pos: vec2(0.0, 0.0),
+            screen_size: vec2(1920.0, 1080.0),
+            particles,
+            done: false,
         })
     }
 
     fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
-        if let glfw::WindowEvent::FramebufferSize(w, h) = event {
-            self.triangles.framebuffer_resized((*w as u32, *h as u32))?;
+        match event {
+            glfw::WindowEvent::FramebufferSize(w, h) => {
+                self.triangles.set_projection([
+                    [2.0 / *w as f32, 0.0, 0.0, 0.0],
+                    [0.0, -2.0 / *h as f32, 0.0, 0.0],
+                    [0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ])?;
+                self.triangles.framebuffer_resized((*w as u32, *h as u32))?;
+                self.screen_size = vec2(*w as f32, *h as f32);
+            }
+            glfw::WindowEvent::CursorPos(m_x, m_y) => {
+                let x = *m_x as f32;
+                let y = *m_y as f32;
+                self.mouse_pos.x = x - (self.screen_size.x / 2.0);
+                self.mouse_pos.y = (self.screen_size.y / 2.0) - y;
+            }
+            _ => (),
         }
+
         Ok(())
     }
 
     fn update(&mut self) -> Result<()> {
-        let mut writable = self.triangles.wait_for_writable_vertices()?;
+        if self.done {
+            return Ok(());
+        }
+        let now = Instant::now();
+        let dt = (now - self.last_update).as_secs_f32();
 
-        let t = (Instant::now() - self.start_time).as_secs_f32();
-        let a0 = t * std::f32::consts::TAU / 10.0;
-        let a1 = a0 + std::f32::consts::TAU / 3.0;
-        let a2 = a1 + std::f32::consts::TAU / 3.0;
-        let r = 1.0;
-        writable.write_vertex_data(
-            &self.rc,
-            &[
-                // 1
-                Vertex::new(r * a0.cos(), r * a0.sin(), 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(r * a1.cos(), r * a1.sin(), 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(r * a2.cos(), r * a2.sin(), 1.0, 0.0, 0.0, 1.0),
-                // 2
-                Vertex::new(r * a0.cos(), r * a0.sin(), 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(r * a1.cos(), r * a1.sin(), 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(r * a2.cos(), r * a2.sin(), 1.0, 0.0, 0.0, 1.0),
-                // 3
-                Vertex::new(r * a0.cos(), r * a0.sin(), 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(r * a1.cos(), r * a1.sin(), 1.0, 0.0, 0.0, 1.0),
-                Vertex::new(r * a2.cos(), r * a2.sin(), 1.0, 0.0, 0.0, 1.0),
-            ],
-        )?;
+        let compute_start = Instant::now();
+        {
+            let mouse_pos = self.mouse_pos;
+            let substeps = 1;
+            for _ in 0..substeps {
+                self.particles.par_iter_mut().for_each(|particle| {
+                    let d = mouse_pos - particle.pos;
+                    let dn = d.normalize();
+                    let mag = d.magnitude();
 
-        self.triangles.publish_vertices(writable)?;
+                    let accel = dn * (5000.0 / mag);
+                    particle.integrate(accel, dt / substeps as f32);
+                });
+            }
+            self.particles
+                .par_iter()
+                .map(|particle| particle.vertex())
+                .collect_into_vec(&mut self.triangles.vertices);
+        }
+        let compute_dt = Instant::now() - compute_start;
+
+        let publish_start = Instant::now();
+        self.triangles.publish_vertices(&self.rc)?;
+        let publish_dt = Instant::now() - publish_start;
+        self.last_update = now;
+
+        log::info!(
+            indoc::indoc! {"
+                dt: {}ms
+                compute: {}ms
+                publish: {}ms
+            "},
+            (dt * 100_000.0).round() / 100.0,
+            (compute_dt.as_secs_f32() * 100_000.0).round() / 100.0,
+            (publish_dt.as_secs_f32() * 100_000.0).round() / 100.0,
+        );
 
         Ok(())
     }

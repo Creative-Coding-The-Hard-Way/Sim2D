@@ -6,10 +6,12 @@ pub struct Vertex {
 }
 
 impl Vertex {
-    pub fn new(x: f32, y: f32, r: f32, g: f32, b: f32, a: f32) -> Self {
+    pub fn new(pos: [f32; 2], vel: [f32; 2], rgba: [f32; 4]) -> Self {
+        let [x, y] = pos;
+        let [vx, vy] = vel;
         Vertex {
-            rgba: [r, g, b, a],
-            pos: [x, y, 0.0, 1.0],
+            rgba,
+            pos: [x, y, vx, vy],
         }
     }
 }

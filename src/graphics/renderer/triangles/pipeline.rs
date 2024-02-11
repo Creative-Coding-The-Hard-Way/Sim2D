@@ -20,6 +20,7 @@ static VERTEX: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct PushConstants {
+    pub dt: f32,
     pub vertex_buffer_addr: vk::DeviceAddress,
 }
 
@@ -60,8 +61,8 @@ impl GraphicsPipeline {
             let create_info = vk::PipelineLayoutCreateInfo {
                 push_constant_range_count: 1,
                 p_push_constant_ranges: &push_constant_range,
-                set_layout_count: 0,
-                p_set_layouts: std::ptr::null(),
+                set_layout_count: 1,
+                p_set_layouts: &descriptor_set_layout.raw,
                 ..Default::default()
             };
             raii::PipelineLayout::new(rc.device.clone(), &create_info)
@@ -130,7 +131,7 @@ impl GraphicsPipeline {
         // Input Assembly
         let input_assembly_create_info =
             vk::PipelineInputAssemblyStateCreateInfo {
-                topology: vk::PrimitiveTopology::TRIANGLE_LIST,
+                topology: vk::PrimitiveTopology::POINT_LIST,
                 primitive_restart_enable: vk::FALSE,
                 ..Default::default()
             };

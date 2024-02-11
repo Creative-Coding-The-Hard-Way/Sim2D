@@ -58,7 +58,7 @@ impl VertexBuffer {
         for _ in 0..count {
             vertex_buffers.push(Self::new(rc)?);
         }
-        Ok(AsyncNBuffer::new(vertex_buffers)?)
+        AsyncNBuffer::new(vertex_buffers)
     }
 
     fn new(rc: &RenderContext) -> Result<Self> {

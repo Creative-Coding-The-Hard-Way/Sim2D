@@ -1,7 +1,10 @@
 use {
     crate::{graphics::vulkan::sync::UsedByFrames, trace},
     anyhow::{Context, Result},
-    std::sync::mpsc::{Receiver, Sender, SyncSender, TryRecvError},
+    std::{
+        sync::mpsc::{Receiver, Sender, SyncSender, TryRecvError},
+        time::Instant,
+    },
 };
 
 pub struct AsyncNBufferClient<T: Send + Sync> {
@@ -36,6 +39,7 @@ impl<T: Send + Sync + 'static> AsyncNBufferClient<T> {
 
 /// A variant of the NBuffer which is designed to work
 pub struct AsyncNBuffer<T: Send + Sync> {
+    last_update: Instant,
     current: UsedByFrames<T>,
     free: Sender<T>,
     in_use: Vec<UsedByFrames<T>>,
@@ -58,6 +62,7 @@ impl<T: Send + Sync + 'static> AsyncNBuffer<T> {
                 .with_context(trace!("Unable to send free resource!"))?;
         }
         let async_n_buffer = Self {
+            last_update: Instant::now(),
             current,
             free: free_resource_sender,
             in_use,
@@ -70,9 +75,38 @@ impl<T: Send + Sync + 'static> AsyncNBuffer<T> {
         Ok((async_n_buffer, client))
     }
 
+    pub fn get_current_with_update_time(
+        &mut self,
+        frame_index: usize,
+    ) -> Result<(&mut T, Instant)> {
+        if let Some(new_current) = self.try_receive_published_resource()? {
+            self.make_current(new_current);
+            self.last_update = Instant::now();
+        }
+        self.current.frame_mask.add_frame(frame_index as u32);
+
+        {
+            let mut in_use_update = Vec::with_capacity(self.in_use.len());
+            for mut in_use in self.in_use.drain(0..) {
+                in_use.frame_mask.remove_frame(frame_index as u32);
+                if in_use.frame_mask.is_empty() {
+                    self.free.send(in_use.release()).with_context(trace!(
+                        "Unable to send newly freed resource!"
+                    ))?;
+                } else {
+                    in_use_update.push(in_use);
+                }
+            }
+            self.in_use = in_use_update;
+        }
+        let last_update = self.last_update;
+        Ok((&mut self.current.resource, last_update))
+    }
+
     pub fn get_current(&mut self, frame_index: usize) -> Result<&mut T> {
         if let Some(new_current) = self.try_receive_published_resource()? {
             self.make_current(new_current);
+            self.last_update = Instant::now();
         }
         self.current.frame_mask.add_frame(frame_index as u32);
 
@@ -92,6 +126,19 @@ impl<T: Send + Sync + 'static> AsyncNBuffer<T> {
         }
 
         Ok(&mut self.current.resource)
+    }
+
+    /// Release all in-use resources.
+    ///
+    /// This can be useful to call right after waiting for every frame to
+    /// complete.
+    pub fn free_all(&mut self) -> Result<()> {
+        for in_use in self.in_use.drain(0..) {
+            self.free
+                .send(in_use.release())
+                .with_context(trace!("Unable to send newly freed resource!"))?;
+        }
+        Ok(())
     }
 
     // Private API

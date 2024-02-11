@@ -1,3 +1,4 @@
+mod api;
 mod color_pass;
 mod pipeline;
 mod transform;
@@ -8,6 +9,7 @@ use {
     self::{
         color_pass::ColorPass,
         pipeline::{GraphicsPipeline, PushConstants},
+        transform::Transform,
         vertex_buffer::VertexBuffer,
     },
     super::Renderer,
@@ -18,46 +20,18 @@ use {
             },
             render_context::RenderContext,
             swapchain::Swapchain,
-            sync::{AsyncNBuffer, AsyncNBufferClient},
+            sync::AsyncNBuffer,
         },
         trace,
     },
     anyhow::{Context, Result},
     ash::vk,
-    std::sync::mpsc::{Receiver, Sender},
+    std::{sync::mpsc::Receiver, time::Instant},
 };
 
-pub use self::{vertex::Vertex, vertex_buffer::WritableVertexBuffer};
-
-pub struct TrianglesApi {
-    client: AsyncNBufferClient<VertexBuffer>,
-    framebuffer_size_sender: Sender<(u32, u32)>,
-}
-
-impl TrianglesApi {
-    pub fn wait_for_writable_vertices(
-        &mut self,
-    ) -> Result<WritableVertexBuffer> {
-        let vertex_buffer = self.client.wait_for_free_resource()?;
-        Ok(WritableVertexBuffer::new(vertex_buffer))
-    }
-
-    pub fn publish_vertices(
-        &mut self,
-        writable_vertices: WritableVertexBuffer,
-    ) -> Result<()> {
-        self.client
-            .make_resource_current(writable_vertices.release())
-    }
-
-    pub fn framebuffer_resized(
-        &mut self,
-        framebuffer_size: (u32, u32),
-    ) -> Result<()> {
-        self.framebuffer_size_sender.send(framebuffer_size)?;
-        Ok(())
-    }
-}
+pub use self::{
+    api::TrianglesApi, vertex::Vertex, vertex_buffer::WritableVertexBuffer,
+};
 
 /// A renderer for streaming colored triangles.
 pub struct Triangles {
@@ -71,6 +45,7 @@ pub struct Triangles {
 
     framebuffer_size_reciever: Receiver<(u32, u32)>,
     vertices: AsyncNBuffer<VertexBuffer>,
+    transform: AsyncNBuffer<Transform>,
     frames_in_flight: FramesInFlight,
 }
 
@@ -81,19 +56,23 @@ impl Renderer for Triangles {
     where
         Self: Sized,
     {
-        let swapchain = Swapchain::new(&rc, (1, 1))
+        let swapchain = Swapchain::new(rc, (1, 1))
             .with_context(trace!("Unable to create the swapchain!"))?;
-        let color_pass = ColorPass::new(&rc, &swapchain)
+        let color_pass = ColorPass::new(rc, &swapchain)
             .with_context(trace!("Unable to create the color pass!"))?;
-        let pipeline = GraphicsPipeline::new(&rc, &color_pass.render_pass)
+        let pipeline = GraphicsPipeline::new(rc, &color_pass.render_pass)
             .with_context(trace!("Unable to create the graphics pipeline!"))?;
-        let frames_in_flight = FramesInFlight::new(&rc, 2)
+        let frames_in_flight = FramesInFlight::new(rc, 2)
             .with_context(trace!("Unable to create frames in flight!"))?;
         let (vertices, vertices_client) =
-            VertexBuffer::create_n_buffered(&rc, frames_in_flight.count() + 1)
-                .with_context(trace!(
-                    "Unable to create streamable vertices!"
-                ))?;
+            VertexBuffer::create_n_buffered(rc, frames_in_flight.count() + 1)
+                .with_context(trace!("Unable to create streamable vertices!"))?;
+        let (transform, transform_client) = Transform::create_n_buffered(
+            rc,
+            pipeline.descriptor_set_layout.clone(),
+            2,
+        )
+        .with_context(trace!("Unable to create transform buffers!"))?;
 
         let (framebuffer_size_sender, framebuffer_size_reciever) =
             std::sync::mpsc::channel::<(u32, u32)>();
@@ -109,28 +88,31 @@ impl Renderer for Triangles {
                 frames_in_flight,
                 framebuffer_size_reciever,
                 vertices,
+                transform,
             },
-            Self::ClientApi {
-                client: vertices_client,
+            Self::ClientApi::new(
+                vertices_client,
+                transform_client,
                 framebuffer_size_sender,
-            },
+            ),
         ))
     }
 
     fn draw_frame(&mut self) -> Result<()> {
-        while let Ok(framebuffer_size) =
-            self.framebuffer_size_reciever.try_recv()
-        {
-            self.framebuffer_size = framebuffer_size;
-            self.swapchain_needs_rebuild = true;
-        }
-
         // Rebuild the Swapchain if needed
         if self.swapchain_needs_rebuild {
+            // pull in any framebuffer updates
+            while let Ok(framebuffer_size) =
+                self.framebuffer_size_reciever.try_recv()
+            {
+                self.framebuffer_size = framebuffer_size;
+            }
             return self.rebuild_swapchain(self.framebuffer_size);
         }
 
-        self.present_frame()
+        self.present_frame()?;
+
+        Ok(())
     }
 
     fn shut_down(&mut self) -> Result<()> {
@@ -150,6 +132,8 @@ impl Triangles {
     ) -> Result<()> {
         // finish all frames in flight before rebuilding
         self.frames_in_flight.wait_for_all_frames(&self.rc)?;
+        self.vertices.free_all()?; // since all frames are now finished
+        self.transform.free_all()?; // since all frames are now finished
 
         // rebuild the swapchain
         unsafe {
@@ -173,6 +157,7 @@ impl Triangles {
     }
 
     pub fn present_frame(&mut self) -> Result<()> {
+        let start = Instant::now();
         let command_buffer = match self
             .frames_in_flight
             .begin_frame(&self.rc, &self.swapchain)?
@@ -183,6 +168,9 @@ impl Triangles {
                 return Ok(());
             }
         };
+        let got_frame = Instant::now();
+
+        let current_frame_index = self.frames_in_flight.current_frame_index();
 
         // Begin the render pass
         {
@@ -252,12 +240,29 @@ impl Triangles {
             }
         }
 
-        let vertex_buffer = self
+        // Bind the descriptor set
+        {
+            let transform = self.transform.get_current(current_frame_index)?;
+            unsafe {
+                self.rc.device.cmd_bind_descriptor_sets(
+                    command_buffer,
+                    vk::PipelineBindPoint::GRAPHICS,
+                    self.pipeline.pipeline_layout.raw,
+                    0,
+                    &[transform.descriptor_set],
+                    &[],
+                );
+            }
+        }
+
+        let (vertex_buffer, last_update) = self
             .vertices
-            .get_current(self.frames_in_flight.current_frame_index())?;
+            .get_current_with_update_time(current_frame_index)?;
         // Set push constants
         {
+            let dt = (Instant::now() - last_update).as_secs_f32();
             let constants = PushConstants {
+                dt,
                 vertex_buffer_addr: vertex_buffer.buffer_address,
             };
             unsafe {
@@ -301,6 +306,17 @@ impl Triangles {
             self.swapchain_needs_rebuild = true;
             return Ok(());
         }
+
+        let dt = (Instant::now() - start).as_secs_f32();
+        let acquire_delay = (got_frame - start).as_secs_f32();
+        log::info!(
+            indoc::indoc! {"
+                render time: {}ms
+                acquire_frame_time: {}ms
+            "},
+            (dt * 100_000.0).round() / 100.0,
+            (acquire_delay * 1_000_000.0).round() / 1000.0,
+        );
 
         Ok(())
     }

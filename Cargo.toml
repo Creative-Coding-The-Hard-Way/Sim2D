@@ -18,6 +18,9 @@ log = "*"
 regex = "*"
 ash = "*"
 indoc = "*"
+nalgebra = "*"
+rand = "*"
+rayon = "*"
 
 [build-dependencies]
 anyhow = "*"

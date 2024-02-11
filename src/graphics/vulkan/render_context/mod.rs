@@ -39,6 +39,26 @@ pub struct RenderContext {
 }
 
 impl RenderContext {
+    /// Create a Vulkan instance and RenderContext for the given window.
+    pub fn frow_glfw_window(window: &glfw::Window) -> Result<Self> {
+        let instance = Instance::new(
+            "Sim2D",
+            &window
+                .glfw
+                .get_required_instance_extensions()
+                .unwrap_or_default(),
+        )
+        .with_context(trace!(
+            "Error while creating Vulkan instance from a GLFW window!"
+        ))?;
+        let surface =
+            raii::Surface::from_glfw_window(instance.ash.clone(), window)
+                .with_context(trace!(
+                    "Error creating surface for glfw window!"
+                ))?;
+        Self::new(instance, surface)
+    }
+
     /// Create a new RenderContext for this application.
     pub fn new(instance: Instance, surface: raii::SurfaceArc) -> Result<Self> {
         let (physical_device, physical_device_metadata) =
