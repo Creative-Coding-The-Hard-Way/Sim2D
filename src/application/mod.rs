@@ -14,12 +14,34 @@ pub trait Sim2D {
     where
         Self: Sized;
 
-    /// Handle a window event.
+    /// Called automatically when the window size is changed.
     #[allow(unused_variables)]
-    fn handle_event(
+    fn resized(&mut self, window_state: &WindowState) -> Result<()> {
+        Ok(())
+    }
+
+    /// Called when the mouse is moved.
+    #[allow(unused_variables)]
+    fn mouse_moved(&mut self, window_state: &WindowState) -> Result<()> {
+        Ok(())
+    }
+
+    /// Called when a mouse button is pressed.
+    #[allow(unused_variables)]
+    fn mouse_pressed(
         &mut self,
         window_state: &WindowState,
-        event: &WindowEvent,
+        button: MouseButton,
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    /// Called by the system any time a mouse button is released.
+    #[allow(unused_variables)]
+    fn mouse_released(
+        &mut self,
+        window_state: &WindowState,
+        button: MouseButton,
     ) -> Result<()> {
         Ok(())
     }
@@ -55,17 +77,28 @@ impl<S: Sim2D> GLFWApplication for GlfwSim2DApp<S> {
     {
         let window_state = WindowState::new(window);
         let rc = RenderContext::frow_glfw_window(window)?;
-        Ok(Self {
-            sim: S::new(rc, &window_state)?,
-            window_state,
-        })
+        let mut sim = S::new(rc, &window_state)?;
+        sim.resized(&window_state)?;
+        Ok(Self { sim, window_state })
     }
 
     fn handle_event(&mut self, glfw_event: &glfw::WindowEvent) -> Result<()> {
         self.window_state
             .handle_event(glfw_event)
-            .map(|window_event| {
-                self.sim.handle_event(&self.window_state, &window_event)
+            .map(|window_event| match window_event {
+                WindowEvent::MouseMoved => {
+                    self.sim.mouse_moved(&self.window_state)
+                }
+                WindowEvent::FramebufferResized
+                | WindowEvent::WindowResized => {
+                    self.sim.resized(&self.window_state)
+                }
+                WindowEvent::MouseButtonPressed(button) => {
+                    self.sim.mouse_pressed(&self.window_state, button)
+                }
+                WindowEvent::MouseButtonReleased(button) => {
+                    self.sim.mouse_released(&self.window_state, button)
+                }
             })
             .unwrap_or(Ok(()))
     }

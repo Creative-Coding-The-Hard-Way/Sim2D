@@ -10,7 +10,7 @@ use {
         ParallelIterator,
     },
     sim2d::{
-        application::{MouseButton, Sim2D, WindowEvent, WindowState},
+        application::{MouseButton, Sim2D, WindowState},
         graphics::{
             renderer::{
                 primitive::{
@@ -43,29 +43,17 @@ struct MyApp {
 
 impl Sim2D for MyApp {
     fn new(rc: RenderContext, state: &WindowState) -> Result<Self> {
-        let mut renderer =
-            AsyncRenderer::<InterpolatedPrimitivesRenderer>::new(
-                &rc,
-                Parameters {
-                    topology: vk::PrimitiveTopology::POINT_LIST,
-                },
-            )?;
+        let renderer = AsyncRenderer::<InterpolatedPrimitivesRenderer>::new(
+            &rc,
+            Parameters {
+                topology: vk::PrimitiveTopology::POINT_LIST,
+            },
+        )?;
 
-        let size = state.size();
-        renderer.set_projection([
-            [2.0 / size.x, 0.0, 0.0, 0.0],
-            [0.0, -2.0 / size.y, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ])?;
-
-        let fb_size = state.framebuffer_size();
-        renderer.framebuffer_resized((fb_size.x, fb_size.y))?;
-
-        let particles: Vec<_> = (0..1_000_000)
+        let particles: Vec<_> = (0..100_000)
             .par_bridge()
             .map_init(rand::thread_rng, |rng, _| {
-                let limits = size * 0.5;
+                let limits = state.size() * 0.5;
                 let x = rng.gen_range(-limits.x..limits.x);
                 let y = rng.gen_range(-limits.y..limits.y);
                 Particle::new(vec2(x, y))
@@ -81,37 +69,35 @@ impl Sim2D for MyApp {
         })
     }
 
-    fn handle_event(
+    fn resized(&mut self, state: &WindowState) -> Result<()> {
+        let size = state.size();
+        self.renderer.set_projection([
+            [2.0 / size.x, 0.0, 0.0, 0.0],
+            [0.0, -2.0 / size.y, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])?;
+        let fb_size = state.framebuffer_size();
+        self.renderer.framebuffer_resized((fb_size.x, fb_size.y))?;
+        Ok(())
+    }
+
+    fn mouse_released(
         &mut self,
         state: &WindowState,
-        event: &WindowEvent,
+        button: MouseButton,
     ) -> Result<()> {
-        match event {
-            WindowEvent::FramebufferResized => {
-                let size = state.size();
-                self.renderer.set_projection([
-                    [2.0 / size.x, 0.0, 0.0, 0.0],
-                    [0.0, -2.0 / size.y, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0],
-                ])?;
-                let fb_size = state.framebuffer_size();
-                self.renderer.framebuffer_resized((fb_size.x, fb_size.y))?;
-            }
-            WindowEvent::MouseButtonReleased(MouseButton::Right) => {
-                let mouse = state.mouse().component_mul(state.size());
-                let r = 100.0;
-                self.particles.par_iter_mut().for_each(|particle| {
-                    let mut rng = rand::thread_rng();
-                    let a = rng.gen_range(0.0..std::f32::consts::TAU);
-                    let v = mouse + vec2(r * a.cos(), r * a.sin());
-                    particle.position = v;
-                    particle.position_previous = v;
-                });
-            }
-            _ => (),
+        if button == MouseButton::Right {
+            let mouse = state.mouse().component_mul(state.size());
+            let r = 100.0;
+            self.particles.par_iter_mut().for_each(|particle| {
+                let mut rng = rand::thread_rng();
+                let a = rng.gen_range(0.0..std::f32::consts::TAU);
+                let v = mouse + vec2(r * a.cos(), r * a.sin());
+                particle.position = v;
+                particle.position_previous = v;
+            });
         }
-
         Ok(())
     }
 
