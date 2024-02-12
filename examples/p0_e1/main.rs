@@ -159,7 +159,7 @@ impl GLFWApplication for MyApp {
             .map(|line| {
                 let dir = line.start.position - line.end.position;
                 let len = dir.magnitude();
-                let delta = len - 200.0;
+                let delta = len - 50.0;
                 if delta > 0.0 {
                     let nd = 0.5 * delta * (dir / len);
                     line.start.position -= nd;

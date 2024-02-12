@@ -17,13 +17,16 @@ impl Line {
     }
 
     pub fn vertices(&self) -> [Vertex; 2] {
-        let max_mag = 200.0;
-        let mag = (self.start.position - self.end.position).magnitude();
+        //let max_mag = 50.0;
+        //let mag = (self.start.position - self.end.position).magnitude();
+        let speed = self.start.velocity().magnitude();
 
-        let t = (1.0 - (mag / max_mag)).clamp(0.0, 1.0);
-        let a = (t * 0.1).max(0.01);
-        let r = (1.0 - t) * 0.75;
-        let b = (t) * 0.75;
+        //let t = (1.0 - (mag / max_mag)).clamp(0.0, 1.0);
+
+        let v = (speed / 20.0).clamp(0.0, 1.0);
+        let r = v;
+        let b = 1.0 - v;
+        let a = (v * 0.1).max(0.005);
         [
             Vertex::new(
                 self.start.position,
@@ -54,7 +57,7 @@ impl Particle {
         let velocity = self.velocity();
         self.position_previous = self.position;
 
-        self.position += velocity + self.acceleration * (dt * dt);
+        self.position += (0.99 * velocity) + self.acceleration * (dt * dt);
         self.acceleration = vec2(0.0, 0.0);
     }
 
@@ -64,9 +67,5 @@ impl Particle {
 
     pub fn velocity(&self) -> Vec2 {
         self.position - self.position_previous
-    }
-
-    pub fn vertex(&self) -> Vertex {
-        Vertex::new(self.position, self.velocity(), [1.0, 1.0, 1.0, 0.25])
     }
 }
