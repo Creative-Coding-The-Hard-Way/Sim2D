@@ -3,7 +3,6 @@ mod particle;
 use {
     anyhow::Result,
     ash::vk,
-    glfw::{Action, MouseButton, WindowEvent},
     particle::Particle,
     rand::prelude::*,
     rayon::iter::{
@@ -11,7 +10,7 @@ use {
         ParallelIterator,
     },
     sim2d::{
-        application::{glfw_application_main, GLFWApplication},
+        application::{MouseButton, Sim2D, WindowEvent, WindowState},
         graphics::{
             renderer::{
                 primitive::{
@@ -39,34 +38,36 @@ struct MyApp {
     // Logical Resources
     last_update: Instant,
     particles: Vec<Particle>,
-    mouse_pos: Vec2,
-    screen_size: Vec2,
-    pressed: bool,
     vertices: Vec<Vertex>,
 }
 
-impl GLFWApplication for MyApp {
-    fn new(window: &mut glfw::Window) -> Result<Self> {
-        window.set_title("CPU Particles");
-        window.set_size(1920, 1080);
+impl Sim2D for MyApp {
+    fn new(rc: RenderContext, state: &WindowState) -> Result<Self> {
+        let mut renderer =
+            AsyncRenderer::<InterpolatedPrimitivesRenderer>::new(
+                &rc,
+                Parameters {
+                    topology: vk::PrimitiveTopology::POINT_LIST,
+                },
+            )?;
 
-        let rc = RenderContext::frow_glfw_window(window)?;
-        let renderer = AsyncRenderer::new(
-            &rc,
-            Parameters {
-                topology: vk::PrimitiveTopology::POINT_LIST,
-            },
-        )?;
+        let size = state.size();
+        renderer.set_projection([
+            [2.0 / size.x, 0.0, 0.0, 0.0],
+            [0.0, -2.0 / size.y, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])?;
 
-        let screen_size = vec2(1920.0, 1080.0);
-        let particles: Vec<_> = (0..100_000)
+        let fb_size = state.framebuffer_size();
+        renderer.framebuffer_resized((fb_size.x, fb_size.y))?;
+
+        let particles: Vec<_> = (0..1_000_000)
             .par_bridge()
-            .map(|_| {
-                let mut rng = rand::thread_rng();
-                let w = screen_size.x * 0.5;
-                let h = screen_size.y * 0.5;
-                let x = rng.gen_range(-w..w);
-                let y = rng.gen_range(-h..h);
+            .map_init(rand::thread_rng, |rng, _| {
+                let limits = size * 0.5;
+                let x = rng.gen_range(-limits.x..limits.x);
+                let y = rng.gen_range(-limits.y..limits.y);
                 Particle::new(vec2(x, y))
             })
             .collect();
@@ -75,60 +76,38 @@ impl GLFWApplication for MyApp {
             rc,
             renderer,
             last_update: Instant::now(),
-            mouse_pos: vec2(0.0, 0.0),
-            screen_size,
-            pressed: false,
             vertices: Vec::with_capacity(particles.len()),
             particles,
         })
     }
 
-    fn handle_event(&mut self, event: &glfw::WindowEvent) -> Result<()> {
+    fn handle_event(
+        &mut self,
+        state: &WindowState,
+        event: &WindowEvent,
+    ) -> Result<()> {
         match event {
-            WindowEvent::FramebufferSize(w, h) => {
+            WindowEvent::FramebufferResized => {
+                let size = state.size();
                 self.renderer.set_projection([
-                    [2.0 / *w as f32, 0.0, 0.0, 0.0],
-                    [0.0, -2.0 / *h as f32, 0.0, 0.0],
+                    [2.0 / size.x, 0.0, 0.0, 0.0],
+                    [0.0, -2.0 / size.y, 0.0, 0.0],
                     [0.0, 0.0, 1.0, 0.0],
                     [0.0, 0.0, 0.0, 1.0],
                 ])?;
-                self.renderer.framebuffer_resized((*w as u32, *h as u32))?;
-                self.screen_size = vec2(*w as f32, *h as f32);
+                let fb_size = state.framebuffer_size();
+                self.renderer.framebuffer_resized((fb_size.x, fb_size.y))?;
             }
-            WindowEvent::MouseButton(
-                MouseButton::Button1,
-                Action::Press,
-                _,
-            ) => {
-                self.pressed = true;
-            }
-            WindowEvent::MouseButton(
-                MouseButton::Button1,
-                Action::Release,
-                _,
-            ) => {
-                self.pressed = false;
-            }
-            WindowEvent::MouseButton(
-                MouseButton::Button2,
-                Action::Release,
-                _,
-            ) => {
-                let mouse_pos = self.mouse_pos;
+            WindowEvent::MouseButtonReleased(MouseButton::Right) => {
+                let mouse = state.mouse().component_mul(state.size());
                 let r = 100.0;
                 self.particles.par_iter_mut().for_each(|particle| {
                     let mut rng = rand::thread_rng();
                     let a = rng.gen_range(0.0..std::f32::consts::TAU);
-                    let v = mouse_pos + vec2(r * a.cos(), r * a.sin());
+                    let v = mouse + vec2(r * a.cos(), r * a.sin());
                     particle.position = v;
                     particle.position_previous = v;
                 });
-            }
-            WindowEvent::CursorPos(m_x, m_y) => {
-                let x = *m_x as f32;
-                let y = *m_y as f32;
-                self.mouse_pos.x = x - (self.screen_size.x / 2.0);
-                self.mouse_pos.y = (self.screen_size.y / 2.0) - y;
             }
             _ => (),
         }
@@ -136,14 +115,14 @@ impl GLFWApplication for MyApp {
         Ok(())
     }
 
-    fn update(&mut self) -> Result<()> {
+    fn update(&mut self, state: &WindowState) -> Result<()> {
         let now = Instant::now();
         let dt = (now - self.last_update).as_secs_f32();
         self.last_update = now;
 
-        let mouse_pressed = self.pressed;
-        let mouse_pos = self.mouse_pos;
-        let dim = self.screen_size / 2.0;
+        let mouse_pressed = state.is_button_pressed(MouseButton::Left);
+        let mouse = state.mouse().component_mul(state.size());
+        let dim = state.size() / 2.0;
         self.particles
             .par_iter_mut()
             .map(|particle| {
@@ -153,7 +132,7 @@ impl GLFWApplication for MyApp {
 
                 // update
                 if mouse_pressed {
-                    let d = mouse_pos - particle.position;
+                    let d = mouse - particle.position;
                     let dn = d.normalize();
                     let mag = d.magnitude().powf(1.2).max(10.0);
 
@@ -176,5 +155,5 @@ impl GLFWApplication for MyApp {
 }
 
 fn main() {
-    glfw_application_main::<MyApp>();
+    MyApp::main()
 }

@@ -1,5 +1,6 @@
 pub mod application;
 pub mod graphics;
+pub mod math;
 
 /// Add context to an anyhow error which includes a formatted error message, the
 /// file path, and the line number.
