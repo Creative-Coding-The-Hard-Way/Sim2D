@@ -3,10 +3,6 @@ mod logging;
 use {
     crate::trace,
     anyhow::{Context, Error, Result},
-    std::sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    },
 };
 
 /// Represents an application which runs as a GLFW-managed window.
@@ -77,13 +73,14 @@ where
     // setup GLFW
     let mut glfw = glfw::init_no_callbacks()?;
     glfw.window_hint(glfw::WindowHint::ClientApi(glfw::ClientApiHint::NoApi));
+    glfw.window_hint(glfw::WindowHint::ScaleToMonitor(true));
     if !glfw.vulkan_supported() {
         anyhow::bail!("Vulkan is not supported by GLFW on this device!");
     }
 
     // Create the Window and the event queue
     let (mut window, events) = glfw
-        .create_window(800, 600, "My first window", glfw::WindowMode::Windowed)
+        .create_window(800, 600, "Sim2D", glfw::WindowMode::Windowed)
         .with_context(trace!("Unable to create the glfw window!"))?;
     window.set_all_polling(true);
 
@@ -91,21 +88,17 @@ where
     let mut app = App::new(&mut window)
         .with_context(trace!("Unable to initialize the application!"))?;
 
-    // A flag used to coordinate shutting down the main thread and the render
-    // thread.
-    let should_close = Arc::new(AtomicBool::new(false));
-
-    // Spawn the render thread
-    let render_thread = {
-        let render_should_close = should_close.clone();
+    // Spawn the window thread
+    let window_thread = {
         std::thread::spawn(move || -> Result<App, (App, Error)> {
-            while !render_should_close.load(Ordering::Relaxed) {
+            loop {
+                // Handle Events
                 for (_, event) in glfw::flush_messages(&events) {
                     if event == glfw::WindowEvent::Close {
-                        render_should_close.store(true, Ordering::Relaxed);
+                        return Ok(app);
                     }
-                    if let Err(err) = app.handle_event(&event) {
-                        render_should_close.store(true, Ordering::Relaxed);
+                    let handle_event_result = app.handle_event(&event);
+                    if let Err(err) = handle_event_result {
                         return Err((
                             app,
                             err.context(trace!(
@@ -115,8 +108,10 @@ where
                         ));
                     }
                 }
-                if let Err(err) = app.update() {
-                    render_should_close.store(true, Ordering::Relaxed);
+
+                // Update
+                let update_result = app.update();
+                if let Err(err) = update_result {
                     return Err((
                         app,
                         err.context(trace!(
@@ -125,17 +120,16 @@ where
                     ));
                 }
             }
-            Ok(app)
         })
     };
 
     // Handle window events on the main thread.
-    while !should_close.load(Ordering::Relaxed) {
+    while !window_thread.is_finished() {
         glfw.wait_events_unbuffered(|_window_id, event| Some(event));
     }
 
     // Join the render thread and exit.
-    match render_thread.join().expect("Render thread panicked!") {
+    match window_thread.join().expect("Application thread panicked!") {
         Err((mut app, err)) => {
             app.shut_down().with_context(trace!(
                 "{}\n{}\n{}",

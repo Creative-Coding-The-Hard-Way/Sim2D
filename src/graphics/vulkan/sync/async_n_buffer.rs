@@ -2,8 +2,10 @@ use {
     crate::{graphics::vulkan::sync::UsedByFrames, trace},
     anyhow::{Context, Result},
     std::{
-        sync::mpsc::{Receiver, Sender, SyncSender, TryRecvError},
-        time::Instant,
+        sync::mpsc::{
+            Receiver, RecvTimeoutError, Sender, SyncSender, TryRecvError,
+        },
+        time::{Duration, Instant},
     },
 };
 
@@ -13,6 +15,8 @@ pub struct AsyncNBufferClient<T: Send + Sync> {
 }
 
 impl<T: Send + Sync + 'static> AsyncNBufferClient<T> {
+    /// Try to get a free resource without blocking. If a resource is not
+    /// instantly available, then gives up and returns None.
     pub fn try_get_free_resource(&self) -> Result<Option<T>> {
         let resource = match self.free_resource_reciever.try_recv() {
             Ok(t) => Some(t),
@@ -24,12 +28,31 @@ impl<T: Send + Sync + 'static> AsyncNBufferClient<T> {
         Ok(resource)
     }
 
-    pub fn wait_for_free_resource(&self) -> Result<T> {
-        self.free_resource_reciever
-            .recv()
-            .with_context(trace!("Error while waiting for a free resource!"))
+    /// Best-effort blocks until a resource is available. Gives up after a short
+    /// delay and returns None.
+    pub fn wait_for_free_resource(&self) -> Result<Option<T>> {
+        let resource = match self
+            .free_resource_reciever
+            .recv_timeout(Duration::from_millis(100))
+        {
+            Ok(resource) => Some(resource),
+            Err(RecvTimeoutError::Timeout) => {
+                log::warn!(
+                    "{}",
+                    trace!("Timeout while waiting for a resource!")()
+                );
+                None
+            }
+            Err(RecvTimeoutError::Disconnected) => {
+                anyhow::bail!("Free resource sender hung up!");
+            }
+        };
+        Ok(resource)
     }
 
+    /// Publish the given resource to become the new current. When the old
+    /// current is no-longer in use by any frames, it will be freed to be
+    /// used again.
     pub fn make_resource_current(&self, resource: T) -> Result<()> {
         self.publish_resource_sender
             .send(resource)

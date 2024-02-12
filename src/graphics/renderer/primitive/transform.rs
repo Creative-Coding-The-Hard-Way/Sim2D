@@ -8,10 +8,13 @@ use {
     ash::vk,
 };
 
+/// The actual data that is saved in the GPU memory and sent to the shader.
 struct TransformUniformBuffer {
     transform: [[f32; 4]; 4],
 }
 
+/// All of the resources required to bind the TransformUniformBuffer and use it
+/// in a frame.
 pub struct Transform {
     pub buffer: raii::BufferArc,
     pub block: memory::OwnedBlock,
@@ -21,6 +24,8 @@ pub struct Transform {
 }
 
 impl Transform {
+    /// Create N instances which can be passed back and forth between the
+    /// renderer and the client Api.
     pub fn create_n_buffered(
         rc: &RenderContext,
         descriptor_set_layout: raii::DescriptorSetLayoutArc,
@@ -33,7 +38,8 @@ impl Transform {
         AsyncNBuffer::new(transforms)
     }
 
-    pub fn new(
+    /// Create a single new Transform instance.
+    fn new(
         rc: &RenderContext,
         descriptor_set_layout: raii::DescriptorSetLayoutArc,
     ) -> Result<Self> {
@@ -122,17 +128,21 @@ impl Transform {
     }
 }
 
+/// Represents a Transform which is safe to perform write operations.
 pub struct WritableTransform(Transform);
 
 impl WritableTransform {
+    /// Take ownership of a transform for safe write operations.
     pub(super) fn new(transform: Transform) -> Self {
         Self(transform)
     }
 
+    /// Release the transform so it can be used for read operations.
     pub(super) fn release(self) -> Transform {
         self.0
     }
 
+    /// Set the transformation matrix.
     pub fn set_transform(&mut self, transform: [[f32; 4]; 4]) {
         let transform_uniform_buffer =
             self.0.block.mapped_ptr as *mut TransformUniformBuffer;

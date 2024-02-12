@@ -2,7 +2,6 @@ mod api;
 mod color_pass;
 mod pipeline;
 mod transform;
-mod vertex;
 mod vertex_buffer;
 
 use {
@@ -30,11 +29,35 @@ use {
 };
 
 pub use self::{
-    api::TrianglesApi, vertex::Vertex, vertex_buffer::WritableVertexBuffer,
+    api::InterpolatedPrimitivesApi,
+    vertex_buffer::{Vertex, WritableVertexBuffer},
 };
 
-/// A renderer for streaming colored triangles.
-pub struct Triangles {
+/// Parameters for the renderer.
+#[derive(Debug, Copy, Clone)]
+pub struct Parameters {
+    /// The topology for the vertices. Defaults to TRIANGLE_LIST.
+    pub topology: vk::PrimitiveTopology,
+}
+
+impl Default for Parameters {
+    fn default() -> Self {
+        Self {
+            topology: vk::PrimitiveTopology::TRIANGLE_LIST,
+        }
+    }
+}
+
+/// A renderer which supports rendering colored primitive geometry like points,
+/// lines, and triangles.
+///
+/// Of note: this renderer does not support textures.
+///
+/// Additionally, each vertex can have an associated velocity. The vertex
+/// position is approximated based on the velocity and the time since last
+/// update. This makes frames appear smooth even if updates happen less than
+/// once per frame.
+pub struct InterpolatedPrimitivesRenderer {
     rc: RenderContext,
 
     swapchain: Swapchain,
@@ -49,10 +72,15 @@ pub struct Triangles {
     frames_in_flight: FramesInFlight,
 }
 
-impl Renderer for Triangles {
-    type ClientApi = TrianglesApi;
+impl Renderer for InterpolatedPrimitivesRenderer {
+    type Api = InterpolatedPrimitivesApi;
+    type Parameters = Parameters;
 
-    fn new(rc: &RenderContext) -> Result<(Self, Self::ClientApi)>
+    /// Create a new Renderer and client api.
+    fn new(
+        rc: &RenderContext,
+        parameters: Self::Parameters,
+    ) -> Result<(Self, Self::Api)>
     where
         Self: Sized,
     {
@@ -60,8 +88,12 @@ impl Renderer for Triangles {
             .with_context(trace!("Unable to create the swapchain!"))?;
         let color_pass = ColorPass::new(rc, &swapchain)
             .with_context(trace!("Unable to create the color pass!"))?;
-        let pipeline = GraphicsPipeline::new(rc, &color_pass.render_pass)
-            .with_context(trace!("Unable to create the graphics pipeline!"))?;
+        let pipeline = GraphicsPipeline::new(
+            rc,
+            &color_pass.render_pass,
+            parameters.topology,
+        )
+        .with_context(trace!("Unable to create the graphics pipeline!"))?;
         let frames_in_flight = FramesInFlight::new(rc, 2)
             .with_context(trace!("Unable to create frames in flight!"))?;
         let (vertices, vertices_client) =
@@ -90,7 +122,7 @@ impl Renderer for Triangles {
                 vertices,
                 transform,
             },
-            Self::ClientApi::new(
+            Self::Api::new(
                 vertices_client,
                 transform_client,
                 framebuffer_size_sender,
@@ -98,6 +130,10 @@ impl Renderer for Triangles {
         ))
     }
 
+    /// Render a single frame.
+    ///
+    /// Automatically rebuilds the swapchain and processes any messages from the
+    /// client api.
     fn draw_frame(&mut self) -> Result<()> {
         // Rebuild the Swapchain if needed
         if self.swapchain_needs_rebuild {
@@ -115,7 +151,10 @@ impl Renderer for Triangles {
         Ok(())
     }
 
+    /// Shut down the renderer. Wait for every frame to finish and stall the
+    /// GPU in anticipation of dropping all Vulkan resources.
     fn shut_down(&mut self) -> Result<()> {
+        log::info!("wait for all frames to finish");
         unsafe {
             self.frames_in_flight.wait_for_all_frames(&self.rc)?;
             self.rc.device.device_wait_idle()?;
@@ -124,7 +163,7 @@ impl Renderer for Triangles {
     }
 }
 
-impl Triangles {
+impl InterpolatedPrimitivesRenderer {
     /// Rebuild the swapchain and dependent resources
     fn rebuild_swapchain(
         &mut self,
@@ -146,16 +185,19 @@ impl Triangles {
         // Rebuild swapchain-dependent resources
         self.color_pass = ColorPass::new(&self.rc, &self.swapchain)
             .with_context(trace!("Unable to rebuild the color pass!"))?;
-        self.pipeline =
-            GraphicsPipeline::new(&self.rc, &self.color_pass.render_pass)
-                .with_context(trace!(
-                    "Unable to rebuild the graphics pipeline!"
-                ))?;
+        self.pipeline = GraphicsPipeline::new(
+            &self.rc,
+            &self.color_pass.render_pass,
+            self.pipeline.topology,
+        )
+        .with_context(trace!("Unable to rebuild the graphics pipeline!"))?;
 
         self.swapchain_needs_rebuild = false;
         Ok(())
     }
 
+    /// Acquire a swapchain image, get the current frame in flight, and
+    /// prepare the frame's rendering commands.
     pub fn present_frame(&mut self) -> Result<()> {
         let start = Instant::now();
         let command_buffer = match self
@@ -309,7 +351,7 @@ impl Triangles {
 
         let dt = (Instant::now() - start).as_secs_f32();
         let acquire_delay = (got_frame - start).as_secs_f32();
-        log::info!(
+        log::trace!(
             indoc::indoc! {"
                 render time: {}ms
                 acquire_frame_time: {}ms

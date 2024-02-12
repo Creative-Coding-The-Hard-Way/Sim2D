@@ -1,5 +1,4 @@
 use {
-    super::Vertex,
     crate::graphics::vulkan::{
         memory, raii,
         render_context::RenderContext,
@@ -9,6 +8,30 @@ use {
     ash::vk,
 };
 
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default)]
+pub struct Vertex {
+    pub rgba: [f32; 4],
+    pub pos: [f32; 2],
+    pub vel: [f32; 2],
+}
+
+impl Vertex {
+    /// Create a new vertex out of things that turn into float arrays.
+    pub fn new(
+        pos: impl Into<[f32; 2]>,
+        vel: impl Into<[f32; 2]>,
+        rgba: impl Into<[f32; 4]>,
+    ) -> Self {
+        Vertex {
+            rgba: rgba.into(),
+            pos: pos.into(),
+            vel: vel.into(),
+        }
+    }
+}
+
+/// All of the resources required to keep track of a vertex buffer.
 pub struct VertexBuffer {
     pub vertex_count: u32,
     pub buffer_address: vk::DeviceAddress,
@@ -16,6 +39,7 @@ pub struct VertexBuffer {
     pub block: memory::OwnedBlock,
 }
 
+/// Represents a VertexBuffer that is safe to write.
 pub struct WritableVertexBuffer(VertexBuffer);
 
 impl WritableVertexBuffer {
@@ -27,7 +51,8 @@ impl WritableVertexBuffer {
         self.0
     }
 
-    /// Write vertex data into the buffer.
+    /// Write vertex data into the buffer. Reallocates GPU memory if there isn't
+    /// sufficient space for the provided vertices.
     pub fn write_vertex_data(
         &mut self,
         rc: &RenderContext,

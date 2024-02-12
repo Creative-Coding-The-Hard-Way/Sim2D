@@ -11,10 +11,10 @@ use {
 };
 
 static FRAGMENT: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
-    data: *include_bytes!("shaders/triangle.frag.spv"),
+    data: *include_bytes!("shaders/passthrough.frag.spv"),
 };
 static VERTEX: &U32AlignedShaderSource<[u8]> = &U32AlignedShaderSource {
-    data: *include_bytes!("shaders/triangle.vert.spv"),
+    data: *include_bytes!("shaders/interpolated_primitive.vert.spv"),
 };
 
 #[repr(C)]
@@ -28,6 +28,7 @@ pub struct GraphicsPipeline {
     pub pipeline: raii::PipelineArc,
     pub pipeline_layout: raii::PipelineLayoutArc,
     pub descriptor_set_layout: raii::DescriptorSetLayoutArc,
+    pub topology: vk::PrimitiveTopology,
 }
 
 impl GraphicsPipeline {
@@ -35,6 +36,7 @@ impl GraphicsPipeline {
     pub fn new(
         rc: &RenderContext,
         render_pass: &vk::RenderPass,
+        topology: vk::PrimitiveTopology,
     ) -> Result<Self> {
         let descriptor_set_layout = {
             let binding = vk::DescriptorSetLayoutBinding {
@@ -131,7 +133,7 @@ impl GraphicsPipeline {
         // Input Assembly
         let input_assembly_create_info =
             vk::PipelineInputAssemblyStateCreateInfo {
-                topology: vk::PrimitiveTopology::POINT_LIST,
+                topology,
                 primitive_restart_enable: vk::FALSE,
                 ..Default::default()
             };
@@ -210,6 +212,7 @@ impl GraphicsPipeline {
             pipeline,
             pipeline_layout,
             descriptor_set_layout,
+            topology,
         })
     }
 }
