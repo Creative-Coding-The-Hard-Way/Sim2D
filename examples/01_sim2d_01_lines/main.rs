@@ -39,7 +39,7 @@ struct MyApp {
 impl Sim2D for MyApp {
     fn new(rc: RenderContext, state: &WindowState) -> Result<Self> {
         state.set_title(module_path!())?;
-        let size = state.set_size(vec2(800.0, 600.0))?;
+        let size = state.set_size(vec2(1200.0, 1000.0))?;
 
         let renderer = AsyncRenderer::new(
             &rc,
