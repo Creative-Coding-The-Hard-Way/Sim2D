@@ -21,6 +21,7 @@ indoc = "*"
 nalgebra = "*"
 rand = "*"
 rayon = "*"
+num-traits = "*"
 
 [build-dependencies]
 anyhow = "*"

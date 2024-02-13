@@ -4,8 +4,11 @@ use {
         vertex_buffer::VertexBuffer,
         Vertex, WritableVertexBuffer,
     },
-    crate::graphics::vulkan::{
-        render_context::RenderContext, sync::AsyncNBufferClient,
+    crate::{
+        graphics::vulkan::{
+            render_context::RenderContext, sync::AsyncNBufferClient,
+        },
+        math::{Mat4f, Vec2ui},
     },
     anyhow::Result,
     std::sync::mpsc::Sender,
@@ -14,7 +17,7 @@ use {
 pub struct InterpolatedPrimitivesApi {
     vertex_buffer_client: AsyncNBufferClient<VertexBuffer>,
     transform_client: AsyncNBufferClient<Transform>,
-    framebuffer_size_sender: Sender<(u32, u32)>,
+    framebuffer_size_sender: Sender<Vec2ui>,
 }
 
 impl InterpolatedPrimitivesApi {
@@ -23,7 +26,7 @@ impl InterpolatedPrimitivesApi {
     pub(super) fn new(
         vertex_buffer_client: AsyncNBufferClient<VertexBuffer>,
         transform_client: AsyncNBufferClient<Transform>,
-        framebuffer_size_sender: Sender<(u32, u32)>,
+        framebuffer_size_sender: Sender<Vec2ui>,
     ) -> Self {
         Self {
             vertex_buffer_client,
@@ -34,7 +37,7 @@ impl InterpolatedPrimitivesApi {
 
     /// Set the current projection matrix. Can be a no-op if the renderer is not
     /// ready for a new matrix yet.
-    pub fn set_projection(&mut self, matrix: [[f32; 4]; 4]) -> Result<()> {
+    pub fn set_projection(&mut self, matrix: &Mat4f) -> Result<()> {
         if let Some(transform) =
             self.transform_client.wait_for_free_resource()?
         {
@@ -68,7 +71,7 @@ impl InterpolatedPrimitivesApi {
     /// Let the renderer know the current framebuffer size.
     pub fn framebuffer_resized(
         &mut self,
-        framebuffer_size: (u32, u32),
+        framebuffer_size: Vec2ui,
     ) -> Result<()> {
         self.framebuffer_size_sender.send(framebuffer_size)?;
         Ok(())

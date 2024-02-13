@@ -1,7 +1,12 @@
 use {
-    crate::math::{vec2, Vec2f, Vec2ui},
+    super::WindowCommand,
+    crate::{
+        math::{vec2, Vec2, Vec2f, Vec2ui},
+        trace,
+    },
+    anyhow::{Context, Result},
     glfw::Action,
-    std::collections::BTreeSet,
+    std::{collections::BTreeSet, sync::mpsc::SyncSender},
 };
 
 pub enum WindowEvent {
@@ -39,10 +44,14 @@ pub struct WindowState {
     mouse_pixels: Vec2f,
     mouse: Vec2f,
     mouse_buttons: BTreeSet<MouseButton>,
+    commands: SyncSender<WindowCommand>,
 }
 
 impl WindowState {
-    pub(super) fn new(window: &glfw::Window) -> Self {
+    pub(super) fn new(
+        window: &glfw::Window,
+        commands: SyncSender<WindowCommand>,
+    ) -> Self {
         let (fb_w, fb_h) = window.get_framebuffer_size();
         let (w, h) = window.get_size();
         let (m_x, m_y) = window.get_cursor_pos();
@@ -57,6 +66,7 @@ impl WindowState {
             mouse_pixels,
             mouse,
             mouse_buttons: BTreeSet::new(),
+            commands,
         }
     }
 
@@ -99,6 +109,42 @@ impl WindowState {
 // Public API
 
 impl WindowState {
+    // Commands
+    // ------------------------------------------------------------------------
+
+    /// Set the window title.
+    pub fn set_title(&self, title: impl Into<String>) -> Result<()> {
+        self.commands
+            .send(WindowCommand::SetTitle(title.into()))
+            .with_context(trace!("Error while setting window title!"))
+    }
+
+    /// Toggle the window's resizability.
+    pub fn set_resizable(&self, is_resizable: bool) -> Result<()> {
+        self.commands
+            .send(WindowCommand::SetResizable(is_resizable))
+            .with_context(trace!("Error while setting the window resize flag!"))
+    }
+
+    /// Set the window size.
+    ///
+    /// Note: This does not immediately update the cached framebuffer and window
+    /// size until after events are processed. Therefore, calling `size()`
+    /// immediately after calling `set_size` will not return the set value.
+    ///
+    /// # Returns
+    ///
+    /// Returns the given size for convenience.
+    pub fn set_size<T>(&self, size: Vec2<T>) -> Result<Vec2<T>>
+    where
+        T: nalgebra::Scalar + Copy + num_traits::AsPrimitive<u32>,
+    {
+        self.commands
+            .send(WindowCommand::SetSize(vec2(size.x.as_(), size.y.as_())))
+            .with_context(trace!("Error while setting the window size!"))
+            .map(|_| size)
+    }
+
     // Mouse API
     // ------------------------------------------------------------------------
 

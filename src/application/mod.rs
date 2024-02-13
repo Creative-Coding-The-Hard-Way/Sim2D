@@ -1,9 +1,12 @@
 mod glfw_application;
 mod window_state;
 
-use {crate::graphics::vulkan::render_context::RenderContext, anyhow::Result};
+use {
+    crate::graphics::vulkan::render_context::RenderContext, anyhow::Result,
+    std::sync::mpsc::SyncSender,
+};
 pub use {
-    glfw_application::{glfw_application_main, GLFWApplication},
+    glfw_application::{glfw_application_main, GLFWApplication, WindowCommand},
     window_state::{MouseButton, WindowEvent, WindowState},
 };
 
@@ -71,14 +74,16 @@ struct GlfwSim2DApp<S: Sim2D> {
 }
 
 impl<S: Sim2D> GLFWApplication for GlfwSim2DApp<S> {
-    fn new(window: &mut glfw::Window) -> Result<Self>
+    fn new(
+        window: &glfw::Window,
+        window_commands: SyncSender<WindowCommand>,
+    ) -> Result<Self>
     where
         Self: Sized,
     {
-        let window_state = WindowState::new(window);
+        let window_state = WindowState::new(window, window_commands);
         let rc = RenderContext::frow_glfw_window(window)?;
-        let mut sim = S::new(rc, &window_state)?;
-        sim.resized(&window_state)?;
+        let sim = S::new(rc, &window_state)?;
         Ok(Self { sim, window_state })
     }
 

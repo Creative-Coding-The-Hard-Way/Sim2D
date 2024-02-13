@@ -1,6 +1,6 @@
-use {
-    super::{vec2, Vec2},
-    sim2d::graphics::renderer::primitive::Vertex,
+use sim2d::{
+    graphics::renderer::primitive::Vertex,
+    math::{vec2, Vec2f},
 };
 
 pub struct Line {
@@ -9,7 +9,7 @@ pub struct Line {
 }
 
 impl Line {
-    pub fn new(start: Vec2, end: Vec2) -> Self {
+    pub fn new(start: Vec2f, end: Vec2f) -> Self {
         Self {
             start: Particle::new(start),
             end: Particle::new(end),
@@ -39,13 +39,13 @@ impl Line {
 }
 
 pub struct Particle {
-    pub position: Vec2,
-    pub position_previous: Vec2,
-    pub acceleration: Vec2,
+    pub position: Vec2f,
+    pub position_previous: Vec2f,
+    pub acceleration: Vec2f,
 }
 
 impl Particle {
-    pub fn new(pos: Vec2) -> Self {
+    pub fn new(pos: Vec2f) -> Self {
         Self {
             position: pos,
             position_previous: pos,
@@ -61,11 +61,11 @@ impl Particle {
         self.acceleration = vec2(0.0, 0.0);
     }
 
-    pub fn accelerate(&mut self, acceleration: Vec2) {
+    pub fn accelerate(&mut self, acceleration: Vec2f) {
         self.acceleration += acceleration;
     }
 
-    pub fn velocity(&self) -> Vec2 {
+    pub fn velocity(&self) -> Vec2f {
         self.position - self.position_previous
     }
 }

@@ -20,15 +20,10 @@ use {
             },
             vulkan::render_context::RenderContext,
         },
+        math::{symmetric_ortho, vec2},
     },
     std::time::Instant,
 };
-
-// Some convenient typedefs
-type Vec2 = nalgebra::Vector2<f32>;
-fn vec2(x: f32, y: f32) -> Vec2 {
-    Vec2::new(x, y)
-}
 
 struct MyApp {
     // Graphics resources
@@ -43,23 +38,26 @@ struct MyApp {
 
 impl Sim2D for MyApp {
     fn new(rc: RenderContext, state: &WindowState) -> Result<Self> {
+        state.set_title("Hello world")?;
+        let size = state.set_size(vec2(800.0, 800.0))?;
+
         let renderer = AsyncRenderer::<InterpolatedPrimitivesRenderer>::new(
             &rc,
             Parameters {
                 topology: vk::PrimitiveTopology::POINT_LIST,
+                framebuffer_size: *state.framebuffer_size(),
+                projection: symmetric_ortho(*state.size()),
             },
         )?;
-
         let particles: Vec<_> = (0..100_000)
             .par_bridge()
             .map_init(rand::thread_rng, |rng, _| {
-                let limits = state.size() * 0.5;
+                let limits = size * 0.5;
                 let x = rng.gen_range(-limits.x..limits.x);
                 let y = rng.gen_range(-limits.y..limits.y);
                 Particle::new(vec2(x, y))
             })
             .collect();
-
         Ok(MyApp {
             rc,
             renderer,
@@ -70,15 +68,10 @@ impl Sim2D for MyApp {
     }
 
     fn resized(&mut self, state: &WindowState) -> Result<()> {
-        let size = state.size();
-        self.renderer.set_projection([
-            [2.0 / size.x, 0.0, 0.0, 0.0],
-            [0.0, -2.0 / size.y, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ])?;
-        let fb_size = state.framebuffer_size();
-        self.renderer.framebuffer_resized((fb_size.x, fb_size.y))?;
+        self.renderer
+            .set_projection(&symmetric_ortho(*state.size()))?;
+        self.renderer
+            .framebuffer_resized(*state.framebuffer_size())?;
         Ok(())
     }
 

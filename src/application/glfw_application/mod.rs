@@ -1,9 +1,17 @@
 mod logging;
 
 use {
-    crate::trace,
+    crate::{math::Vec2ui, trace},
     anyhow::{Context, Error, Result},
+    std::sync::mpsc::SyncSender,
 };
+
+#[derive(Debug)]
+pub enum WindowCommand {
+    SetTitle(String),
+    SetResizable(bool),
+    SetSize(Vec2ui),
+}
 
 /// Represents an application which runs as a GLFW-managed window.
 pub trait GLFWApplication {
@@ -12,7 +20,13 @@ pub trait GLFWApplication {
     /// # Params
     ///
     /// - `window`: The GLFW Window which hosts the application.
-    fn new(window: &mut glfw::Window) -> Result<Self>
+    /// - `window_commands`: A channel to send commands for updating the
+    ///   application window. The application owns this sender and can safely
+    ///   keep it for sending commands at arbitrary times.
+    fn new(
+        window: &glfw::Window,
+        window_commands: SyncSender<WindowCommand>,
+    ) -> Result<Self>
     where
         Self: Sized;
 
@@ -85,8 +99,11 @@ where
         .with_context(trace!("Unable to create the glfw window!"))?;
     window.set_all_polling(true);
 
+    let (command_sender, command_receiver) =
+        std::sync::mpsc::sync_channel::<WindowCommand>(64);
+
     // Create the GLFW App instance.
-    let mut app = App::new(&mut window)
+    let mut app = App::new(&window, command_sender)
         .with_context(trace!("Unable to initialize the application!"))?;
 
     // Spawn the window thread
@@ -126,7 +143,27 @@ where
 
     // Handle window events on the main thread.
     while !window_thread.is_finished() {
-        glfw.wait_events_unbuffered(|_window_id, event| Some(event));
+        // Process Events
+        glfw.poll_events();
+
+        // Process Commands
+        while let Ok(command) = command_receiver.try_recv() {
+            log::info!("Got Window Command:\n{:#?}", command);
+            match command {
+                WindowCommand::SetTitle(title) => {
+                    window.set_title(&title);
+                }
+                WindowCommand::SetResizable(is_resizable) => {
+                    window.set_resizable(is_resizable);
+                }
+                WindowCommand::SetSize(size) => {
+                    window.set_size(size.x as i32, size.y as i32);
+                }
+            }
+        }
+
+        // Yield before looping again
+        std::thread::yield_now();
     }
 
     // Join the render thread and exit.

@@ -1,8 +1,11 @@
 use {
-    crate::graphics::vulkan::{
-        memory, raii,
-        render_context::RenderContext,
-        sync::{AsyncNBuffer, AsyncNBufferClient},
+    crate::{
+        graphics::vulkan::{
+            memory, raii,
+            render_context::RenderContext,
+            sync::{AsyncNBuffer, AsyncNBufferClient},
+        },
+        math::Mat4f,
     },
     anyhow::Result,
     ash::vk,
@@ -10,7 +13,7 @@ use {
 
 /// The actual data that is saved in the GPU memory and sent to the shader.
 struct TransformUniformBuffer {
-    transform: [[f32; 4]; 4],
+    transform: [f32; 16],
 }
 
 /// All of the resources required to bind the TransformUniformBuffer and use it
@@ -29,11 +32,16 @@ impl Transform {
     pub fn create_n_buffered(
         rc: &RenderContext,
         descriptor_set_layout: raii::DescriptorSetLayoutArc,
+        initial_value: &Mat4f,
         count: usize,
     ) -> Result<(AsyncNBuffer<Self>, AsyncNBufferClient<Self>)> {
         let mut transforms = Vec::with_capacity(count);
         for _ in 0..count {
-            transforms.push(Self::new(rc, descriptor_set_layout.clone())?);
+            transforms.push(Self::new(
+                rc,
+                descriptor_set_layout.clone(),
+                initial_value,
+            )?);
         }
         AsyncNBuffer::new(transforms)
     }
@@ -42,6 +50,7 @@ impl Transform {
     fn new(
         rc: &RenderContext,
         descriptor_set_layout: raii::DescriptorSetLayoutArc,
+        initial_value: &Mat4f,
     ) -> Result<Self> {
         let buffer = {
             let create_info = vk::BufferCreateInfo {
@@ -68,12 +77,7 @@ impl Transform {
             rc.device
                 .bind_buffer_memory(buffer.raw, block.memory.raw, 0)?;
             let t = block.mapped_ptr as *mut TransformUniformBuffer;
-            (*t).transform = [
-                [1.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0],
-            ];
+            (*t).transform.copy_from_slice(initial_value.as_slice());
         };
         let descriptor_pool = {
             let pool_size = vk::DescriptorPoolSize {
@@ -143,11 +147,13 @@ impl WritableTransform {
     }
 
     /// Set the transformation matrix.
-    pub fn set_transform(&mut self, transform: [[f32; 4]; 4]) {
+    pub fn set_transform(&mut self, transform: &Mat4f) {
         let transform_uniform_buffer =
             self.0.block.mapped_ptr as *mut TransformUniformBuffer;
         unsafe {
-            (*transform_uniform_buffer).transform = transform;
+            (*transform_uniform_buffer)
+                .transform
+                .copy_from_slice(transform.as_slice());
         }
     }
 }

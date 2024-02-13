@@ -21,6 +21,7 @@ use {
             swapchain::Swapchain,
             sync::AsyncNBuffer,
         },
+        math::{vec2, Mat4f, Vec2ui},
         trace,
     },
     anyhow::{Context, Result},
@@ -38,12 +39,20 @@ pub use self::{
 pub struct Parameters {
     /// The topology for the vertices. Defaults to TRIANGLE_LIST.
     pub topology: vk::PrimitiveTopology,
+
+    /// The initial framebuffer size.
+    pub framebuffer_size: Vec2ui,
+
+    /// The initial projection.
+    pub projection: Mat4f,
 }
 
 impl Default for Parameters {
     fn default() -> Self {
         Self {
+            framebuffer_size: vec2(1, 1),
             topology: vk::PrimitiveTopology::TRIANGLE_LIST,
+            projection: Mat4f::identity(),
         }
     }
 }
@@ -64,9 +73,9 @@ pub struct InterpolatedPrimitivesRenderer {
     color_pass: ColorPass,
     pipeline: GraphicsPipeline,
     swapchain_needs_rebuild: bool,
-    framebuffer_size: (u32, u32),
+    framebuffer_size: Vec2ui,
 
-    framebuffer_size_reciever: Receiver<(u32, u32)>,
+    framebuffer_size_reciever: Receiver<Vec2ui>,
     vertices: AsyncNBuffer<VertexBuffer>,
     transform: AsyncNBuffer<Transform>,
     frames_in_flight: FramesInFlight,
@@ -84,8 +93,11 @@ impl Renderer for InterpolatedPrimitivesRenderer {
     where
         Self: Sized,
     {
-        let swapchain = Swapchain::new(rc, (1, 1))
-            .with_context(trace!("Unable to create the swapchain!"))?;
+        let swapchain = Swapchain::new(
+            rc,
+            (parameters.framebuffer_size.x, parameters.framebuffer_size.y),
+        )
+        .with_context(trace!("Unable to create the swapchain!"))?;
         let color_pass = ColorPass::new(rc, &swapchain)
             .with_context(trace!("Unable to create the color pass!"))?;
         let pipeline = GraphicsPipeline::new(
@@ -102,12 +114,13 @@ impl Renderer for InterpolatedPrimitivesRenderer {
         let (transform, transform_client) = Transform::create_n_buffered(
             rc,
             pipeline.descriptor_set_layout.clone(),
-            2,
+            &parameters.projection,
+            frames_in_flight.count() + 1,
         )
         .with_context(trace!("Unable to create transform buffers!"))?;
 
         let (framebuffer_size_sender, framebuffer_size_reciever) =
-            std::sync::mpsc::channel::<(u32, u32)>();
+            std::sync::mpsc::channel::<Vec2ui>();
 
         Ok((
             Self {
@@ -116,7 +129,7 @@ impl Renderer for InterpolatedPrimitivesRenderer {
                 color_pass,
                 pipeline,
                 swapchain_needs_rebuild: false,
-                framebuffer_size: (1, 1),
+                framebuffer_size: parameters.framebuffer_size,
                 frames_in_flight,
                 framebuffer_size_reciever,
                 vertices,
@@ -143,7 +156,7 @@ impl Renderer for InterpolatedPrimitivesRenderer {
             {
                 self.framebuffer_size = framebuffer_size;
             }
-            return self.rebuild_swapchain(self.framebuffer_size);
+            return self.rebuild_swapchain();
         }
 
         self.present_frame()?;
@@ -165,10 +178,7 @@ impl Renderer for InterpolatedPrimitivesRenderer {
 
 impl InterpolatedPrimitivesRenderer {
     /// Rebuild the swapchain and dependent resources
-    fn rebuild_swapchain(
-        &mut self,
-        framebuffer_size: (u32, u32),
-    ) -> Result<()> {
+    fn rebuild_swapchain(&mut self) -> Result<()> {
         // finish all frames in flight before rebuilding
         self.frames_in_flight.wait_for_all_frames(&self.rc)?;
         self.vertices.free_all()?; // since all frames are now finished
@@ -176,9 +186,11 @@ impl InterpolatedPrimitivesRenderer {
 
         // rebuild the swapchain
         unsafe {
-            self.framebuffer_size = framebuffer_size;
             self.swapchain
-                .rebuild_swapchain(&self.rc, self.framebuffer_size)
+                .rebuild_swapchain(
+                    &self.rc,
+                    (self.framebuffer_size.x, self.framebuffer_size.y),
+                )
                 .with_context(trace!("Unable to resize the swapchain!"))?
         };
 

@@ -628,6 +628,7 @@ dependencies = [
  "indoc",
  "log",
  "nalgebra",
+ "num-traits",
  "rand",
  "rayon",
  "regex",
