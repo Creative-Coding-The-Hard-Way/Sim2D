@@ -9,3 +9,9 @@ ash = "0.38.0"
 clap = "4.5.53"
 demo_vk = { git = "https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git" }
 glfw = "0.60.0"
+log = "0.4.28"
+
+[build-dependencies]
+anyhow = "1.0.100"
+glob = "0.3.3"
+shader_compiler = { git = "https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git" }

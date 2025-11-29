@@ -1679,6 +1679,9 @@ dependencies = [
  "clap",
  "demo_vk",
  "glfw",
+ "glob",
+ "log",
+ "shader_compiler",
 ]
 
 [[package]]

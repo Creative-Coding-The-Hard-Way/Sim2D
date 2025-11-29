@@ -1,23 +1,30 @@
 use {
-    anyhow::Result,
+    anyhow::{Context, Result},
     ash::vk,
     clap::Parser,
     demo_vk::{
+        app::FullscreenToggle,
         demo::{Demo, Graphics, demo_main},
-        graphics::vulkan::Frame,
+        graphics::vulkan::{Frame, raii},
     },
     glfw::Window,
 };
+
+mod g2;
 
 #[derive(Debug, Parser)]
 struct Args {}
 
 type Gfx = Graphics<Args>;
 
-struct Example {}
+struct Example {
+    fullscreen: FullscreenToggle,
+    pipeline: raii::Pipeline,
+}
 
 impl Demo for Example {
     type Args = Args;
+    const FRAMES_IN_FLIGHT_COUNT: usize = 2;
 
     /// Specify physical device features if anything non-default is required
     fn physical_device_dynamic_rendering_features()
@@ -29,12 +36,23 @@ impl Demo for Example {
     }
 
     /// Initialize the demo
-    fn new(_window: &mut Window, _gfx: &mut Gfx) -> Result<Self> {
-        Ok(Self {})
+    fn new(window: &mut Window, gfx: &mut Gfx) -> Result<Self> {
+        window.set_key_polling(true);
+        let pipeline = g2::create_pipeline(gfx)
+            .context("Unable to create graphics pipeline")?;
+        Ok(Self {
+            pipeline,
+            fullscreen: FullscreenToggle::new(window),
+        })
     }
 
     /// Draw a frame
-    fn draw(&mut self, _window: &mut Window, gfx: &mut Gfx, frame: &Frame) -> Result<()> {
+    fn draw(
+        &mut self,
+        _window: &mut Window,
+        gfx: &mut Gfx,
+        frame: &Frame,
+    ) -> Result<()> {
         let image_memory_barrier = vk::ImageMemoryBarrier {
             old_layout: vk::ImageLayout::UNDEFINED,
             new_layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
@@ -91,6 +109,33 @@ impl Demo for Example {
                 },
             );
 
+            gfx.vulkan.cmd_set_viewport(
+                frame.command_buffer(),
+                0,
+                &[vk::Viewport {
+                    x: 0.0,
+                    y: 0.0,
+                    width: gfx.swapchain.extent().width as f32,
+                    height: gfx.swapchain.extent().height as f32,
+                    min_depth: 0.0,
+                    max_depth: 1.0,
+                }],
+            );
+            gfx.vulkan.cmd_set_scissor(
+                frame.command_buffer(),
+                0,
+                &[vk::Rect2D {
+                    offset: vk::Offset2D { x: 0, y: 0 },
+                    extent: gfx.swapchain.extent(),
+                }],
+            );
+            gfx.vulkan.cmd_bind_pipeline(
+                frame.command_buffer(),
+                vk::PipelineBindPoint::GRAPHICS,
+                self.pipeline.raw,
+            );
+            gfx.vulkan.cmd_draw(frame.command_buffer(), 3, 1, 0, 0);
+
             gfx.vulkan.cmd_end_rendering(frame.command_buffer());
         }
 
@@ -119,6 +164,27 @@ impl Demo for Example {
                 &[],
                 &[image_memory_barrier],
             );
+        }
+
+        Ok(())
+    }
+
+    fn handle_event(
+        &mut self,
+        #[allow(unused_variables)] window: &mut glfw::Window,
+        #[allow(unused_variables)] gfx: &mut Graphics<Self::Args>,
+        #[allow(unused_variables)] event: glfw::WindowEvent,
+    ) -> Result<()> {
+        if let glfw::WindowEvent::Key(
+            glfw::Key::Space,
+            _,
+            glfw::Action::Release,
+            _,
+        ) = event
+        {
+            self.fullscreen
+                .toggle_fullscreen(window)
+                .context("unable to toggle fullscreen!")?;
         }
 
         Ok(())
