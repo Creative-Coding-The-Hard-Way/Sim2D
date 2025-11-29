@@ -1,45 +1,11 @@
 [package]
 name = "sim2d"
 version = "0.1.0"
-authors = ["Bradley Lyman <lyman.brad3211@gmail.com>"]
-edition = "2018"
-
-[profile.release-with-debug]
-inherits = "release"
-debug = true
-
-[profile.dev]
-opt-level = 1               # Use slightly better optimizations
+edition = "2024"
 
 [dependencies]
-anyhow = "*"
-flexi_logger = { version = "*", features = ["async"] }
-log = "*"
-ash = { version = "*", features = ["linked"] }
-aquamarine = "*"
-nalgebra = "*"
-memoffset = "*"
-thiserror = "*"
-spin_sleep = "*"
-image = "*"
-indoc = "*"
-regex = "*"
-ccthw_ash_instance = { git = "https://github.com/Creative-Coding-The-Hard-Way/ash_instance.git" }
-ccthw_ash_allocator = { git = "https://github.com/Creative-Coding-The-Hard-Way/ash_allocator.git" }
-scopeguard = "*"
-approx = "*"
-rand = "*"
-rayon = "*"
-ab_glyph = "*"
-
-[build-dependencies]
-anyhow = "*"
-glob = "*"
-
-[dependencies.glfw]
-version = "*"
-features = [ "vulkan" ]
-
-[dependencies.textwrap]
-features = ["terminal_size"]
-version = "*"
+anyhow = "1.0.100"
+ash = "0.38.0"
+clap = "4.5.53"
+demo_vk = { git = "https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git" }
+glfw = "0.60.0"
