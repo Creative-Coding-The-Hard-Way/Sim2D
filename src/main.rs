@@ -7,10 +7,10 @@ use {
     demo_vk::{
         app::FullscreenToggle,
         demo::{Demo, Graphics, demo_main},
-        graphics::vulkan::Frame,
+        graphics::vulkan::{Frame, RequiredDeviceFeatures},
     },
     glfw::Window,
-    graphics_2d::{G2, GeometryMesh},
+    graphics_2d::{GeometryMesh, Graphics2D},
     nalgebra::{Matrix4, vector},
     std::{f32, time::Instant},
 };
@@ -37,7 +37,8 @@ struct Example {
     fullscreen: FullscreenToggle,
     projection: Matrix4<f32>,
     geometry_mesh: GeometryMesh,
-    g2: G2,
+    geometry_mesh2: GeometryMesh,
+    g2: Graphics2D,
     start_time: Instant,
 }
 
@@ -45,11 +46,18 @@ impl Demo for Example {
     type Args = Args;
     const FRAMES_IN_FLIGHT_COUNT: usize = 2;
 
-    /// Specify physical device features if anything non-default is required
-    fn physical_device_dynamic_rendering_features()
-    -> vk::PhysicalDeviceDynamicRenderingFeatures<'static> {
-        vk::PhysicalDeviceDynamicRenderingFeatures {
-            dynamic_rendering: vk::TRUE,
+    fn required_device_features() -> RequiredDeviceFeatures {
+        RequiredDeviceFeatures {
+            physical_device_dynamic_rendering_features:
+                vk::PhysicalDeviceDynamicRenderingFeatures {
+                    dynamic_rendering: vk::TRUE,
+                    ..Default::default()
+                },
+            physical_device_buffer_device_address_features:
+                vk::PhysicalDeviceBufferDeviceAddressFeatures {
+                    buffer_device_address: vk::TRUE,
+                    ..Default::default()
+                },
             ..Default::default()
         }
     }
@@ -70,7 +78,9 @@ impl Demo for Example {
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
             geometry_mesh: GeometryMesh::new(100),
-            g2: G2::new(gfx).context("Unable to create g2 subsystem")?,
+            geometry_mesh2: GeometryMesh::new(100),
+            g2: Graphics2D::new(gfx)
+                .context("Unable to create g2 subsystem")?,
             start_time: Instant::now(),
         })
     }
@@ -80,31 +90,23 @@ impl Demo for Example {
         #[allow(unused_variables)] window: &mut glfw::Window,
         #[allow(unused_variables)] gfx: &mut Graphics<Self::Args>,
     ) -> Result<()> {
-        let t = Instant::now().duration_since(self.start_time).as_secs_f32()
+        let _t = Instant::now().duration_since(self.start_time).as_secs_f32()
             * (f32::consts::PI / 3.0);
 
+        self.geometry_mesh2.clear();
         self.geometry_mesh.clear();
+        self.geometry_mesh.set_color([1.0, 0.0, 0.0, 1.0]);
+        self.geometry_mesh.triangle(
+            vector![0.0, 0.0],
+            vector![1.0, 0.0],
+            vector![0.0, 1.0],
+        );
+        self.geometry_mesh.set_color([1.0, 1.0, 1.0, 1.0]);
+        self.geometry_mesh.aligned_quad(0.0, 0.0, 10.0, 0.05);
 
-        let max = 100;
-        for i in 0..max {
-            let angle = (i as f32 / max as f32) * f32::consts::PI * 2.0;
-            let next_angle =
-                ((i + 1) as f32 / max as f32) * f32::consts::PI * 2.0;
+        self.geometry_mesh2.set_color([0.0, 1.0, 0.0, 1.0]);
+        self.geometry_mesh2.aligned_quad(2.0, 2.0, 2.0, 5.0);
 
-            let calc_pos = |angle: f32| {
-                vector![
-                    4.5 * (angle * 2.3 + t).cos(),
-                    4.5 * (angle * 1.821 + t).sin()
-                ]
-            };
-
-            let current = calc_pos(angle);
-            let next = calc_pos(next_angle);
-            let d = 0.05 * (next - current).normalize();
-            let r = vector![-d.x, d.y];
-
-            self.geometry_mesh.triangle(next, current + r, current - r);
-        }
         Ok(())
     }
 
@@ -171,7 +173,11 @@ impl Demo for Example {
                 },
             );
             self.g2.set_projection(frame, &self.projection)?;
-            self.g2.add_mesh(frame, &self.geometry_mesh)?;
+            self.g2.prepare_meshes(
+                gfx,
+                frame,
+                &[&self.geometry_mesh, &self.geometry_mesh2],
+            )?;
             self.g2.write_draw_commands(gfx, frame)?;
             gfx.vulkan.cmd_end_rendering(frame.command_buffer());
         }

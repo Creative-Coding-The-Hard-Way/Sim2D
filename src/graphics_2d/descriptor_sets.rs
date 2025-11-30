@@ -1,9 +1,9 @@
 use {
-    super::{UniformData, Vertex},
+    super::{DynamicBuffer, UniformData, Vertex},
     crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::{CPUBuffer, UniformBuffer, raii},
+    demo_vk::graphics::vulkan::{UniformBuffer, raii},
 };
 
 pub fn create_descriptor_set_layout(
@@ -83,17 +83,51 @@ pub fn allocate_descriptor_sets(
     }
 }
 
+/// Update the vertex buffer binding for the provided descriptor set.
+///
+/// # Safety
+///
+/// Unsafe because the caller must synchronize access to the descriptor set and
+/// vertex buffer.
+pub unsafe fn write_vertex_buffer_descriptor(
+    gfx: &Gfx,
+    descriptor_set: vk::DescriptorSet,
+    vertex_buffer: &DynamicBuffer<Vertex>,
+) {
+    let vertex_buffer_info = vk::DescriptorBufferInfo {
+        buffer: vertex_buffer.raw(),
+        offset: 0,
+        range: vertex_buffer.size_in_bytes(),
+    };
+    unsafe {
+        gfx.vulkan.update_descriptor_sets(
+            &[vk::WriteDescriptorSet {
+                dst_set: descriptor_set,
+                dst_binding: 1,
+                dst_array_element: 0,
+                descriptor_count: 1,
+                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
+                p_image_info: std::ptr::null(),
+                p_buffer_info: &vertex_buffer_info,
+                p_texel_buffer_view: std::ptr::null(),
+                ..Default::default()
+            }],
+            &[],
+        )
+    };
+}
+
 pub fn write_descriptor_sets(
     gfx: &Gfx,
     descriptor_sets: &[vk::DescriptorSet],
     uniform_buffer: &UniformBuffer<UniformData>,
-    vertex_buffers: &[CPUBuffer<Vertex>],
+    vertex_buffers: &[DynamicBuffer<Vertex>],
 ) {
     let vertex_buffer_infos: Vec<vk::DescriptorBufferInfo> = descriptor_sets
         .iter()
         .zip(vertex_buffers.iter())
         .map(|(_, vertex_buffer)| vk::DescriptorBufferInfo {
-            buffer: vertex_buffer.buffer(),
+            buffer: vertex_buffer.raw(),
             offset: 0,
             range: vertex_buffer.size_in_bytes(),
         })

@@ -2,6 +2,7 @@
 //! typically change every frame.
 
 mod descriptor_sets;
+mod dynamic_buffer;
 mod mesh;
 mod pipeline;
 
@@ -10,11 +11,13 @@ use {
     crate::{Gfx, graphics_2d::mesh::Mesh},
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::{CPUBuffer, Frame, UniformBuffer, raii},
+    demo_vk::graphics::vulkan::{Frame, UniformBuffer, raii},
     descriptor_sets::{
         allocate_descriptor_sets, create_descriptor_pool,
         create_descriptor_set_layout, write_descriptor_sets,
+        write_vertex_buffer_descriptor,
     },
+    dynamic_buffer::DynamicBuffer,
     nalgebra::Matrix4,
     pipeline::{create_pipeline, create_pipeline_layout},
 };
@@ -25,19 +28,30 @@ struct UniformData {
     pub projection: [[f32; 4]; 4],
 }
 
+#[derive(Debug)]
+struct DrawParams {
+    index_offset: u32,
+    vertex_offset: u32,
+    index_count: u32,
+}
+
 /// The 2D Graphics entrypoint.
-pub struct G2 {
-    vertex_buffers: Vec<CPUBuffer<Vertex>>,
+pub struct Graphics2D {
+    vertex_buffers: Vec<DynamicBuffer<Vertex>>,
+    index_buffers: Vec<DynamicBuffer<u32>>,
+
     uniform_buffer: UniformBuffer<UniformData>,
     _descriptor_pool: raii::DescriptorPool,
     _descriptor_set_layout: raii::DescriptorSetLayout,
     descriptor_sets: Vec<vk::DescriptorSet>,
     pipeline_layout: raii::PipelineLayout,
     pipeline: raii::Pipeline,
-    vertex_count: u32,
+    draw_params: Vec<DrawParams>,
 }
 
-impl G2 {
+const INITIAL_CAPACITY: usize = 16_384;
+
+impl Graphics2D {
     pub fn new(gfx: &Gfx) -> Result<Self> {
         // Create descriptor resources
         let descriptor_pool = create_descriptor_pool(gfx)
@@ -67,13 +81,25 @@ impl G2 {
             let mut vertex_buffers =
                 Vec::with_capacity(gfx.frames_in_flight.frame_count());
             for _ in 0..gfx.frames_in_flight.frame_count() {
-                vertex_buffers.push(CPUBuffer::allocate(
+                vertex_buffers.push(DynamicBuffer::new(
                     &gfx.vulkan,
-                    10_000,
+                    INITIAL_CAPACITY,
                     vk::BufferUsageFlags::STORAGE_BUFFER,
                 )?);
             }
             vertex_buffers
+        };
+        let index_buffers = {
+            let mut index_buffers =
+                Vec::with_capacity(gfx.frames_in_flight.frame_count());
+            for _ in 0..gfx.frames_in_flight.frame_count() {
+                index_buffers.push(DynamicBuffer::new(
+                    &gfx.vulkan,
+                    INITIAL_CAPACITY,
+                    vk::BufferUsageFlags::INDEX_BUFFER,
+                )?);
+            }
+            index_buffers
         };
 
         // write descriptor sets
@@ -91,18 +117,72 @@ impl G2 {
             descriptor_sets,
             pipeline_layout,
             pipeline,
+            index_buffers,
             vertex_buffers,
-            vertex_count: 0,
+            draw_params: Vec::with_capacity(10),
         })
     }
 
     /// Adds a mesh to the current frame.
-    pub fn add_mesh(&mut self, frame: &Frame, mesh: &impl Mesh) -> Result<()> {
-        unsafe {
+    pub fn prepare_meshes(
+        &mut self,
+        gfx: &Gfx,
+        frame: &Frame,
+        meshes: &[&dyn Mesh],
+    ) -> Result<()> {
+        let (vertex_data, index_data) = {
+            let mut vertex_data = vec![];
+            let mut index_data = vec![];
+            let mut index_offset = 0;
+            let mut vertex_offset = 0;
+
+            self.draw_params.clear();
+            for mesh in meshes {
+                let vertices = mesh.vertices();
+                let indices = mesh.indices();
+                vertex_data.push(vertices);
+                index_data.push(indices);
+
+                self.draw_params.push(DrawParams {
+                    index_offset,
+                    vertex_offset,
+                    index_count: indices.len() as u32,
+                });
+
+                index_offset += indices.len() as u32;
+                vertex_offset += vertices.len() as u32;
+            }
+
+            (vertex_data, index_data)
+        };
+
+        // write mesh data into frame-specific buffers
+        let needs_descriptor_update = unsafe {
             self.vertex_buffers[frame.frame_index()]
-                .write_data(self.vertex_count as usize, mesh.vertices())?;
+                .write_data(&gfx.vulkan, &vertex_data)
+                .context("Unable to write frame vertex data!")?
+        };
+
+        if needs_descriptor_update {
+            // the vertex buffer was reallocated, so the descriptor needs to
+            // be updated to refer to the new buffer.
+
+            unsafe {
+                // SAFE because only frame-specific resources are modified
+                write_vertex_buffer_descriptor(
+                    gfx,
+                    self.descriptor_sets[frame.frame_index()],
+                    &self.vertex_buffers[frame.frame_index()],
+                );
+            }
         }
-        self.vertex_count += mesh.vertices().len() as u32;
+
+        unsafe {
+            self.index_buffers[frame.frame_index()]
+                .write_data(&gfx.vulkan, &index_data)
+                .context("Unable to write index data!")?;
+        }
+
         Ok(())
     }
 
@@ -162,15 +242,23 @@ impl G2 {
                 &[self.descriptor_sets[frame.frame_index()]],
                 &[],
             );
-
-            gfx.vulkan.cmd_draw(
+            gfx.vulkan.cmd_bind_index_buffer(
                 frame.command_buffer(),
-                self.vertex_count,
-                1,
+                self.index_buffers[frame.frame_index()].raw(),
                 0,
-                0,
+                vk::IndexType::UINT32,
             );
-            self.vertex_count = 0;
+
+            for draw_params in self.draw_params.drain(0..) {
+                gfx.vulkan.cmd_draw_indexed(
+                    frame.command_buffer(),
+                    draw_params.index_count, // index count
+                    1,                       // instance count
+                    draw_params.index_offset, // first index
+                    draw_params.vertex_offset as i32, // vertex offset
+                    0,                       // first instance
+                );
+            }
         }
         Ok(())
     }
