@@ -1,3 +1,5 @@
+mod graphics_2d;
+
 use {
     anyhow::{Context, Result},
     ash::vk,
@@ -5,21 +7,35 @@ use {
     demo_vk::{
         app::FullscreenToggle,
         demo::{Demo, Graphics, demo_main},
-        graphics::vulkan::{Frame, raii},
+        graphics::vulkan::Frame,
     },
     glfw::Window,
+    graphics_2d::{G2, Vertex},
+    nalgebra::Matrix4,
 };
-
-mod g2;
 
 #[derive(Debug, Parser)]
 struct Args {}
 
 type Gfx = Graphics<Args>;
 
+pub fn ortho_projection(aspect: f32, height: f32) -> Matrix4<f32> {
+    let w = height * aspect;
+    let h = height;
+    #[rustfmt::skip]
+    let projection = Matrix4::new(
+        2.0 / w,  0.0,     0.0, 0.0,
+        0.0,     -2.0 / h, 0.0, 0.0,
+        0.0,      0.0,     1.0, 0.0,
+        0.0,      0.0,     0.0, 1.0,
+    );
+    projection
+}
+
 struct Example {
     fullscreen: FullscreenToggle,
-    pipeline: raii::Pipeline,
+    projection: Matrix4<f32>,
+    g2: G2,
 }
 
 impl Demo for Example {
@@ -38,11 +54,19 @@ impl Demo for Example {
     /// Initialize the demo
     fn new(window: &mut Window, gfx: &mut Gfx) -> Result<Self> {
         window.set_key_polling(true);
-        let pipeline = g2::create_pipeline(gfx)
-            .context("Unable to create graphics pipeline")?;
+        window.set_framebuffer_size_polling(true);
+        window.set_size(1920, 1080);
+        window.set_aspect_ratio(4, 3);
+
+        let (w, h) = {
+            let (w, h) = window.get_framebuffer_size();
+            (w as f32, h as f32)
+        };
+
         Ok(Self {
-            pipeline,
             fullscreen: FullscreenToggle::new(window),
+            projection: ortho_projection(w / h, 10.0),
+            g2: G2::new(gfx).context("Unable to create g2 subsystem")?,
         })
     }
 
@@ -108,34 +132,24 @@ impl Demo for Example {
                     ..Default::default()
                 },
             );
+            self.g2.set_projection(frame, &self.projection)?;
 
-            gfx.vulkan.cmd_set_viewport(
-                frame.command_buffer(),
-                0,
-                &[vk::Viewport {
-                    x: 0.0,
-                    y: 0.0,
-                    width: gfx.swapchain.extent().width as f32,
-                    height: gfx.swapchain.extent().height as f32,
-                    min_depth: 0.0,
-                    max_depth: 1.0,
-                }],
-            );
-            gfx.vulkan.cmd_set_scissor(
-                frame.command_buffer(),
-                0,
-                &[vk::Rect2D {
-                    offset: vk::Offset2D { x: 0, y: 0 },
-                    extent: gfx.swapchain.extent(),
-                }],
-            );
-            gfx.vulkan.cmd_bind_pipeline(
-                frame.command_buffer(),
-                vk::PipelineBindPoint::GRAPHICS,
-                self.pipeline.raw,
-            );
-            gfx.vulkan.cmd_draw(frame.command_buffer(), 3, 1, 0, 0);
-
+            self.g2.vertex(Vertex {
+                pos: [-0.5, -0.5],
+                uv: [0.0, 0.0],
+                color: [1.0, 1.0, 1.0, 1.0],
+            });
+            self.g2.vertex(Vertex {
+                pos: [0.0, 0.5],
+                uv: [0.0, 0.0],
+                color: [1.0, 1.0, 1.0, 1.0],
+            });
+            self.g2.vertex(Vertex {
+                pos: [0.5, -0.5],
+                uv: [0.0, 0.0],
+                color: [1.0, 1.0, 1.0, 1.0],
+            });
+            self.g2.write_draw_commands(gfx, frame)?;
             gfx.vulkan.cmd_end_rendering(frame.command_buffer());
         }
 
@@ -186,7 +200,10 @@ impl Demo for Example {
                 .toggle_fullscreen(window)
                 .context("unable to toggle fullscreen!")?;
         }
-
+        if let glfw::WindowEvent::FramebufferSize(width, height) = event {
+            self.projection =
+                ortho_projection(width as f32 / height as f32, 10.0);
+        }
         Ok(())
     }
 }

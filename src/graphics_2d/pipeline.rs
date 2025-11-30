@@ -1,28 +1,33 @@
-//! G2 is the 2D graphics API. It support drawing arbitrary shapes which
-//! typically change every frame.
-
-// aoue
-
 use {
+    crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,
     demo_vk::graphics::vulkan::{raii, spirv_words},
     std::ffi::CString,
 };
 
-pub fn create_pipeline(gfx: &crate::Gfx) -> Result<raii::Pipeline> {
-    let pipeline_layout = raii::PipelineLayout::new(
+pub fn create_pipeline_layout(
+    gfx: &Gfx,
+    descriptor_set_layout: &raii::DescriptorSetLayout,
+) -> Result<raii::PipelineLayout> {
+    let raw_descriptor_set_layouts = [descriptor_set_layout.raw];
+    raii::PipelineLayout::new(
         "FirstTriangle",
         gfx.vulkan.device.clone(),
         &vk::PipelineLayoutCreateInfo {
-            set_layout_count: 0,
-            p_set_layouts: std::ptr::null(),
+            set_layout_count: raw_descriptor_set_layouts.len() as u32,
+            p_set_layouts: raw_descriptor_set_layouts.as_ptr(),
             push_constant_range_count: 0,
             p_push_constant_ranges: std::ptr::null(),
             ..Default::default()
         },
-    )?;
+    )
+}
 
+pub fn create_pipeline(
+    gfx: &Gfx,
+    pipeline_layout: &raii::PipelineLayout,
+) -> Result<raii::Pipeline> {
     let vertex_shader_bytes =
         spirv_words(include_bytes!("./shaders/triangle.vert.spv"))
             .context("Unable to unpack vertex shader bytes.")?;
