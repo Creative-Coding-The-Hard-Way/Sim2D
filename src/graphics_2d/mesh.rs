@@ -16,18 +16,6 @@ pub trait Mesh {
     fn indices(&self) -> &[u32];
 }
 
-/// Placeholder for a mesh that supports rendering textured sprites.
-pub struct SpritesMesh {}
-
-impl Mesh for SpritesMesh {
-    fn vertices(&self) -> &[Vertex] {
-        &[]
-    }
-    fn indices(&self) -> &[u32] {
-        &[]
-    }
-}
-
 /// The GeometryMesh supports constructing procedural geometry, things like
 /// lines, circles, and triangles.
 pub struct GeometryMesh {

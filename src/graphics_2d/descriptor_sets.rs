@@ -1,5 +1,5 @@
 use {
-    super::{DynamicBuffer, UniformData, Vertex},
+    super::UniformData,
     crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,

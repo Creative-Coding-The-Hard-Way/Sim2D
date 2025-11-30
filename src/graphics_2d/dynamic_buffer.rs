@@ -41,11 +41,6 @@ impl<DataT: Copy> DynamicBuffer<DataT> {
         })
     }
 
-    /// Returns the size of the underlying buffer in bytes.
-    pub fn size_in_bytes(&self) -> u64 {
-        self.cpu_buffer.size_in_bytes()
-    }
-
     /// Returns the raw buffer handle.
     ///
     /// # Safety
