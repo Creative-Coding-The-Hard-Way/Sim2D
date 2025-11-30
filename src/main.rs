@@ -10,8 +10,9 @@ use {
         graphics::vulkan::Frame,
     },
     glfw::Window,
-    graphics_2d::{G2, Vertex},
-    nalgebra::Matrix4,
+    graphics_2d::{G2, GeometryMesh},
+    nalgebra::{Matrix4, vector},
+    std::{f32, time::Instant},
 };
 
 #[derive(Debug, Parser)]
@@ -35,7 +36,9 @@ pub fn ortho_projection(aspect: f32, height: f32) -> Matrix4<f32> {
 struct Example {
     fullscreen: FullscreenToggle,
     projection: Matrix4<f32>,
+    geometry_mesh: GeometryMesh,
     g2: G2,
+    start_time: Instant,
 }
 
 impl Demo for Example {
@@ -66,8 +69,43 @@ impl Demo for Example {
         Ok(Self {
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
+            geometry_mesh: GeometryMesh::new(100),
             g2: G2::new(gfx).context("Unable to create g2 subsystem")?,
+            start_time: Instant::now(),
         })
+    }
+
+    fn update(
+        &mut self,
+        #[allow(unused_variables)] window: &mut glfw::Window,
+        #[allow(unused_variables)] gfx: &mut Graphics<Self::Args>,
+    ) -> Result<()> {
+        let t = Instant::now().duration_since(self.start_time).as_secs_f32()
+            * (f32::consts::PI / 3.0);
+
+        self.geometry_mesh.clear();
+
+        let max = 100;
+        for i in 0..max {
+            let angle = (i as f32 / max as f32) * f32::consts::PI * 2.0;
+            let next_angle =
+                ((i + 1) as f32 / max as f32) * f32::consts::PI * 2.0;
+
+            let calc_pos = |angle: f32| {
+                vector![
+                    4.5 * (angle * 2.3 + t).cos(),
+                    4.5 * (angle * 1.821 + t).sin()
+                ]
+            };
+
+            let current = calc_pos(angle);
+            let next = calc_pos(next_angle);
+            let d = 0.05 * (next - current).normalize();
+            let r = vector![-d.x, d.y];
+
+            self.geometry_mesh.triangle(next, current + r, current - r);
+        }
+        Ok(())
     }
 
     /// Draw a frame
@@ -133,22 +171,7 @@ impl Demo for Example {
                 },
             );
             self.g2.set_projection(frame, &self.projection)?;
-
-            self.g2.vertex(Vertex {
-                pos: [-0.5, -0.5],
-                uv: [0.0, 0.0],
-                color: [1.0, 1.0, 1.0, 1.0],
-            });
-            self.g2.vertex(Vertex {
-                pos: [0.0, 0.5],
-                uv: [0.0, 0.0],
-                color: [1.0, 1.0, 1.0, 1.0],
-            });
-            self.g2.vertex(Vertex {
-                pos: [0.5, -0.5],
-                uv: [0.0, 0.0],
-                color: [1.0, 1.0, 1.0, 1.0],
-            });
+            self.g2.add_mesh(frame, &self.geometry_mesh)?;
             self.g2.write_draw_commands(gfx, frame)?;
             gfx.vulkan.cmd_end_rendering(frame.command_buffer());
         }
@@ -209,5 +232,5 @@ impl Demo for Example {
 }
 
 fn main() {
-    demo_main::<Example>();
+    let _ = demo_main::<Example>();
 }

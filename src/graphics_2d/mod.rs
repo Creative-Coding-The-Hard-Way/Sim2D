@@ -2,10 +2,12 @@
 //! typically change every frame.
 
 mod descriptor_sets;
+mod mesh;
 mod pipeline;
 
+pub use mesh::{GeometryMesh, Vertex};
 use {
-    crate::Gfx,
+    crate::{Gfx, graphics_2d::mesh::Mesh},
     anyhow::{Context, Result},
     ash::vk,
     demo_vk::graphics::vulkan::{CPUBuffer, Frame, UniformBuffer, raii},
@@ -16,14 +18,6 @@ use {
     nalgebra::Matrix4,
     pipeline::{create_pipeline, create_pipeline_layout},
 };
-
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Vertex {
-    pub pos: [f32; 2],
-    pub uv: [f32; 2],
-    pub color: [f32; 4],
-}
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -40,7 +34,7 @@ pub struct G2 {
     descriptor_sets: Vec<vk::DescriptorSet>,
     pipeline_layout: raii::PipelineLayout,
     pipeline: raii::Pipeline,
-    vertices: Vec<Vertex>,
+    vertex_count: u32,
 }
 
 impl G2 {
@@ -98,8 +92,18 @@ impl G2 {
             pipeline_layout,
             pipeline,
             vertex_buffers,
-            vertices: Vec::with_capacity(10_000),
+            vertex_count: 0,
         })
+    }
+
+    /// Adds a mesh to the current frame.
+    pub fn add_mesh(&mut self, frame: &Frame, mesh: &impl Mesh) -> Result<()> {
+        unsafe {
+            self.vertex_buffers[frame.frame_index()]
+                .write_data(self.vertex_count as usize, mesh.vertices())?;
+        }
+        self.vertex_count += mesh.vertices().len() as u32;
+        Ok(())
     }
 
     pub fn set_projection(
@@ -115,10 +119,10 @@ impl G2 {
         )
     }
 
-    pub fn vertex(&mut self, vertex: Vertex) {
-        self.vertices.push(vertex);
-    }
-
+    /// Emits draw commands for all of the meshes in the current frame.
+    ///
+    /// NOTE: it is incorrect to call this multiple times for the same frame as
+    ///       there is only one internal vertex buffer per frame.
     pub fn write_draw_commands(
         &mut self,
         gfx: &Gfx,
@@ -159,17 +163,14 @@ impl G2 {
                 &[],
             );
 
-            // write the vertex data for the current frame
-            self.vertex_buffers[frame.frame_index()]
-                .write_data(0, &self.vertices)?;
-
             gfx.vulkan.cmd_draw(
                 frame.command_buffer(),
-                self.vertices.len() as u32,
+                self.vertex_count,
                 1,
                 0,
                 0,
             );
+            self.vertex_count = 0;
         }
         Ok(())
     }
