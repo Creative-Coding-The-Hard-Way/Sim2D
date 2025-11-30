@@ -53,8 +53,8 @@ impl Demo for Example {
                     dynamic_rendering: vk::TRUE,
                     ..Default::default()
                 },
-            physical_device_buffer_device_address_features:
-                vk::PhysicalDeviceBufferDeviceAddressFeatures {
+            physical_device_vulkan12_features:
+                vk::PhysicalDeviceVulkan12Features {
                     buffer_device_address: vk::TRUE,
                     ..Default::default()
                 },

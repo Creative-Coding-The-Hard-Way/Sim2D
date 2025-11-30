@@ -15,7 +15,6 @@ use {
     descriptor_sets::{
         allocate_descriptor_sets, create_descriptor_pool,
         create_descriptor_set_layout, write_descriptor_sets,
-        write_vertex_buffer_descriptor,
     },
     dynamic_buffer::DynamicBuffer,
     nalgebra::Matrix4,
@@ -84,7 +83,8 @@ impl Graphics2D {
                 vertex_buffers.push(DynamicBuffer::new(
                     &gfx.vulkan,
                     INITIAL_CAPACITY,
-                    vk::BufferUsageFlags::STORAGE_BUFFER,
+                    vk::BufferUsageFlags::STORAGE_BUFFER
+                        | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
                 )?);
             }
             vertex_buffers
@@ -96,19 +96,15 @@ impl Graphics2D {
                 index_buffers.push(DynamicBuffer::new(
                     &gfx.vulkan,
                     INITIAL_CAPACITY,
-                    vk::BufferUsageFlags::INDEX_BUFFER,
+                    vk::BufferUsageFlags::INDEX_BUFFER
+                        | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
                 )?);
             }
             index_buffers
         };
 
         // write descriptor sets
-        write_descriptor_sets(
-            gfx,
-            &descriptor_sets,
-            &uniform_buffer,
-            &vertex_buffers,
-        );
+        write_descriptor_sets(gfx, &descriptor_sets, &uniform_buffer);
 
         Ok(Self {
             uniform_buffer,
@@ -157,27 +153,10 @@ impl Graphics2D {
         };
 
         // write mesh data into frame-specific buffers
-        let needs_descriptor_update = unsafe {
+        unsafe {
             self.vertex_buffers[frame.frame_index()]
                 .write_data(&gfx.vulkan, &vertex_data)
-                .context("Unable to write frame vertex data!")?
-        };
-
-        if needs_descriptor_update {
-            // the vertex buffer was reallocated, so the descriptor needs to
-            // be updated to refer to the new buffer.
-
-            unsafe {
-                // SAFE because only frame-specific resources are modified
-                write_vertex_buffer_descriptor(
-                    gfx,
-                    self.descriptor_sets[frame.frame_index()],
-                    &self.vertex_buffers[frame.frame_index()],
-                );
-            }
-        }
-
-        unsafe {
+                .context("Unable to write frame vertex data!")?;
             self.index_buffers[frame.frame_index()]
                 .write_data(&gfx.vulkan, &index_data)
                 .context("Unable to write index data!")?;
@@ -247,6 +226,15 @@ impl Graphics2D {
                 self.index_buffers[frame.frame_index()].raw(),
                 0,
                 vk::IndexType::UINT32,
+            );
+            gfx.vulkan.cmd_push_constants(
+                frame.command_buffer(),
+                self.pipeline_layout.raw,
+                vk::ShaderStageFlags::VERTEX,
+                0,
+                &self.vertex_buffers[frame.frame_index()]
+                    .buffer_device_address()
+                    .to_le_bytes(),
             );
 
             for draw_params in self.draw_params.drain(0..) {

@@ -513,7 +513,7 @@ dependencies = [
 [[package]]
 name = "demo_vk"
 version = "0.1.0"
-source = "git+https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git#82c8996decec21ccf78257fde592f003e0325d69"
+source = "git+https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git#de3cafc067127f444362b82bc151971507c86303"
 dependencies = [
  "anyhow",
  "argfile",
@@ -1669,7 +1669,7 @@ dependencies = [
 [[package]]
 name = "shader_compiler"
 version = "0.1.0"
-source = "git+https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git#82c8996decec21ccf78257fde592f003e0325d69"
+source = "git+https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git#de3cafc067127f444362b82bc151971507c86303"
 dependencies = [
  "anyhow",
 ]

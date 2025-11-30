@@ -11,14 +11,19 @@ pub fn create_pipeline_layout(
     descriptor_set_layout: &raii::DescriptorSetLayout,
 ) -> Result<raii::PipelineLayout> {
     let raw_descriptor_set_layouts = [descriptor_set_layout.raw];
+    let push_constant_ranges = [vk::PushConstantRange {
+        stage_flags: vk::ShaderStageFlags::VERTEX,
+        offset: 0,
+        size: 8,
+    }];
     raii::PipelineLayout::new(
         "FirstTriangle",
         gfx.vulkan.device.clone(),
         &vk::PipelineLayoutCreateInfo {
             set_layout_count: raw_descriptor_set_layouts.len() as u32,
             p_set_layouts: raw_descriptor_set_layouts.as_ptr(),
-            push_constant_range_count: 0,
-            p_push_constant_ranges: std::ptr::null(),
+            push_constant_range_count: push_constant_ranges.len() as u32,
+            p_push_constant_ranges: push_constant_ranges.as_ptr(),
             ..Default::default()
         },
     )
