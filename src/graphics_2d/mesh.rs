@@ -1,4 +1,6 @@
-use nalgebra::Vector2;
+use {
+    crate::graphics_2d::material::Material, nalgebra::Vector2, std::sync::Arc,
+};
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -14,6 +16,7 @@ pub struct Vertex {
 pub trait Mesh {
     fn vertices(&self) -> &[Vertex];
     fn indices(&self) -> &[u32];
+    fn material(&self) -> &Arc<Material>;
 }
 
 /// The GeometryMesh supports constructing procedural geometry, things like
@@ -22,6 +25,7 @@ pub struct GeometryMesh {
     color: [f32; 4],
     vertices: Vec<Vertex>,
     indices: Vec<u32>,
+    material: Arc<Material>,
 }
 
 impl Mesh for GeometryMesh {
@@ -32,16 +36,21 @@ impl Mesh for GeometryMesh {
     fn indices(&self) -> &[u32] {
         &self.indices
     }
+
+    fn material(&self) -> &Arc<Material> {
+        &self.material
+    }
 }
 
 impl GeometryMesh {
     /// Creates a new empty Mesh with pre-allocated internal memory for
     /// vertex data.
-    pub fn new(initial_capacity: usize) -> Self {
+    pub fn new(initial_capacity: usize, material: Arc<Material>) -> Self {
         Self {
             color: [1.0, 1.0, 1.0, 1.0],
             vertices: Vec::with_capacity(initial_capacity),
             indices: Vec::with_capacity(initial_capacity),
+            material,
         }
     }
 

@@ -3,22 +3,22 @@
 
 mod descriptor_sets;
 mod dynamic_buffer;
+mod material;
 mod mesh;
-mod pipeline;
 
 pub use mesh::{GeometryMesh, Vertex};
 use {
     crate::{Gfx, graphics_2d::mesh::Mesh},
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::{Frame, UniformBuffer, raii},
+    demo_vk::graphics::vulkan::{Frame, UniformBuffer, raii, spirv_words},
     descriptor_sets::{
-        allocate_descriptor_sets, create_descriptor_pool,
-        create_descriptor_set_layout, write_descriptor_sets,
+        allocate_descriptor_sets, create_descriptor_pool, write_descriptor_sets,
     },
     dynamic_buffer::DynamicBuffer,
+    material::Material,
     nalgebra::Matrix4,
-    pipeline::{create_pipeline, create_pipeline_layout},
+    std::sync::Arc,
 };
 
 #[repr(C)]
@@ -27,25 +27,30 @@ struct UniformData {
     pub projection: [[f32; 4]; 4],
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct DrawParams {
     index_offset: u32,
     vertex_offset: u32,
     index_count: u32,
+    material: Arc<Material>,
 }
 
 /// The 2D Graphics entrypoint.
 pub struct Graphics2D {
+    // Per-Frame resources
     vertex_buffers: Vec<DynamicBuffer<Vertex>>,
     index_buffers: Vec<DynamicBuffer<u32>>,
-
     uniform_buffer: UniformBuffer<UniformData>,
+    descriptor_sets: Vec<vk::DescriptorSet>,
+    draw_params: Vec<Vec<DrawParams>>,
+
+    // Shared resources
     _descriptor_pool: raii::DescriptorPool,
     _descriptor_set_layout: raii::DescriptorSetLayout,
-    descriptor_sets: Vec<vk::DescriptorSet>,
     pipeline_layout: raii::PipelineLayout,
-    pipeline: raii::Pipeline,
-    draw_params: Vec<DrawParams>,
+    default_vertex_shader_module: raii::ShaderModule,
+    default_fragment_shader_module: raii::ShaderModule,
+    default_material: Arc<Material>,
 }
 
 const INITIAL_CAPACITY: usize = 16_384;
@@ -55,7 +60,7 @@ impl Graphics2D {
         // Create descriptor resources
         let descriptor_pool = create_descriptor_pool(gfx)
             .context("Unable to create descriptor pool.")?;
-        let descriptor_set_layout = create_descriptor_set_layout(gfx)
+        let descriptor_set_layout = Material::create_descriptor_set_layout(gfx)
             .context("Unable to create descriptor set layout")?;
         let descriptor_sets = allocate_descriptor_sets(
             gfx,
@@ -66,10 +71,8 @@ impl Graphics2D {
 
         // create pipeline resources
         let pipeline_layout =
-            create_pipeline_layout(gfx, &descriptor_set_layout)
+            Material::create_pipeline_layout(gfx, &descriptor_set_layout)
                 .context("Unable to create pipeline layout")?;
-        let pipeline = create_pipeline(gfx, &pipeline_layout)
-            .context("Unable to create graphics pipeline")?;
 
         // create buffers
         let uniform_buffer = UniformBuffer::allocate_per_frame(
@@ -106,43 +109,122 @@ impl Graphics2D {
         // write descriptor sets
         write_descriptor_sets(gfx, &descriptor_sets, &uniform_buffer);
 
+        let default_vertex_shader_module = {
+            let vertex_shader_words =
+                spirv_words(include_bytes!("./shaders/triangle.vert.spv"))
+                    .context("Unable to pack default vertex shader source")?;
+            raii::ShaderModule::new(
+                "DefaultVertexShader",
+                gfx.vulkan.device.clone(),
+                &vk::ShaderModuleCreateInfo {
+                    code_size: vertex_shader_words.len() * 4,
+                    p_code: vertex_shader_words.as_ptr(),
+                    ..Default::default()
+                },
+            )
+            .context("Unable to create default vertex shader module")?
+        };
+        let default_fragment_shader_module = {
+            let fragment_shader_words =
+                spirv_words(include_bytes!("./shaders/triangle.frag.spv"))
+                    .context("Unable to pack default fragment shader source")?;
+            raii::ShaderModule::new(
+                "DefaultFragmentShader",
+                gfx.vulkan.device.clone(),
+                &vk::ShaderModuleCreateInfo {
+                    code_size: fragment_shader_words.len() * 4,
+                    p_code: fragment_shader_words.as_ptr(),
+                    ..Default::default()
+                },
+            )
+            .context("Unable to create default fragment shader module")?
+        };
+        let default_material = Arc::new(
+            Material::new(
+                gfx,
+                &pipeline_layout,
+                &default_vertex_shader_module,
+                &default_fragment_shader_module,
+            )
+            .context("Unable to create default material")?,
+        );
+
         Ok(Self {
+            index_buffers,
+            vertex_buffers,
             uniform_buffer,
+            draw_params: vec![vec![]; gfx.frames_in_flight.frame_count()],
+
             _descriptor_pool: descriptor_pool,
             _descriptor_set_layout: descriptor_set_layout,
             descriptor_sets,
             pipeline_layout,
-            pipeline,
-            index_buffers,
-            vertex_buffers,
-            draw_params: Vec::with_capacity(10),
+
+            default_vertex_shader_module,
+            default_fragment_shader_module,
+            default_material,
         })
     }
 
-    /// Adds a mesh to the current frame.
+    /// Creates a new rendering material. See the documentation for [Material]
+    /// for details on allowed shader inputs and outputs.
+    ///
+    /// Default vertex and fragment shaders are used automatically if either
+    /// is omitted.
+    pub fn new_material(
+        &self,
+        gfx: &Gfx,
+        vertex_shader: Option<&raii::ShaderModule>,
+        fragment_shader: Option<&raii::ShaderModule>,
+    ) -> Result<Arc<Material>> {
+        let material = Material::new(
+            gfx,
+            &self.pipeline_layout,
+            vertex_shader.unwrap_or(&self.default_vertex_shader_module),
+            fragment_shader.unwrap_or(&self.default_fragment_shader_module),
+        )
+        .context("Unable to create new material!")?;
+        Ok(Arc::new(material))
+    }
+
+    /// Returns the default material for use by meshes without special material
+    /// requirements.
+    pub fn default_material(&self) -> &Arc<Material> {
+        &self.default_material
+    }
+
+    /// Prepares the meshes for this frame.
+    ///
+    /// This should only be called once per frame, calling it repeatedly will
+    /// only render whatever meshes were provided last.
     pub fn prepare_meshes(
         &mut self,
         gfx: &Gfx,
         frame: &Frame,
         meshes: &[&dyn Mesh],
     ) -> Result<()> {
+        // reset draw parameters for this frame
+        let draw_params = &mut self.draw_params[frame.frame_index()];
+        draw_params.clear();
+
+        // collect the vertex and index references and assemble the draw params
         let (vertex_data, index_data) = {
-            let mut vertex_data = vec![];
-            let mut index_data = vec![];
+            let mut vertex_data = Vec::with_capacity(meshes.len());
+            let mut index_data = Vec::with_capacity(meshes.len());
             let mut index_offset = 0;
             let mut vertex_offset = 0;
 
-            self.draw_params.clear();
             for mesh in meshes {
                 let vertices = mesh.vertices();
                 let indices = mesh.indices();
                 vertex_data.push(vertices);
                 index_data.push(indices);
 
-                self.draw_params.push(DrawParams {
+                draw_params.push(DrawParams {
                     index_offset,
                     vertex_offset,
                     index_count: indices.len() as u32,
+                    material: mesh.material().clone(),
                 });
 
                 index_offset += indices.len() as u32;
@@ -208,11 +290,6 @@ impl Graphics2D {
                     extent: gfx.swapchain.extent(),
                 }],
             );
-            gfx.vulkan.cmd_bind_pipeline(
-                frame.command_buffer(),
-                vk::PipelineBindPoint::GRAPHICS,
-                self.pipeline.raw,
-            );
             gfx.vulkan.cmd_bind_descriptor_sets(
                 frame.command_buffer(),
                 vk::PipelineBindPoint::GRAPHICS,
@@ -237,7 +314,20 @@ impl Graphics2D {
                     .to_le_bytes(),
             );
 
-            for draw_params in self.draw_params.drain(0..) {
+            let mut last_bound_pipeline = vk::Pipeline::null();
+            for draw_params in self.draw_params[frame.frame_index()].drain(0..)
+            {
+                // Bind the pipeline for the current draw, but only if its
+                // actually different from the most recently used pipeline.
+                let pipeline = draw_params.material.pipeline().raw;
+                if pipeline != last_bound_pipeline {
+                    gfx.vulkan.cmd_bind_pipeline(
+                        frame.command_buffer(),
+                        vk::PipelineBindPoint::GRAPHICS,
+                        pipeline,
+                    );
+                    last_bound_pipeline = pipeline;
+                }
                 gfx.vulkan.cmd_draw_indexed(
                     frame.command_buffer(),
                     draw_params.index_count, // index count

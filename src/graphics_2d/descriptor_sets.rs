@@ -6,28 +6,6 @@ use {
     demo_vk::graphics::vulkan::{UniformBuffer, raii},
 };
 
-pub fn create_descriptor_set_layout(
-    gfx: &Gfx,
-) -> Result<raii::DescriptorSetLayout> {
-    let bindings = [vk::DescriptorSetLayoutBinding {
-        binding: 0,
-        descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
-        descriptor_count: 1,
-        stage_flags: vk::ShaderStageFlags::VERTEX,
-        p_immutable_samplers: std::ptr::null(),
-        ..Default::default()
-    }];
-    raii::DescriptorSetLayout::new(
-        "FirstTriangleDescLayout",
-        gfx.vulkan.device.clone(),
-        &vk::DescriptorSetLayoutCreateInfo {
-            binding_count: bindings.len() as u32,
-            p_bindings: bindings.as_ptr(),
-            ..Default::default()
-        },
-    )
-}
-
 pub fn create_descriptor_pool(gfx: &Gfx) -> Result<raii::DescriptorPool> {
     let frame_count = gfx.frames_in_flight.frame_count() as u32;
     let pool_sizes = [vk::DescriptorPoolSize {

@@ -7,7 +7,7 @@ use {
     demo_vk::{
         app::FullscreenToggle,
         demo::{Demo, Graphics, demo_main},
-        graphics::vulkan::{Frame, RequiredDeviceFeatures},
+        graphics::vulkan::{Frame, RequiredDeviceFeatures, raii, spirv_words},
     },
     glfw::Window,
     graphics_2d::{GeometryMesh, Graphics2D},
@@ -74,13 +74,34 @@ impl Demo for Example {
             (w as f32, h as f32)
         };
 
+        let g2 =
+            Graphics2D::new(gfx).context("Unable to create g2 subsystem")?;
+
+        let shader_module = {
+            let words = spirv_words(include_bytes!("./custom.frag.spv"))?;
+            raii::ShaderModule::new(
+                "custom shader module",
+                gfx.vulkan.device.clone(),
+                &vk::ShaderModuleCreateInfo {
+                    code_size: words.len() * 4,
+                    p_code: words.as_ptr(),
+                    ..Default::default()
+                },
+            )?
+        };
+
         Ok(Self {
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
-            geometry_mesh: GeometryMesh::new(100),
-            geometry_mesh2: GeometryMesh::new(100),
-            g2: Graphics2D::new(gfx)
-                .context("Unable to create g2 subsystem")?,
+            geometry_mesh: GeometryMesh::new(
+                100,
+                g2.default_material().clone(),
+            ),
+            geometry_mesh2: GeometryMesh::new(
+                100,
+                g2.new_material(gfx, None, Some(&shader_module))?,
+            ),
+            g2,
             start_time: Instant::now(),
         })
     }
@@ -104,7 +125,7 @@ impl Demo for Example {
         self.geometry_mesh.set_color([1.0, 1.0, 1.0, 1.0]);
         self.geometry_mesh.aligned_quad(0.0, 0.0, 10.0, 0.05);
 
-        self.geometry_mesh2.set_color([0.0, 1.0, 0.0, 1.0]);
+        self.geometry_mesh2.set_color([0.0, 1.0, 0.0, 0.9]);
         self.geometry_mesh2.aligned_quad(2.0, 2.0, 2.0, 5.0);
 
         Ok(())
