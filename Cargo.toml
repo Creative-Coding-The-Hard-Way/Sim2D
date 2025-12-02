@@ -6,9 +6,11 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.100"
 ash = "0.38.0"
+bon = "3.8.1"
 clap = "4.5.53"
 demo_vk = { git = "https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git" }
 glfw = "0.60.0"
+image = "0.25.9"
 log = "0.4.28"
 nalgebra = "0.34.1"
 

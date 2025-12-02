@@ -1,6 +1,7 @@
 mod graphics_2d;
 
 use {
+    crate::graphics_2d::{Texture, TextureLoader},
     anyhow::{Context, Result},
     ash::vk,
     clap::Parser,
@@ -40,6 +41,7 @@ struct Example {
     geometry_mesh2: GeometryMesh,
     g2: Graphics2D,
     start_time: Instant,
+    texture: Texture,
 }
 
 impl Demo for Example {
@@ -90,6 +92,9 @@ impl Demo for Example {
             )?
         };
 
+        let texture = TextureLoader::new(gfx.vulkan.clone())?
+            .load_from_file("Penguin.jpg", true)?;
+
         Ok(Self {
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
@@ -103,6 +108,7 @@ impl Demo for Example {
             ),
             g2,
             start_time: Instant::now(),
+            texture,
         })
     }
 

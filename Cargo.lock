@@ -1686,10 +1686,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "ash",
+ "bon",
  "clap",
  "demo_vk",
  "glfw",
  "glob",
+ "image",
  "log",
  "nalgebra",
  "shader_compiler",

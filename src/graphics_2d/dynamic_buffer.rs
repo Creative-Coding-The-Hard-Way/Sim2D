@@ -1,4 +1,5 @@
 use {
+    crate::graphics_2d::utility::round_to_power_of_two,
     anyhow::{Context, Result},
     ash::vk,
     demo_vk::graphics::vulkan::{CPUBuffer, VulkanContext},
@@ -10,11 +11,6 @@ pub struct DynamicBuffer<DataT: Copy> {
     usage: vk::BufferUsageFlags,
     cpu_buffer: CPUBuffer<DataT>,
     buffer_device_address: vk::DeviceAddress,
-}
-
-/// Returns the smallest power of two greater than the provided value.
-fn round_to_power_of_two(value: usize) -> usize {
-    (value as f32).log2().ceil().exp2().round() as usize
 }
 
 impl<DataT: Copy> DynamicBuffer<DataT> {
@@ -100,25 +96,5 @@ impl<DataT: Copy> DynamicBuffer<DataT> {
         }
 
         Ok(reallocated)
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    pub fn power_of_two_should_round_up() {
-        assert_eq!(round_to_power_of_two(1), 1);
-        assert_eq!(round_to_power_of_two(2), 2);
-        assert_eq!(round_to_power_of_two(3), 4);
-        assert_eq!(round_to_power_of_two(6), 8);
-        assert_eq!(round_to_power_of_two(9), 16);
-        assert_eq!(round_to_power_of_two(20), 32);
-        assert_eq!(round_to_power_of_two(50), 64);
-        assert_eq!(round_to_power_of_two(93), 128);
-        assert_eq!(round_to_power_of_two(200), 256);
-        assert_eq!(round_to_power_of_two(500), 512);
-        assert_eq!(round_to_power_of_two(10_000), 16384);
     }
 }

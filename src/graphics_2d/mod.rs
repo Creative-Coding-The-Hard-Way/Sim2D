@@ -5,8 +5,9 @@ mod descriptor_sets;
 mod dynamic_buffer;
 mod material;
 mod mesh;
+mod texture;
+pub(crate) mod utility;
 
-pub use mesh::{GeometryMesh, Vertex};
 use {
     crate::{Gfx, graphics_2d::mesh::Mesh},
     anyhow::{Context, Result},
@@ -19,6 +20,10 @@ use {
     material::Material,
     nalgebra::Matrix4,
     std::sync::Arc,
+};
+pub use {
+    mesh::{GeometryMesh, Vertex},
+    texture::{Texture, TextureLoader},
 };
 
 #[repr(C)]
