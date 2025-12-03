@@ -1,3 +1,4 @@
+mod atlas;
 mod loader;
 
 use {
@@ -6,7 +7,7 @@ use {
     demo_vk::graphics::vulkan::{OwnedBlock, VulkanContext, raii},
 };
 
-pub use self::loader::TextureLoader;
+pub use self::{atlas::TextureAtlas, loader::TextureLoader};
 
 /// A 2D image for use when rendering.
 ///

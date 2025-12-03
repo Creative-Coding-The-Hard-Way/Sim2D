@@ -2,12 +2,29 @@ use {
     crate::graphics_2d::material::Material, nalgebra::Vector2, std::sync::Arc,
 };
 
-#[repr(C)]
+#[repr(C, align(16))]
 #[derive(Debug, Copy, Clone)]
 pub struct Vertex {
     pub pos: [f32; 2],
     pub uv: [f32; 2],
     pub color: [f32; 4],
+    pub texture_index: i32,
+}
+
+impl Vertex {
+    pub fn new(
+        pos: [f32; 2],
+        uv: [f32; 2],
+        color: [f32; 4],
+        texture_index: i32,
+    ) -> Self {
+        Self {
+            pos,
+            uv,
+            color,
+            texture_index,
+        }
+    }
 }
 
 /// A Mesh is the minimal unit of rendering.
@@ -74,21 +91,9 @@ impl GeometryMesh {
         let base_index = self.vertices.len() as u32;
 
         self.vertices.extend_from_slice(&[
-            Vertex {
-                pos: p1.data.0[0],
-                uv: [0.0, 0.0],
-                color: self.color,
-            },
-            Vertex {
-                pos: p2.data.0[0],
-                uv: [0.0, 0.0],
-                color: self.color,
-            },
-            Vertex {
-                pos: p3.data.0[0],
-                uv: [0.0, 0.0],
-                color: self.color,
-            },
+            Vertex::new(p1.data.0[0], [0.0, 0.0], self.color, -1),
+            Vertex::new(p2.data.0[0], [0.0, 0.0], self.color, -1),
+            Vertex::new(p3.data.0[0], [0.0, 0.0], self.color, -1),
         ]);
         self.indices.extend_from_slice(&[
             base_index,
@@ -100,6 +105,7 @@ impl GeometryMesh {
     /// Adds an axis-aligned quad to the mesh.
     pub fn aligned_quad(
         &mut self,
+        texture_index: i32,
         center_x: f32,
         center_y: f32,
         width: f32,
@@ -113,26 +119,10 @@ impl GeometryMesh {
         let bottom = center_y - height / 2.0;
 
         self.vertices.extend_from_slice(&[
-            Vertex {
-                pos: [left, top],
-                uv: [0.0, 0.0],
-                color: self.color,
-            },
-            Vertex {
-                pos: [left, bottom],
-                uv: [0.0, 0.0],
-                color: self.color,
-            },
-            Vertex {
-                pos: [right, bottom],
-                uv: [0.0, 0.0],
-                color: self.color,
-            },
-            Vertex {
-                pos: [right, top],
-                uv: [0.0, 0.0],
-                color: self.color,
-            },
+            Vertex::new([left, top], [0.0, 0.0], self.color, texture_index),
+            Vertex::new([left, bottom], [0.0, 1.0], self.color, texture_index),
+            Vertex::new([right, bottom], [1.0, 1.0], self.color, texture_index),
+            Vertex::new([right, top], [1.0, 0.0], self.color, texture_index),
         ]);
         self.indices.extend_from_slice(&[
             // triangle 1

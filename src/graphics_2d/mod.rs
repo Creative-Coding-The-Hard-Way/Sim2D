@@ -9,7 +9,10 @@ mod texture;
 pub(crate) mod utility;
 
 use {
-    crate::{Gfx, graphics_2d::mesh::Mesh},
+    crate::{
+        Gfx,
+        graphics_2d::{mesh::Mesh, texture::TextureAtlas},
+    },
     anyhow::{Context, Result},
     ash::vk,
     demo_vk::graphics::vulkan::{Frame, UniformBuffer, raii, spirv_words},
@@ -56,12 +59,20 @@ pub struct Graphics2D {
     default_vertex_shader_module: raii::ShaderModule,
     default_fragment_shader_module: raii::ShaderModule,
     default_material: Arc<Material>,
+    texture_atlas: TextureAtlas,
 }
 
 const INITIAL_CAPACITY: usize = 16_384;
 
 impl Graphics2D {
+    pub fn add_texture(&mut self, gfx: &Gfx, texture: Texture) -> i32 {
+        self.texture_atlas.add_texture(gfx, texture)
+    }
+
     pub fn new(gfx: &Gfx) -> Result<Self> {
+        let texture_atlas =
+            TextureAtlas::new(gfx).context("Unable to create texture atlas")?;
+
         // Create descriptor resources
         let descriptor_pool = create_descriptor_pool(gfx)
             .context("Unable to create descriptor pool.")?;
@@ -75,9 +86,12 @@ impl Graphics2D {
         .context("Unable to allocate descriptor set.")?;
 
         // create pipeline resources
-        let pipeline_layout =
-            Material::create_pipeline_layout(gfx, &descriptor_set_layout)
-                .context("Unable to create pipeline layout")?;
+        let pipeline_layout = Material::create_pipeline_layout(
+            gfx,
+            texture_atlas.descriptor_set_layout(),
+            &descriptor_set_layout,
+        )
+        .context("Unable to create pipeline layout")?;
 
         // create buffers
         let uniform_buffer = UniformBuffer::allocate_per_frame(
@@ -168,6 +182,7 @@ impl Graphics2D {
             default_vertex_shader_module,
             default_fragment_shader_module,
             default_material,
+            texture_atlas,
         })
     }
 
@@ -300,7 +315,10 @@ impl Graphics2D {
                 vk::PipelineBindPoint::GRAPHICS,
                 self.pipeline_layout.raw,
                 0,
-                &[self.descriptor_sets[frame.frame_index()]],
+                &[
+                    self.texture_atlas.descriptor_set(),
+                    self.descriptor_sets[frame.frame_index()],
+                ],
                 &[],
             );
             gfx.vulkan.cmd_bind_index_buffer(

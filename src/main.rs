@@ -41,7 +41,6 @@ struct Example {
     geometry_mesh2: GeometryMesh,
     g2: Graphics2D,
     start_time: Instant,
-    texture: Texture,
 }
 
 impl Demo for Example {
@@ -57,6 +56,16 @@ impl Demo for Example {
                 },
             physical_device_vulkan12_features:
                 vk::PhysicalDeviceVulkan12Features {
+                    // required for texture atlas behavior
+                    runtime_descriptor_array: vk::TRUE,
+                    descriptor_indexing: vk::TRUE,
+                    descriptor_binding_variable_descriptor_count: vk::TRUE,
+                    descriptor_binding_update_unused_while_pending: vk::TRUE,
+                    descriptor_binding_partially_bound: vk::TRUE,
+                    descriptor_binding_sampled_image_update_after_bind:
+                        vk::TRUE,
+
+                    // required for graphics2d mesh vertex buffers
                     buffer_device_address: vk::TRUE,
                     ..Default::default()
                 },
@@ -76,7 +85,7 @@ impl Demo for Example {
             (w as f32, h as f32)
         };
 
-        let g2 =
+        let mut g2 =
             Graphics2D::new(gfx).context("Unable to create g2 subsystem")?;
 
         let shader_module = {
@@ -93,7 +102,9 @@ impl Demo for Example {
         };
 
         let texture = TextureLoader::new(gfx.vulkan.clone())?
-            .load_from_file("Penguin.jpg", true)?;
+            .load_from_file("Penguin.jpg", false)?;
+
+        g2.add_texture(gfx, texture);
 
         Ok(Self {
             fullscreen: FullscreenToggle::new(window),
@@ -108,7 +119,6 @@ impl Demo for Example {
             ),
             g2,
             start_time: Instant::now(),
-            texture,
         })
     }
 
@@ -129,10 +139,10 @@ impl Demo for Example {
             vector![0.0, 1.0],
         );
         self.geometry_mesh.set_color([1.0, 1.0, 1.0, 1.0]);
-        self.geometry_mesh.aligned_quad(0.0, 0.0, 10.0, 0.05);
+        self.geometry_mesh.aligned_quad(0, 0.0, 0.0, 10.0, 1.0);
 
-        self.geometry_mesh2.set_color([0.0, 1.0, 0.0, 0.9]);
-        self.geometry_mesh2.aligned_quad(2.0, 2.0, 2.0, 5.0);
+        self.geometry_mesh2.set_color([1.0, 1.0, 1.0, 1.0]);
+        self.geometry_mesh2.aligned_quad(0, 2.0, 2.0, 2.0, 5.0);
 
         Ok(())
     }

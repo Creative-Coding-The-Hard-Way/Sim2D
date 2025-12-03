@@ -44,9 +44,13 @@ impl Material {
     /// Builds a pipeline layout for use with Material pipelines.
     pub(super) fn create_pipeline_layout(
         gfx: &Gfx,
+        texture_atlas_descriptor_set_layout: &raii::DescriptorSetLayout,
         descriptor_set_layout: &raii::DescriptorSetLayout,
     ) -> Result<raii::PipelineLayout> {
-        let raw_descriptor_set_layouts = [descriptor_set_layout.raw];
+        let raw_descriptor_set_layouts = [
+            texture_atlas_descriptor_set_layout.raw,
+            descriptor_set_layout.raw,
+        ];
         let push_constant_ranges = [vk::PushConstantRange {
             stage_flags: vk::ShaderStageFlags::VERTEX,
             offset: 0,
