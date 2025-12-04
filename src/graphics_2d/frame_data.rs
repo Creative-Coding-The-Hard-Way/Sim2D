@@ -3,14 +3,7 @@ use {
     anyhow::{Context, Result},
     ash::vk,
     demo_vk::graphics::vulkan::{Frame, UniformBuffer, raii},
-    nalgebra::Matrix4,
 };
-
-#[repr(C, align(16))]
-#[derive(Debug, Copy, Clone)]
-struct UniformData {
-    projection: [[f32; 4]; 4],
-}
 
 /// FrameData manages all resources required to provide frame-constant user data
 /// to the shader pipeline.
@@ -19,7 +12,7 @@ struct UniformData {
 /// frame which does not change until the next frame. Data is stored in a CPU
 /// accessible uniform buffer, as such it is optimized for data which typically
 /// changes on each frame.
-pub struct FrameData {
+pub struct FrameData<UserDataT: Copy> {
     /// One descriptor set for each frame-in-flight.
     descriptor_sets: Vec<vk::DescriptorSet>,
 
@@ -30,10 +23,10 @@ pub struct FrameData {
     descriptor_set_layout: raii::DescriptorSetLayout,
 
     /// A CPU accessible buffer that has space for per-frame data.
-    uniform_buffer: UniformBuffer<UniformData>,
+    uniform_buffer: UniformBuffer<UserDataT>,
 }
 
-impl FrameData {
+impl<UserDataT: Copy> FrameData<UserDataT> {
     /// Creates a new FrameData instance to manage frame-constant user data.
     pub fn new(gfx: &Gfx) -> Result<Self> {
         let frame_count = gfx.frames_in_flight.frame_count() as u32;
@@ -109,17 +102,8 @@ impl FrameData {
         })
     }
 
-    pub fn set_projection(
-        &mut self,
-        frame: &Frame,
-        projection: &Matrix4<f32>,
-    ) -> Result<()> {
-        self.uniform_buffer.update_frame_data(
-            frame,
-            UniformData {
-                projection: projection.data.0,
-            },
-        )
+    pub fn set_data(&mut self, frame: &Frame, data: UserDataT) -> Result<()> {
+        self.uniform_buffer.update_frame_data(frame, data)
     }
 
     pub fn descriptor_set_for_frame(&self, frame: &Frame) -> vk::DescriptorSet {
@@ -133,7 +117,7 @@ impl FrameData {
     fn write_descriptor_sets(
         gfx: &Gfx,
         descriptor_sets: &[vk::DescriptorSet],
-        uniform_buffer: &UniformBuffer<UniformData>,
+        uniform_buffer: &UniformBuffer<UserDataT>,
     ) {
         let uniform_buffer_infos: Vec<vk::DescriptorBufferInfo> =
             descriptor_sets
@@ -142,7 +126,7 @@ impl FrameData {
                 .map(|(index, _descriptor_set)| vk::DescriptorBufferInfo {
                     buffer: uniform_buffer.buffer(),
                     offset: uniform_buffer.offset_for_index(index),
-                    range: std::mem::size_of::<UniformData>() as u64,
+                    range: std::mem::size_of::<UserDataT>() as u64,
                 })
                 .collect();
         let writes: Vec<vk::WriteDescriptorSet> = descriptor_sets

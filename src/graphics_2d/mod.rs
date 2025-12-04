@@ -18,7 +18,6 @@ use {
     demo_vk::graphics::vulkan::{Frame, raii, spirv_words},
     dynamic_buffer::DynamicBuffer,
     material::Material,
-    nalgebra::Matrix4,
     std::sync::Arc,
 };
 pub use {
@@ -35,12 +34,12 @@ struct DrawParams {
 }
 
 /// The 2D Graphics entrypoint.
-pub struct Graphics2D {
+pub struct Graphics2D<PerFrameDataT: Copy = ()> {
     vertex_buffers: Vec<DynamicBuffer<Vertex>>,
     index_buffers: Vec<DynamicBuffer<u32>>,
     draw_params: Vec<Vec<DrawParams>>,
 
-    frame_data: FrameData,
+    frame_data: FrameData<PerFrameDataT>,
 
     pipeline_layout: raii::PipelineLayout,
 
@@ -51,7 +50,7 @@ pub struct Graphics2D {
 
 const INITIAL_CAPACITY: usize = 16_384;
 
-impl Graphics2D {
+impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
     pub fn new(gfx: &Gfx, texture_atlas: &TextureAtlas) -> Result<Self> {
         let frame_data = FrameData::new(gfx)
             .context("Unable to create FrameData instance")?;
@@ -227,12 +226,12 @@ impl Graphics2D {
         Ok(())
     }
 
-    pub fn set_projection(
+    pub fn set_frame_constants(
         &mut self,
         frame: &Frame,
-        projection: &Matrix4<f32>,
+        data: PerFrameDataT,
     ) -> Result<()> {
-        self.frame_data.set_projection(frame, projection)
+        self.frame_data.set_data(frame, data)
     }
 
     /// Emits draw commands for all of the meshes in the current frame.

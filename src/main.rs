@@ -16,6 +16,20 @@ use {
     std::{f32, time::Instant},
 };
 
+#[repr(C, align(16))]
+#[derive(Debug, Copy, Clone)]
+struct FrameConstants {
+    projection: [[f32; 4]; 4],
+}
+
+impl FrameConstants {
+    pub fn new(matrix: Matrix4<f32>) -> Self {
+        Self {
+            projection: matrix.data.0,
+        }
+    }
+}
+
 #[derive(Debug, Parser)]
 struct Args {}
 
@@ -40,7 +54,7 @@ struct Example {
     projection: Matrix4<f32>,
     geometry_mesh: GeometryMesh,
     geometry_mesh2: GeometryMesh,
-    g2: Graphics2D,
+    g2: Graphics2D<FrameConstants>,
     start_time: Instant,
 }
 
@@ -215,7 +229,10 @@ impl Demo for Example {
                 },
             );
             self.texture_atlas.bind_atlas_descriptor(gfx, frame);
-            self.g2.set_projection(frame, &self.projection)?;
+            self.g2.set_frame_constants(
+                frame,
+                FrameConstants::new(self.projection),
+            )?;
             self.g2.prepare_meshes(
                 gfx,
                 frame,
