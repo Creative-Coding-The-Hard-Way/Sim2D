@@ -2,7 +2,7 @@ use {
     crate::{Gfx, graphics_2d::Texture},
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::raii,
+    demo_vk::graphics::vulkan::{Frame, raii},
 };
 
 /// Used to constrain the variable descriptor array and pool sizes. This is well
@@ -20,11 +20,13 @@ pub struct TextureAtlas {
     textures: Vec<Texture>,
 
     // The sampler used when reading textures.
-    sampler: raii::Sampler,
+    _sampler: raii::Sampler,
 
     descriptor_set_layout: raii::DescriptorSetLayout,
     descriptor_set: vk::DescriptorSet,
-    descriptor_pool: raii::DescriptorPool,
+    _descriptor_pool: raii::DescriptorPool,
+
+    pipeline_layout: raii::PipelineLayout,
 }
 
 impl TextureAtlas {
@@ -150,12 +152,33 @@ impl TextureAtlas {
             }
         };
 
+        let pipeline_layout = {
+            let ranges = [vk::PushConstantRange {
+                stage_flags: vk::ShaderStageFlags::VERTEX,
+                offset: 0,
+                size: 8,
+            }];
+            raii::PipelineLayout::new(
+                "TextureAtlas Layout",
+                gfx.vulkan.device.clone(),
+                &vk::PipelineLayoutCreateInfo {
+                    set_layout_count: 1,
+                    p_set_layouts: &descriptor_set_layout.raw,
+                    push_constant_range_count: ranges.len() as u32,
+                    p_push_constant_ranges: ranges.as_ptr(),
+                    ..Default::default()
+                },
+            )
+            .context("Unable to create effective pipeline layout")?
+        };
+
         Ok(Self {
             textures: vec![],
-            sampler,
+            _sampler: sampler,
             descriptor_set_layout,
-            descriptor_pool,
+            _descriptor_pool: descriptor_pool,
             descriptor_set,
+            pipeline_layout,
         })
     }
 
@@ -163,8 +186,22 @@ impl TextureAtlas {
         &self.descriptor_set_layout
     }
 
-    pub fn descriptor_set(&self) -> vk::DescriptorSet {
-        self.descriptor_set
+    /// Binds the atlas's descriptor set for the frame.
+    ///
+    /// The atlas always binds to descriptor 0 as it should be compatible with
+    /// every other pipeline layout used during the frame and should never
+    /// need to be rebound.
+    pub fn bind_atlas_descriptor(&self, gfx: &Gfx, frame: &Frame) {
+        unsafe {
+            gfx.vulkan.cmd_bind_descriptor_sets(
+                frame.command_buffer(),
+                vk::PipelineBindPoint::GRAPHICS,
+                self.pipeline_layout.raw,
+                0,
+                &[self.descriptor_set],
+                &[],
+            );
+        }
     }
 
     /// Adds a texture to the atlas and returns the index which can be used in

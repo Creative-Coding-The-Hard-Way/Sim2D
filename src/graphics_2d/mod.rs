@@ -11,9 +11,7 @@ pub(crate) mod utility;
 use {
     crate::{
         Gfx,
-        graphics_2d::{
-            frame_data::FrameData, mesh::Mesh, texture::TextureAtlas,
-        },
+        graphics_2d::{frame_data::FrameData, mesh::Mesh},
     },
     anyhow::{Context, Result},
     ash::vk,
@@ -25,7 +23,7 @@ use {
 };
 pub use {
     mesh::{GeometryMesh, Vertex},
-    texture::{Texture, TextureLoader},
+    texture::{Texture, TextureAtlas, TextureLoader},
 };
 
 #[derive(Debug, Clone)]
@@ -49,17 +47,12 @@ pub struct Graphics2D {
     default_vertex_shader_module: raii::ShaderModule,
     default_fragment_shader_module: raii::ShaderModule,
     default_material: Arc<Material>,
-
-    texture_atlas: TextureAtlas,
 }
 
 const INITIAL_CAPACITY: usize = 16_384;
 
 impl Graphics2D {
-    pub fn new(gfx: &Gfx) -> Result<Self> {
-        let texture_atlas =
-            TextureAtlas::new(gfx).context("Unable to create texture atlas")?;
-
+    pub fn new(gfx: &Gfx, texture_atlas: &TextureAtlas) -> Result<Self> {
         let frame_data = FrameData::new(gfx)
             .context("Unable to create FrameData instance")?;
 
@@ -150,13 +143,7 @@ impl Graphics2D {
             default_vertex_shader_module,
             default_fragment_shader_module,
             default_material,
-
-            texture_atlas,
         })
-    }
-
-    pub fn add_texture(&mut self, gfx: &Gfx, texture: Texture) -> i32 {
-        self.texture_atlas.add_texture(gfx, texture)
     }
 
     /// Creates a new rendering material. See the documentation for [Material]
@@ -282,11 +269,8 @@ impl Graphics2D {
                 frame.command_buffer(),
                 vk::PipelineBindPoint::GRAPHICS,
                 self.pipeline_layout.raw,
-                0,
-                &[
-                    self.texture_atlas.descriptor_set(),
-                    self.frame_data.descriptor_set_for_frame(frame),
-                ],
+                1,
+                &[self.frame_data.descriptor_set_for_frame(frame)],
                 &[],
             );
             gfx.vulkan.cmd_bind_index_buffer(

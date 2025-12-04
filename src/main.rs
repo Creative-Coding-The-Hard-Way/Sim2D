@@ -1,7 +1,7 @@
 mod graphics_2d;
 
 use {
-    crate::graphics_2d::TextureLoader,
+    crate::graphics_2d::{TextureAtlas, TextureLoader},
     anyhow::{Context, Result},
     ash::vk,
     clap::Parser,
@@ -35,6 +35,7 @@ pub fn ortho_projection(aspect: f32, height: f32) -> Matrix4<f32> {
 }
 
 struct Example {
+    texture_atlas: TextureAtlas,
     fullscreen: FullscreenToggle,
     projection: Matrix4<f32>,
     geometry_mesh: GeometryMesh,
@@ -85,8 +86,11 @@ impl Demo for Example {
             (w as f32, h as f32)
         };
 
-        let mut g2 =
-            Graphics2D::new(gfx).context("Unable to create g2 subsystem")?;
+        let mut texture_atlas =
+            TextureAtlas::new(gfx).context("Unable to create texture atlas")?;
+
+        let g2 = Graphics2D::new(gfx, &texture_atlas)
+            .context("Unable to create g2 subsystem")?;
 
         let shader_module = {
             let words = spirv_words(include_bytes!("./custom.frag.spv"))?;
@@ -104,9 +108,10 @@ impl Demo for Example {
         let texture = TextureLoader::new(gfx.vulkan.clone())?
             .load_from_file("Penguin.jpg", false)?;
 
-        g2.add_texture(gfx, texture);
+        texture_atlas.add_texture(gfx, texture);
 
         Ok(Self {
+            texture_atlas,
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
             geometry_mesh: GeometryMesh::new(
@@ -209,6 +214,7 @@ impl Demo for Example {
                     ..Default::default()
                 },
             );
+            self.texture_atlas.bind_atlas_descriptor(gfx, frame);
             self.g2.set_projection(frame, &self.projection)?;
             self.g2.prepare_meshes(
                 gfx,
