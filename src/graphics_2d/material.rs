@@ -45,11 +45,11 @@ impl Material {
     pub(super) fn create_pipeline_layout(
         gfx: &Gfx,
         texture_atlas_descriptor_set_layout: &raii::DescriptorSetLayout,
-        descriptor_set_layout: &raii::DescriptorSetLayout,
+        frame_data_descriptor_set_layout: &raii::DescriptorSetLayout,
     ) -> Result<raii::PipelineLayout> {
         let raw_descriptor_set_layouts = [
             texture_atlas_descriptor_set_layout.raw,
-            descriptor_set_layout.raw,
+            frame_data_descriptor_set_layout.raw,
         ];
         let push_constant_ranges = [vk::PushConstantRange {
             stage_flags: vk::ShaderStageFlags::VERTEX,

@@ -1,8 +1,8 @@
 //! G2 is the 2D graphics API. It support drawing arbitrary shapes which
 //! typically change every frame.
 
-mod descriptor_sets;
 mod dynamic_buffer;
+mod frame_data;
 mod material;
 mod mesh;
 mod texture;
@@ -11,14 +11,13 @@ pub(crate) mod utility;
 use {
     crate::{
         Gfx,
-        graphics_2d::{mesh::Mesh, texture::TextureAtlas},
+        graphics_2d::{
+            frame_data::FrameData, mesh::Mesh, texture::TextureAtlas,
+        },
     },
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::{Frame, UniformBuffer, raii, spirv_words},
-    descriptor_sets::{
-        allocate_descriptor_sets, create_descriptor_pool, write_descriptor_sets,
-    },
+    demo_vk::graphics::vulkan::{Frame, raii, spirv_words},
     dynamic_buffer::DynamicBuffer,
     material::Material,
     nalgebra::Matrix4,
@@ -28,12 +27,6 @@ pub use {
     mesh::{GeometryMesh, Vertex},
     texture::{Texture, TextureLoader},
 };
-
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-struct UniformData {
-    pub projection: [[f32; 4]; 4],
-}
 
 #[derive(Debug, Clone)]
 struct DrawParams {
@@ -45,59 +38,40 @@ struct DrawParams {
 
 /// The 2D Graphics entrypoint.
 pub struct Graphics2D {
-    // Per-Frame resources
     vertex_buffers: Vec<DynamicBuffer<Vertex>>,
     index_buffers: Vec<DynamicBuffer<u32>>,
-    uniform_buffer: UniformBuffer<UniformData>,
-    descriptor_sets: Vec<vk::DescriptorSet>,
     draw_params: Vec<Vec<DrawParams>>,
 
-    // Shared resources
-    _descriptor_pool: raii::DescriptorPool,
-    _descriptor_set_layout: raii::DescriptorSetLayout,
+    frame_data: FrameData,
+
     pipeline_layout: raii::PipelineLayout,
+
     default_vertex_shader_module: raii::ShaderModule,
     default_fragment_shader_module: raii::ShaderModule,
     default_material: Arc<Material>,
+
     texture_atlas: TextureAtlas,
 }
 
 const INITIAL_CAPACITY: usize = 16_384;
 
 impl Graphics2D {
-    pub fn add_texture(&mut self, gfx: &Gfx, texture: Texture) -> i32 {
-        self.texture_atlas.add_texture(gfx, texture)
-    }
-
     pub fn new(gfx: &Gfx) -> Result<Self> {
         let texture_atlas =
             TextureAtlas::new(gfx).context("Unable to create texture atlas")?;
 
-        // Create descriptor resources
-        let descriptor_pool = create_descriptor_pool(gfx)
-            .context("Unable to create descriptor pool.")?;
-        let descriptor_set_layout = Material::create_descriptor_set_layout(gfx)
-            .context("Unable to create descriptor set layout")?;
-        let descriptor_sets = allocate_descriptor_sets(
-            gfx,
-            &descriptor_pool,
-            &descriptor_set_layout,
-        )
-        .context("Unable to allocate descriptor set.")?;
+        let frame_data = FrameData::new(gfx)
+            .context("Unable to create FrameData instance")?;
 
         // create pipeline resources
         let pipeline_layout = Material::create_pipeline_layout(
             gfx,
             texture_atlas.descriptor_set_layout(),
-            &descriptor_set_layout,
+            frame_data.descriptor_set_layout(),
         )
         .context("Unable to create pipeline layout")?;
 
         // create buffers
-        let uniform_buffer = UniformBuffer::allocate_per_frame(
-            &gfx.vulkan,
-            &gfx.frames_in_flight,
-        )?;
         let vertex_buffers = {
             let mut vertex_buffers =
                 Vec::with_capacity(gfx.frames_in_flight.frame_count());
@@ -124,9 +98,6 @@ impl Graphics2D {
             }
             index_buffers
         };
-
-        // write descriptor sets
-        write_descriptor_sets(gfx, &descriptor_sets, &uniform_buffer);
 
         let default_vertex_shader_module = {
             let vertex_shader_words =
@@ -171,19 +142,21 @@ impl Graphics2D {
         Ok(Self {
             index_buffers,
             vertex_buffers,
-            uniform_buffer,
             draw_params: vec![vec![]; gfx.frames_in_flight.frame_count()],
 
-            _descriptor_pool: descriptor_pool,
-            _descriptor_set_layout: descriptor_set_layout,
-            descriptor_sets,
-            pipeline_layout,
+            frame_data,
 
+            pipeline_layout,
             default_vertex_shader_module,
             default_fragment_shader_module,
             default_material,
+
             texture_atlas,
         })
+    }
+
+    pub fn add_texture(&mut self, gfx: &Gfx, texture: Texture) -> i32 {
+        self.texture_atlas.add_texture(gfx, texture)
     }
 
     /// Creates a new rendering material. See the documentation for [Material]
@@ -272,12 +245,7 @@ impl Graphics2D {
         frame: &Frame,
         projection: &Matrix4<f32>,
     ) -> Result<()> {
-        self.uniform_buffer.update_frame_data(
-            frame,
-            UniformData {
-                projection: projection.data.0,
-            },
-        )
+        self.frame_data.set_projection(frame, projection)
     }
 
     /// Emits draw commands for all of the meshes in the current frame.
@@ -317,7 +285,7 @@ impl Graphics2D {
                 0,
                 &[
                     self.texture_atlas.descriptor_set(),
-                    self.descriptor_sets[frame.frame_index()],
+                    self.frame_data.descriptor_set_for_frame(frame),
                 ],
                 &[],
             );

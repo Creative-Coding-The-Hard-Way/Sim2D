@@ -1,7 +1,7 @@
 mod graphics_2d;
 
 use {
-    crate::graphics_2d::{Texture, TextureLoader},
+    crate::graphics_2d::TextureLoader,
     anyhow::{Context, Result},
     ash::vk,
     clap::Parser,
@@ -251,25 +251,35 @@ impl Demo for Example {
 
     fn handle_event(
         &mut self,
-        #[allow(unused_variables)] window: &mut glfw::Window,
-        #[allow(unused_variables)] gfx: &mut Graphics<Self::Args>,
-        #[allow(unused_variables)] event: glfw::WindowEvent,
+        window: &mut glfw::Window,
+        _gfx: &mut Graphics<Self::Args>,
+        event: glfw::WindowEvent,
     ) -> Result<()> {
-        if let glfw::WindowEvent::Key(
-            glfw::Key::Space,
-            _,
-            glfw::Action::Release,
-            _,
-        ) = event
-        {
-            self.fullscreen
-                .toggle_fullscreen(window)
-                .context("unable to toggle fullscreen!")?;
-        }
-        if let glfw::WindowEvent::FramebufferSize(width, height) = event {
-            self.projection =
-                ortho_projection(width as f32 / height as f32, 10.0);
-        }
+        match event {
+            glfw::WindowEvent::Key(
+                glfw::Key::Space,
+                _,
+                glfw::Action::Release,
+                _,
+            ) => {
+                self.fullscreen
+                    .toggle_fullscreen(window)
+                    .context("unable to toggle fullscreen!")?;
+            }
+            glfw::WindowEvent::Key(
+                glfw::Key::Escape,
+                _,
+                glfw::Action::Release,
+                _,
+            ) => {
+                window.set_should_close(true);
+            }
+            glfw::WindowEvent::FramebufferSize(width, height) => {
+                self.projection =
+                    ortho_projection(width as f32 / height as f32, 10.0);
+            }
+            _ => {}
+        };
         Ok(())
     }
 }
