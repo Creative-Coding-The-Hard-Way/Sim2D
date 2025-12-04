@@ -24,16 +24,24 @@ impl<DataT: Copy> DynamicBuffer<DataT> {
             round_to_power_of_two(initial_capacity),
             usage,
         )?;
-        let buffer_device_address = unsafe {
-            ctx.get_buffer_device_address(&vk::BufferDeviceAddressInfo {
-                buffer: cpu_buffer.buffer(),
-                ..Default::default()
-            })
+
+        let address = if usage
+            .contains(vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS)
+        {
+            unsafe {
+                ctx.get_buffer_device_address(&vk::BufferDeviceAddressInfo {
+                    buffer: cpu_buffer.buffer(),
+                    ..Default::default()
+                })
+            }
+        } else {
+            0
         };
+
         Ok(Self {
             usage,
             cpu_buffer,
-            buffer_device_address,
+            buffer_device_address: address,
         })
     }
 
@@ -48,6 +56,9 @@ impl<DataT: Copy> DynamicBuffer<DataT> {
     }
 
     /// Returns the current buffer device address.
+    ///
+    /// Only valid if the buffer was created with the
+    /// `vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS` flag.
     pub fn buffer_device_address(&self) -> vk::DeviceAddress {
         self.buffer_device_address
     }

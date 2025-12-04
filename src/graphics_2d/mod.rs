@@ -2,25 +2,24 @@
 //! typically change every frame.
 
 mod dynamic_buffer;
-mod frame_data;
+mod frame_constants;
 mod material;
 mod mesh;
 mod texture;
 pub(crate) mod utility;
 
 use {
-    crate::{
-        Gfx,
-        graphics_2d::{frame_data::FrameData, mesh::Mesh},
-    },
+    self::{frame_constants::FrameConstants, mesh::Mesh},
+    crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::{Frame, raii, spirv_words},
+    demo_vk::graphics::vulkan::{Frame, VulkanContext, raii, spirv_words},
     dynamic_buffer::DynamicBuffer,
     material::Material,
     std::sync::Arc,
 };
-pub use {
+
+pub use self::{
     mesh::{GeometryMesh, Vertex},
     texture::{Texture, TextureAtlas, TextureLoader},
 };
@@ -33,13 +32,39 @@ struct DrawParams {
     material: Arc<Material>,
 }
 
+/// All of the resources required to assemble draw commands for a frame.
+///
+/// The renderer keeps one instance per frame-in-flight so resources can be
+/// updated freely while constructing the frame.
+struct FrameDraw {
+    vertex_buffer: DynamicBuffer<Vertex>,
+    index_buffer: DynamicBuffer<u32>,
+    draw_params: Vec<DrawParams>,
+}
+
+impl FrameDraw {
+    pub fn new(ctx: &VulkanContext) -> Result<Self> {
+        Ok(Self {
+            vertex_buffer: DynamicBuffer::new(
+                ctx,
+                INITIAL_CAPACITY,
+                vk::BufferUsageFlags::STORAGE_BUFFER
+                    | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
+            )?,
+            index_buffer: DynamicBuffer::new(
+                ctx,
+                INITIAL_CAPACITY,
+                vk::BufferUsageFlags::INDEX_BUFFER,
+            )?,
+            draw_params: Vec::with_capacity(4),
+        })
+    }
+}
+
 /// The 2D Graphics entrypoint.
 pub struct Graphics2D<PerFrameDataT: Copy = ()> {
-    vertex_buffers: Vec<DynamicBuffer<Vertex>>,
-    index_buffers: Vec<DynamicBuffer<u32>>,
-    draw_params: Vec<Vec<DrawParams>>,
-
-    frame_data: FrameData<PerFrameDataT>,
+    frame_draw_resources: Vec<FrameDraw>,
+    frame_constants: FrameConstants<PerFrameDataT>,
 
     pipeline_layout: raii::PipelineLayout,
 
@@ -52,43 +77,29 @@ const INITIAL_CAPACITY: usize = 16_384;
 
 impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
     pub fn new(gfx: &Gfx, texture_atlas: &TextureAtlas) -> Result<Self> {
-        let frame_data = FrameData::new(gfx)
+        let frame_constants = FrameConstants::new(gfx)
             .context("Unable to create FrameData instance")?;
 
         // create pipeline resources
         let pipeline_layout = Material::create_pipeline_layout(
             gfx,
             texture_atlas.descriptor_set_layout(),
-            frame_data.descriptor_set_layout(),
+            frame_constants.descriptor_set_layout(),
         )
         .context("Unable to create pipeline layout")?;
 
-        // create buffers
-        let vertex_buffers = {
-            let mut vertex_buffers =
+        let frame_draw_resources = {
+            let mut resources =
                 Vec::with_capacity(gfx.frames_in_flight.frame_count());
-            for _ in 0..gfx.frames_in_flight.frame_count() {
-                vertex_buffers.push(DynamicBuffer::new(
-                    &gfx.vulkan,
-                    INITIAL_CAPACITY,
-                    vk::BufferUsageFlags::STORAGE_BUFFER
-                        | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
+            for frame_index in 0..gfx.frames_in_flight.frame_count() {
+                resources.push(FrameDraw::new(&gfx.vulkan).context(
+                    format!(
+                        "Unable to create draw resources for frame {}",
+                        frame_index
+                    ),
                 )?);
             }
-            vertex_buffers
-        };
-        let index_buffers = {
-            let mut index_buffers =
-                Vec::with_capacity(gfx.frames_in_flight.frame_count());
-            for _ in 0..gfx.frames_in_flight.frame_count() {
-                index_buffers.push(DynamicBuffer::new(
-                    &gfx.vulkan,
-                    INITIAL_CAPACITY,
-                    vk::BufferUsageFlags::INDEX_BUFFER
-                        | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
-                )?);
-            }
-            index_buffers
+            resources
         };
 
         let default_vertex_shader_module = {
@@ -132,11 +143,8 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
         );
 
         Ok(Self {
-            index_buffers,
-            vertex_buffers,
-            draw_params: vec![vec![]; gfx.frames_in_flight.frame_count()],
-
-            frame_data,
+            frame_draw_resources,
+            frame_constants,
 
             pipeline_layout,
             default_vertex_shader_module,
@@ -182,9 +190,8 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
         frame: &Frame,
         meshes: &[&dyn Mesh],
     ) -> Result<()> {
-        // reset draw parameters for this frame
-        let draw_params = &mut self.draw_params[frame.frame_index()];
-        draw_params.clear();
+        let frame_draw = &mut self.frame_draw_resources[frame.frame_index()];
+        frame_draw.draw_params.clear();
 
         // collect the vertex and index references and assemble the draw params
         let (vertex_data, index_data) = {
@@ -199,7 +206,7 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                 vertex_data.push(vertices);
                 index_data.push(indices);
 
-                draw_params.push(DrawParams {
+                frame_draw.draw_params.push(DrawParams {
                     index_offset,
                     vertex_offset,
                     index_count: indices.len() as u32,
@@ -215,10 +222,12 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
 
         // write mesh data into frame-specific buffers
         unsafe {
-            self.vertex_buffers[frame.frame_index()]
+            frame_draw
+                .vertex_buffer
                 .write_data(&gfx.vulkan, &vertex_data)
                 .context("Unable to write frame vertex data!")?;
-            self.index_buffers[frame.frame_index()]
+            frame_draw
+                .index_buffer
                 .write_data(&gfx.vulkan, &index_data)
                 .context("Unable to write index data!")?;
         }
@@ -231,7 +240,7 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
         frame: &Frame,
         data: PerFrameDataT,
     ) -> Result<()> {
-        self.frame_data.set_data(frame, data)
+        self.frame_constants.set_data(frame, data)
     }
 
     /// Emits draw commands for all of the meshes in the current frame.
@@ -243,6 +252,7 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
         gfx: &Gfx,
         frame: &Frame,
     ) -> Result<()> {
+        let frame_draw = &mut self.frame_draw_resources[frame.frame_index()];
         unsafe {
             gfx.vulkan.cmd_set_viewport(
                 frame.command_buffer(),
@@ -269,12 +279,12 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                 vk::PipelineBindPoint::GRAPHICS,
                 self.pipeline_layout.raw,
                 1,
-                &[self.frame_data.descriptor_set_for_frame(frame)],
+                &[self.frame_constants.descriptor_set_for_frame(frame)],
                 &[],
             );
             gfx.vulkan.cmd_bind_index_buffer(
                 frame.command_buffer(),
-                self.index_buffers[frame.frame_index()].raw(),
+                frame_draw.index_buffer.raw(),
                 0,
                 vk::IndexType::UINT32,
             );
@@ -283,25 +293,29 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                 self.pipeline_layout.raw,
                 vk::ShaderStageFlags::VERTEX,
                 0,
-                &self.vertex_buffers[frame.frame_index()]
+                &frame_draw
+                    .vertex_buffer
                     .buffer_device_address()
                     .to_le_bytes(),
             );
+        }
 
-            let mut last_bound_pipeline = vk::Pipeline::null();
-            for draw_params in self.draw_params[frame.frame_index()].drain(0..)
-            {
-                // Bind the pipeline for the current draw, but only if its
-                // actually different from the most recently used pipeline.
-                let pipeline = draw_params.material.pipeline().raw;
-                if pipeline != last_bound_pipeline {
+        let mut last_bound_pipeline = vk::Pipeline::null();
+        for draw_params in frame_draw.draw_params.drain(0..) {
+            // Bind the pipeline for the current draw, but only if its
+            // actually different from the most recently used pipeline.
+            let pipeline = draw_params.material.pipeline().raw;
+            if pipeline != last_bound_pipeline {
+                unsafe {
                     gfx.vulkan.cmd_bind_pipeline(
                         frame.command_buffer(),
                         vk::PipelineBindPoint::GRAPHICS,
                         pipeline,
                     );
-                    last_bound_pipeline = pipeline;
                 }
+                last_bound_pipeline = pipeline;
+            }
+            unsafe {
                 gfx.vulkan.cmd_draw_indexed(
                     frame.command_buffer(),
                     draw_params.index_count, // index count
@@ -312,6 +326,7 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                 );
             }
         }
+
         Ok(())
     }
 }

@@ -18,38 +18,15 @@ pub struct Material {
 }
 
 impl Material {
-    /// Builds the descriptor set layout for use with Material pipelines.
-    pub(super) fn create_descriptor_set_layout(
-        gfx: &Gfx,
-    ) -> Result<raii::DescriptorSetLayout> {
-        let bindings = [vk::DescriptorSetLayoutBinding {
-            binding: 0,
-            descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
-            descriptor_count: 1,
-            stage_flags: vk::ShaderStageFlags::VERTEX,
-            p_immutable_samplers: std::ptr::null(),
-            ..Default::default()
-        }];
-        raii::DescriptorSetLayout::new(
-            "FirstTriangleDescLayout",
-            gfx.vulkan.device.clone(),
-            &vk::DescriptorSetLayoutCreateInfo {
-                binding_count: bindings.len() as u32,
-                p_bindings: bindings.as_ptr(),
-                ..Default::default()
-            },
-        )
-    }
-
     /// Builds a pipeline layout for use with Material pipelines.
     pub(super) fn create_pipeline_layout(
         gfx: &Gfx,
         texture_atlas_descriptor_set_layout: &raii::DescriptorSetLayout,
-        frame_data_descriptor_set_layout: &raii::DescriptorSetLayout,
+        frame_constants_descriptor_set_layout: &raii::DescriptorSetLayout,
     ) -> Result<raii::PipelineLayout> {
         let raw_descriptor_set_layouts = [
             texture_atlas_descriptor_set_layout.raw,
-            frame_data_descriptor_set_layout.raw,
+            frame_constants_descriptor_set_layout.raw,
         ];
         let push_constant_ranges = [vk::PushConstantRange {
             stage_flags: vk::ShaderStageFlags::VERTEX,

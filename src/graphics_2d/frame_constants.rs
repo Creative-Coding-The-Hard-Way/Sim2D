@@ -5,14 +5,14 @@ use {
     demo_vk::graphics::vulkan::{Frame, UniformBuffer, raii},
 };
 
-/// FrameData manages all resources required to provide frame-constant user data
-/// to the shader pipeline.
+/// Manages all resources required to provide frame-constant data to the shader
+/// pipeline.
 ///
 /// Frame-constant means data which is specified once at the beginning of the
 /// frame which does not change until the next frame. Data is stored in a CPU
 /// accessible uniform buffer, as such it is optimized for data which typically
 /// changes on each frame.
-pub struct FrameData<UserDataT: Copy> {
+pub struct FrameConstants<UserDataT: Copy> {
     /// One descriptor set for each frame-in-flight.
     descriptor_sets: Vec<vk::DescriptorSet>,
 
@@ -26,8 +26,8 @@ pub struct FrameData<UserDataT: Copy> {
     uniform_buffer: UniformBuffer<UserDataT>,
 }
 
-impl<UserDataT: Copy> FrameData<UserDataT> {
-    /// Creates a new FrameData instance to manage frame-constant user data.
+impl<UserDataT: Copy> FrameConstants<UserDataT> {
+    /// Creates a new instance.
     pub fn new(gfx: &Gfx) -> Result<Self> {
         let frame_count = gfx.frames_in_flight.frame_count() as u32;
 
