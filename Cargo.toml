@@ -19,5 +19,5 @@ anyhow = "1.0.100"
 glob = "0.3.3"
 shader_compiler = { git = "https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git" }
 
-[feature]
+[features]
 glfw-src-build = ["demo_vk/glfw-src-build"]
