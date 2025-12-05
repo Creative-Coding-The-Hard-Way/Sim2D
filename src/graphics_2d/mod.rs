@@ -264,6 +264,29 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
         self.frame_constants.set_data(frame, data)
     }
 
+    /// Binds the texture atlas for the frame.
+    ///
+    /// This only needs to be done once a frame, regardless of how many meshes
+    /// there are as mesh pipelines are required to have compatible pipeline
+    /// layouts.
+    pub fn bind_texture_atlas(
+        &mut self,
+        gfx: &Gfx,
+        frame: &Frame,
+        texture_atlas: &TextureAtlas,
+    ) {
+        unsafe {
+            gfx.vulkan.cmd_bind_descriptor_sets(
+                frame.command_buffer(),
+                vk::PipelineBindPoint::GRAPHICS,
+                self.pipeline_layout.raw,
+                0,
+                &[texture_atlas.descriptor_set()],
+                &[],
+            );
+        }
+    }
+
     /// Emits draw commands for all of the meshes in the current frame.
     ///
     /// NOTE: it is incorrect to call this multiple times for the same frame as

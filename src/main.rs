@@ -215,7 +215,7 @@ impl Demo for Example {
                     ..Default::default()
                 },
             );
-            self.texture_atlas.bind_atlas_descriptor(gfx, frame);
+            self.g2.bind_texture_atlas(gfx, frame, &self.texture_atlas);
             self.g2.prepare_meshes(
                 gfx,
                 frame,
