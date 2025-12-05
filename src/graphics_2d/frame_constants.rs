@@ -36,7 +36,8 @@ impl<UserDataT: Copy> FrameConstants<UserDataT> {
                 binding: 0,
                 descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
                 descriptor_count: 1,
-                stage_flags: vk::ShaderStageFlags::VERTEX,
+                stage_flags: vk::ShaderStageFlags::VERTEX
+                    | vk::ShaderStageFlags::FRAGMENT,
                 p_immutable_samplers: std::ptr::null(),
                 ..Default::default()
             }];
@@ -119,6 +120,11 @@ impl<UserDataT: Copy> FrameConstants<UserDataT> {
         descriptor_sets: &[vk::DescriptorSet],
         uniform_buffer: &UniformBuffer<UserDataT>,
     ) {
+        if std::mem::size_of::<UserDataT>() == 0 {
+            // nothing to do if there is no UserData
+            return;
+        }
+
         let uniform_buffer_infos: Vec<vk::DescriptorBufferInfo> =
             descriptor_sets
                 .iter()

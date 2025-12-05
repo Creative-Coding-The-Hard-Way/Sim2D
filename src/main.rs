@@ -8,27 +8,13 @@ use {
     demo_vk::{
         app::FullscreenToggle,
         demo::{Demo, Graphics, demo_main},
-        graphics::vulkan::{Frame, RequiredDeviceFeatures, raii, spirv_words},
+        graphics::vulkan::{Frame, RequiredDeviceFeatures},
     },
     glfw::Window,
     graphics_2d::{GeometryMesh, Graphics2D},
-    nalgebra::{Matrix4, vector},
+    nalgebra::{Matrix4, Rotation3, Translation3, Vector3, vector},
     std::{f32, time::Instant},
 };
-
-#[repr(C, align(16))]
-#[derive(Debug, Copy, Clone)]
-struct FrameConstants {
-    projection: [[f32; 4]; 4],
-}
-
-impl FrameConstants {
-    pub fn new(matrix: Matrix4<f32>) -> Self {
-        Self {
-            projection: matrix.data.0,
-        }
-    }
-}
 
 #[derive(Debug, Parser)]
 struct Args {}
@@ -54,7 +40,7 @@ struct Example {
     projection: Matrix4<f32>,
     geometry_mesh: GeometryMesh,
     geometry_mesh2: GeometryMesh,
-    g2: Graphics2D<FrameConstants>,
+    g2: Graphics2D,
     start_time: Instant,
 }
 
@@ -106,19 +92,6 @@ impl Demo for Example {
         let g2 = Graphics2D::new(gfx, &texture_atlas)
             .context("Unable to create g2 subsystem")?;
 
-        let shader_module = {
-            let words = spirv_words(include_bytes!("./custom.frag.spv"))?;
-            raii::ShaderModule::new(
-                "custom shader module",
-                gfx.vulkan.device.clone(),
-                &vk::ShaderModuleCreateInfo {
-                    code_size: words.len() * 4,
-                    p_code: words.as_ptr(),
-                    ..Default::default()
-                },
-            )?
-        };
-
         let texture = TextureLoader::new(gfx.vulkan.clone())?
             .load_from_file("Penguin.jpg", false)?;
 
@@ -134,7 +107,7 @@ impl Demo for Example {
             ),
             geometry_mesh2: GeometryMesh::new(
                 100,
-                g2.new_material(gfx, None, Some(&shader_module))?,
+                g2.default_material().clone(),
             ),
             g2,
             start_time: Instant::now(),
@@ -146,22 +119,36 @@ impl Demo for Example {
         #[allow(unused_variables)] window: &mut glfw::Window,
         #[allow(unused_variables)] gfx: &mut Graphics<Self::Args>,
     ) -> Result<()> {
-        let _t = Instant::now().duration_since(self.start_time).as_secs_f32()
+        let t = Instant::now().duration_since(self.start_time).as_secs_f32()
             * (f32::consts::PI / 3.0);
 
-        self.geometry_mesh2.clear();
         self.geometry_mesh.clear();
+        self.geometry_mesh.set_transform(
+            self.projection
+                * (Translation3::new(-3.0, 0.0, 0.0)
+                    * Rotation3::new(Vector3::z() * t))
+                .to_homogeneous(),
+        );
         self.geometry_mesh.set_color([1.0, 0.0, 0.0, 1.0]);
         self.geometry_mesh.triangle(
             vector![0.0, 0.0],
             vector![1.0, 0.0],
             vector![0.0, 1.0],
         );
-        self.geometry_mesh.set_color([1.0, 1.0, 1.0, 1.0]);
-        self.geometry_mesh.aligned_quad(0, 0.0, 0.0, 10.0, 1.0);
 
-        self.geometry_mesh2.set_color([1.0, 1.0, 1.0, 1.0]);
-        self.geometry_mesh2.aligned_quad(0, 2.0, 2.0, 2.0, 5.0);
+        self.geometry_mesh2.clear();
+        self.geometry_mesh2.set_transform(
+            self.projection
+                * (Translation3::new(3.0, 0.0, 0.0)
+                    * Rotation3::new(Vector3::z() * -t))
+                .to_homogeneous(),
+        );
+        self.geometry_mesh2.set_color([0.0, 0.5, 0.9, 1.0]);
+        self.geometry_mesh2.triangle(
+            vector![0.0, 0.0],
+            vector![1.0, 0.0],
+            vector![0.0, 1.0],
+        );
 
         Ok(())
     }
@@ -229,10 +216,6 @@ impl Demo for Example {
                 },
             );
             self.texture_atlas.bind_atlas_descriptor(gfx, frame);
-            self.g2.set_frame_constants(
-                frame,
-                FrameConstants::new(self.projection),
-            )?;
             self.g2.prepare_meshes(
                 gfx,
                 frame,

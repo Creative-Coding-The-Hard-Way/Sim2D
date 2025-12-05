@@ -1,5 +1,7 @@
 use {
-    crate::graphics_2d::material::Material, nalgebra::Vector2, std::sync::Arc,
+    crate::graphics_2d::material::Material,
+    nalgebra::{Matrix4, Vector2},
+    std::sync::Arc,
 };
 
 #[repr(C, align(16))]
@@ -34,6 +36,7 @@ pub trait Mesh {
     fn vertices(&self) -> &[Vertex];
     fn indices(&self) -> &[u32];
     fn material(&self) -> &Arc<Material>;
+    fn transform(&self) -> &Matrix4<f32>;
 }
 
 /// The GeometryMesh supports constructing procedural geometry, things like
@@ -43,6 +46,7 @@ pub struct GeometryMesh {
     vertices: Vec<Vertex>,
     indices: Vec<u32>,
     material: Arc<Material>,
+    transform: Matrix4<f32>,
 }
 
 impl Mesh for GeometryMesh {
@@ -57,6 +61,10 @@ impl Mesh for GeometryMesh {
     fn material(&self) -> &Arc<Material> {
         &self.material
     }
+
+    fn transform(&self) -> &Matrix4<f32> {
+        &self.transform
+    }
 }
 
 impl GeometryMesh {
@@ -68,7 +76,13 @@ impl GeometryMesh {
             vertices: Vec::with_capacity(initial_capacity),
             indices: Vec::with_capacity(initial_capacity),
             material,
+            transform: Matrix4::identity(),
         }
+    }
+
+    /// Set the matrix transformation matrix.
+    pub fn set_transform(&mut self, projection: Matrix4<f32>) {
+        self.transform = projection;
     }
 
     /// Clears all geometry from the Mesh while retaining any allocated memory.

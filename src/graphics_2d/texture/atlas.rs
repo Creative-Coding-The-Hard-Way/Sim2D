@@ -156,7 +156,7 @@ impl TextureAtlas {
             let ranges = [vk::PushConstantRange {
                 stage_flags: vk::ShaderStageFlags::VERTEX,
                 offset: 0,
-                size: 8,
+                size: 8 + 8 + 4,
             }];
             raii::PipelineLayout::new(
                 "TextureAtlas Layout",

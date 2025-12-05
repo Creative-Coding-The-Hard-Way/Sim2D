@@ -67,35 +67,20 @@ impl<DataT: Copy> DynamicBuffer<DataT> {
     ///
     /// # Safety
     ///
-    /// The caller is required to synchronize access to the underlying buffer.
-    /// Importantly: if [data] is longer than the underlying buffer, then the
-    /// buffer will be reallocated with more memory.
-    pub unsafe fn write_data(
+    /// The caller is responsible for synchronizing access to the underlying
+    /// buffer. This method can reallocate the buffer, which will cause
+    /// problems if the GPU is still accessing the buffer when this function
+    /// is called.
+    pub unsafe fn write_chunked_data(
         &mut self,
         ctx: &VulkanContext,
         data: &[&[DataT]],
     ) -> Result<bool> {
-        let total_size = data.iter().map(|chunk| chunk.len()).sum();
-        let reallocated = if self.cpu_buffer.capacity() < total_size {
-            let new_size = round_to_power_of_two(total_size);
-            log::info!(
-                "reallocate buffer. Current size: {}, required size: {}, new size: {}",
-                self.cpu_buffer.capacity(),
-                total_size,
-                new_size
-            );
-            self.cpu_buffer = CPUBuffer::allocate(ctx, new_size, self.usage)
-                .context("Unable to reallocate new buffer!")?;
-            self.buffer_device_address = unsafe {
-                ctx.get_buffer_device_address(&vk::BufferDeviceAddressInfo {
-                    buffer: self.cpu_buffer.buffer(),
-                    ..Default::default()
-                })
-            };
-
-            true // cpu buffer was reallocated
-        } else {
-            false // cpu buffer was not reallocated
+        let reallocated = unsafe {
+            self.maybe_reallocate(
+                ctx,
+                data.iter().map(|chunk| chunk.len()).sum(),
+            )?
         };
 
         let mut offset = 0;
@@ -107,5 +92,86 @@ impl<DataT: Copy> DynamicBuffer<DataT> {
         }
 
         Ok(reallocated)
+    }
+
+    /// Writes iterated data to the underlying buffer.
+    ///
+    /// Must be an exact size iterator so the buffer can be reallocated if
+    /// necessary without an additional copy on the CPU.
+    ///
+    /// # Safety
+    ///
+    /// The caller is responsible for synchronizing access to the underlying
+    /// buffer. This method can reallocate the buffer, which will cause
+    /// problems if the GPU is still accessing the buffer when this function
+    /// is called.
+    pub unsafe fn write_iterated_data<I>(
+        &mut self,
+        ctx: &VulkanContext,
+        data: I,
+    ) -> Result<bool>
+    where
+        I: ExactSizeIterator<Item = DataT>,
+    {
+        let reallocated = unsafe {
+            self.maybe_reallocate(
+                ctx,
+                data.len() * std::mem::size_of::<DataT>(),
+            )?
+        };
+
+        for (index, item) in data.enumerate() {
+            unsafe { self.cpu_buffer.write_data(index, &[item])? }
+        }
+
+        Ok(reallocated)
+    }
+
+    /// Checks that the buffer has enough space for `required_size` and
+    /// reallocates the underlying storage if needed.
+    ///
+    /// # Returns
+    ///
+    /// Returns `true` when the buffer was reallocated and `false` if not.
+    ///
+    /// # Safety
+    ///
+    /// Unsafe because the caller must synchronize access to the buffer and
+    /// ensure it is not in use by the GPU when this function is called as
+    /// the buffer _could_ be deleted during reallocation.
+    unsafe fn maybe_reallocate(
+        &mut self,
+        ctx: &VulkanContext,
+        required_size: usize,
+    ) -> Result<bool> {
+        if self.cpu_buffer.capacity() >= required_size {
+            return Ok(false);
+        }
+
+        let new_size = round_to_power_of_two(required_size);
+
+        log::trace!(
+            "Reallocating. Current size: {}, Required size: {}, New size: {}",
+            self.cpu_buffer.capacity(),
+            required_size,
+            new_size
+        );
+
+        self.cpu_buffer = CPUBuffer::allocate(ctx, new_size, self.usage)
+            .context("Unable to reallocate new buffer!")?;
+
+        if self
+            .usage
+            .contains(vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS)
+        {
+            self.buffer_device_address = unsafe {
+                ctx.get_buffer_device_address(&vk::BufferDeviceAddressInfo {
+                    buffer: self.cpu_buffer.buffer(),
+                    ..Default::default()
+                })
+            }
+        }
+
+        Ok(true)
     }
 }

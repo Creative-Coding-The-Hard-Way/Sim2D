@@ -30,6 +30,13 @@ struct DrawParams {
     vertex_offset: u32,
     index_count: u32,
     material: Arc<Material>,
+    transform_index: u32,
+}
+
+#[repr(C, align(16))]
+#[derive(Debug, Copy, Clone)]
+struct MeshTransform {
+    matrix: [[f32; 4]; 4],
 }
 
 /// All of the resources required to assemble draw commands for a frame.
@@ -39,6 +46,7 @@ struct DrawParams {
 struct FrameDraw {
     vertex_buffer: DynamicBuffer<Vertex>,
     index_buffer: DynamicBuffer<u32>,
+    transforms: DynamicBuffer<MeshTransform>,
     draw_params: Vec<DrawParams>,
 }
 
@@ -55,6 +63,12 @@ impl FrameDraw {
                 ctx,
                 INITIAL_CAPACITY,
                 vk::BufferUsageFlags::INDEX_BUFFER,
+            )?,
+            transforms: DynamicBuffer::new(
+                ctx,
+                INITIAL_CAPACITY,
+                vk::BufferUsageFlags::STORAGE_BUFFER
+                    | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
             )?,
             draw_params: Vec::with_capacity(4),
         })
@@ -200,7 +214,7 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
             let mut index_offset = 0;
             let mut vertex_offset = 0;
 
-            for mesh in meshes {
+            for (transform_index, mesh) in meshes.iter().enumerate() {
                 let vertices = mesh.vertices();
                 let indices = mesh.indices();
                 vertex_data.push(vertices);
@@ -211,6 +225,7 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                     vertex_offset,
                     index_count: indices.len() as u32,
                     material: mesh.material().clone(),
+                    transform_index: transform_index as u32,
                 });
 
                 index_offset += indices.len() as u32;
@@ -224,12 +239,18 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
         unsafe {
             frame_draw
                 .vertex_buffer
-                .write_data(&gfx.vulkan, &vertex_data)
+                .write_chunked_data(&gfx.vulkan, &vertex_data)
                 .context("Unable to write frame vertex data!")?;
             frame_draw
                 .index_buffer
-                .write_data(&gfx.vulkan, &index_data)
+                .write_chunked_data(&gfx.vulkan, &index_data)
                 .context("Unable to write index data!")?;
+            frame_draw.transforms.write_iterated_data(
+                &gfx.vulkan,
+                meshes.iter().map(|mesh| MeshTransform {
+                    matrix: mesh.transform().data.0,
+                }),
+            )?;
         }
 
         Ok(())
@@ -298,6 +319,13 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                     .buffer_device_address()
                     .to_le_bytes(),
             );
+            gfx.vulkan.cmd_push_constants(
+                frame.command_buffer(),
+                self.pipeline_layout.raw,
+                vk::ShaderStageFlags::VERTEX,
+                8,
+                &frame_draw.transforms.buffer_device_address().to_le_bytes(),
+            );
         }
 
         let mut last_bound_pipeline = vk::Pipeline::null();
@@ -316,6 +344,13 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                 last_bound_pipeline = pipeline;
             }
             unsafe {
+                gfx.vulkan.cmd_push_constants(
+                    frame.command_buffer(),
+                    self.pipeline_layout.raw,
+                    vk::ShaderStageFlags::VERTEX,
+                    16,
+                    &draw_params.transform_index.to_le_bytes(),
+                );
                 gfx.vulkan.cmd_draw_indexed(
                     frame.command_buffer(),
                     draw_params.index_count, // index count
