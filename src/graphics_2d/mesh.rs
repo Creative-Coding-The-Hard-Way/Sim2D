@@ -1,5 +1,6 @@
 use {
     crate::graphics_2d::material::Material,
+    ash::vk,
     nalgebra::{Matrix4, Vector2},
     std::sync::Arc,
 };
@@ -37,6 +38,7 @@ pub trait Mesh {
     fn indices(&self) -> &[u32];
     fn material(&self) -> &Arc<Material>;
     fn transform(&self) -> &Matrix4<f32>;
+    fn scissor(&self) -> vk::Rect2D;
 }
 
 /// The GeometryMesh supports constructing procedural geometry, things like
@@ -47,6 +49,7 @@ pub struct GeometryMesh {
     indices: Vec<u32>,
     material: Arc<Material>,
     transform: Matrix4<f32>,
+    scissor: vk::Rect2D,
 }
 
 impl Mesh for GeometryMesh {
@@ -65,6 +68,10 @@ impl Mesh for GeometryMesh {
     fn transform(&self) -> &Matrix4<f32> {
         &self.transform
     }
+
+    fn scissor(&self) -> vk::Rect2D {
+        self.scissor
+    }
 }
 
 impl GeometryMesh {
@@ -77,7 +84,18 @@ impl GeometryMesh {
             indices: Vec::with_capacity(initial_capacity),
             material,
             transform: Matrix4::identity(),
+            scissor: vk::Rect2D {
+                offset: vk::Offset2D { x: 0, y: 0 },
+                extent: vk::Extent2D {
+                    width: 1,
+                    height: 1,
+                },
+            },
         }
+    }
+
+    pub fn set_scissor(&mut self, rect: vk::Rect2D) {
+        self.scissor = rect;
     }
 
     /// Set the matrix transformation matrix.

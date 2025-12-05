@@ -31,6 +31,7 @@ struct DrawParams {
     index_count: u32,
     material: Arc<Material>,
     transform_index: u32,
+    scissor: vk::Rect2D,
 }
 
 #[repr(C, align(16))]
@@ -226,6 +227,7 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                     index_count: indices.len() as u32,
                     material: mesh.material().clone(),
                     transform_index: transform_index as u32,
+                    scissor: mesh.scissor(),
                 });
 
                 index_offset += indices.len() as u32;
@@ -310,14 +312,6 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                     max_depth: 1.0,
                 }],
             );
-            gfx.vulkan.cmd_set_scissor(
-                frame.command_buffer(),
-                0,
-                &[vk::Rect2D {
-                    offset: vk::Offset2D { x: 0, y: 0 },
-                    extent: gfx.swapchain.extent(),
-                }],
-            );
             gfx.vulkan.cmd_bind_descriptor_sets(
                 frame.command_buffer(),
                 vk::PipelineBindPoint::GRAPHICS,
@@ -373,6 +367,11 @@ impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
                     vk::ShaderStageFlags::VERTEX,
                     16,
                     &draw_params.transform_index.to_le_bytes(),
+                );
+                gfx.vulkan.cmd_set_scissor(
+                    frame.command_buffer(),
+                    0,
+                    &[draw_params.scissor],
                 );
                 gfx.vulkan.cmd_draw_indexed(
                     frame.command_buffer(),

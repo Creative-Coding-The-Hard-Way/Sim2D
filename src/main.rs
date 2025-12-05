@@ -12,7 +12,7 @@ use {
     },
     glfw::Window,
     graphics_2d::{GeometryMesh, Graphics2D},
-    nalgebra::{Matrix4, Rotation3, Translation3, Vector3, vector},
+    nalgebra::{Matrix4, Rotation3, Scale3, Translation3, Vector3, vector},
     std::{f32, time::Instant},
 };
 
@@ -119,15 +119,17 @@ impl Demo for Example {
         #[allow(unused_variables)] window: &mut glfw::Window,
         #[allow(unused_variables)] gfx: &mut Graphics<Self::Args>,
     ) -> Result<()> {
+        let (width, height) = window.get_size();
+        let (width, height) = (width as u32, height as u32);
         let t = Instant::now().duration_since(self.start_time).as_secs_f32()
             * (f32::consts::PI / 3.0);
 
         self.geometry_mesh.clear();
         self.geometry_mesh.set_transform(
             self.projection
-                * (Translation3::new(-3.0, 0.0, 0.0)
-                    * Rotation3::new(Vector3::z() * t))
-                .to_homogeneous(),
+                * Translation3::new(-3.0, 0.0, 0.0).to_homogeneous()
+                * Rotation3::new(Vector3::z() * t).to_homogeneous()
+                * Scale3::new(4.0, 4.0, 1.0).to_homogeneous(),
         );
         self.geometry_mesh.set_color([1.0, 0.0, 0.0, 1.0]);
         self.geometry_mesh.triangle(
@@ -135,13 +137,20 @@ impl Demo for Example {
             vector![1.0, 0.0],
             vector![0.0, 1.0],
         );
+        self.geometry_mesh.set_scissor(vk::Rect2D {
+            offset: vk::Offset2D { x: 0, y: 0 },
+            extent: vk::Extent2D {
+                width: width / 2,
+                height,
+            },
+        });
 
         self.geometry_mesh2.clear();
         self.geometry_mesh2.set_transform(
             self.projection
-                * (Translation3::new(3.0, 0.0, 0.0)
-                    * Rotation3::new(Vector3::z() * -t))
-                .to_homogeneous(),
+                * Translation3::new(3.0, 0.0, 0.0).to_homogeneous()
+                * Rotation3::new(Vector3::z() * -t).to_homogeneous()
+                * Scale3::new(4.0, 4.0, 1.0).to_homogeneous(),
         );
         self.geometry_mesh2.set_color([0.0, 0.5, 0.9, 1.0]);
         self.geometry_mesh2.triangle(
@@ -149,6 +158,10 @@ impl Demo for Example {
             vector![1.0, 0.0],
             vector![0.0, 1.0],
         );
+        self.geometry_mesh2.set_scissor(vk::Rect2D {
+            offset: vk::Offset2D { x: 0, y: 0 },
+            extent: vk::Extent2D { width, height },
+        });
 
         Ok(())
     }
