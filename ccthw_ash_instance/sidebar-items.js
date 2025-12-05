@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["InstanceError"],"struct":["LogicalDevice","PhysicalDevice","PhysicalDeviceFeatures","PhysicalDeviceProperties","QueueFamilyInfo","VulkanInstance"],"trait":["VulkanHandle"],"type":["InstanceResult"]};

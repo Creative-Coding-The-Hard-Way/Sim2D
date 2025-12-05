@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":["ClosedAdd","ClosedDiv","ClosedMul","ClosedNeg","ClosedSub","ComplexField","Field","RealField","SubsetOf","SupersetOf"]};
+window.SIDEBAR_ITEMS = {"trait":["ClosedAdd","ClosedAddAssign","ClosedDiv","ClosedDivAssign","ClosedMul","ClosedMulAssign","ClosedNeg","ClosedSub","ClosedSubAssign","ComplexField","Field","RealField","SubsetOf","SupersetOf"]};

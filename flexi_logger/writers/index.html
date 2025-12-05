@@ -1,37 +1,42 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Contains the trait `LogWriter` for extending `flexi_logger` with additional log writers, and two concrete implementations for writing to files (`FileLogWriter`) or to the syslog ([`SyslogWriter`]). You can also use your own implementations of `LogWriter`."><title>flexi_logger::writers - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="flexi_logger" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../flexi_logger/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module writers</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">flexi_logger</a>::<wbr><a class="mod" href="#">writers</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../src/flexi_logger/writers.rs.html#1-117">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Contains the trait <a href="trait.LogWriter.html" title="trait flexi_logger::writers::LogWriter"><code>LogWriter</code></a> for extending <code>flexi_logger</code>
-with additional log writers,
-and two concrete implementations
-for writing to files (<a href="struct.FileLogWriter.html" title="struct flexi_logger::writers::FileLogWriter"><code>FileLogWriter</code></a>)
-or to the syslog ([<code>SyslogWriter</code>]).
-You can also use your own implementations of <a href="trait.LogWriter.html" title="trait flexi_logger::writers::LogWriter"><code>LogWriter</code></a>.</p>
-<p>Such log writers can be used in two ways:</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Describes how to extend `flexi_logger` with additional log writers."><title>flexi_logger::writers - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="flexi_logger" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.1 (ed61e7d7e 2025-11-07)" data-channel="1.91.1" data-search-js="search-e256b49e.js" data-stringdex-js="stringdex-c3e638e9.js" data-settings-js="settings-c38705f0.js" ><script src="../../static.files/storage-e2aeef58.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-6dc2a7f3.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module writers</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../flexi_logger/index.html">flexi_<wbr>logger</a><span class="version">0.31.7</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module writers</a></h2><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#traits" title="Traits">Traits</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate flexi_<wbr>logger</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">flexi_logger</a></div><h1>Module <span>writers</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/flexi_logger/writers.rs.html#1-135">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Describes how to extend <code>flexi_logger</code> with additional log writers.</p>
+<p>The module also contains two ready-to-use log writers,
+one for writing to files (<a href="struct.FileLogWriter.html" title="struct flexi_logger::writers::FileLogWriter"><code>FileLogWriter</code></a>), one for writing to the syslog ([<code>SyslogWriter</code>]).</p>
+<p>Log writers can be used in two ways:</p>
 <ul>
 <li>
-<p>You can influence to which output stream normal log messages will be written,
-i.e. those from normal log macro calls without explicit target specification.
-By default, the logs are sent to stderr. With one of the methods</p>
+<p><em>Default output channel:</em> <br>
+You can influence to which output stream normal log messages will be written,
+i.e. those from log macro calls without explicit target specification
+(like in <code>log::error!("File not found")</code>).</p>
+<p>With one of the methods</p>
 <ul>
+<li><a href="../struct.Logger.html#method.log_to_stderr" title="method flexi_logger::Logger::log_to_stderr"><code>Logger::log_to_stderr</code></a> (default)</li>
 <li><a href="../struct.Logger.html#method.log_to_stdout" title="method flexi_logger::Logger::log_to_stdout"><code>Logger::log_to_stdout</code></a></li>
 <li><a href="../struct.Logger.html#method.log_to_file" title="method flexi_logger::Logger::log_to_file"><code>Logger::log_to_file</code></a></li>
 <li><a href="../struct.Logger.html#method.log_to_writer" title="method flexi_logger::Logger::log_to_writer"><code>Logger::log_to_writer</code></a></li>
 <li><a href="../struct.Logger.html#method.log_to_file_and_writer" title="method flexi_logger::Logger::log_to_file_and_writer"><code>Logger::log_to_file_and_writer</code></a></li>
 <li><a href="../struct.Logger.html#method.do_not_log" title="method flexi_logger::Logger::do_not_log"><code>Logger::do_not_log</code></a></li>
 </ul>
-<p>you can specify a different log target. See there for more details.</p>
-<p>Normal log calls will only be written to the chosen output channel if they match the current
-<a href="../struct.LogSpecification.html" title="struct flexi_logger::LogSpecification">log specification</a>.</p>
+<p>you can change the default output channel. The fourth and the fifth of these methods
+take log writers as input. See their documentation for more details.</p>
+<p>Messages will only be written to the default output channel
+if they match the current <a href="../struct.LogSpecification.html" title="struct flexi_logger::LogSpecification">log specification</a>.</p>
+<br>
 </li>
 <li>
-<p>You can register additional log writers under a target name with
+<p><em>Additional output channels:</em> <br>
+You can register additional log writers under a <em>target name</em> with
 <a href="../struct.Logger.html#method.add_writer" title="method flexi_logger::Logger::add_writer"><code>Logger::add_writer()</code></a>, and address these log writers by
-specifying the target name in calls to the
+specifying the <em>target name</em> in calls to the
 <a href="https://docs.rs/log/latest/log/macro.log.html">log macros</a>.</p>
-<p>A log call with a target value that has the form <code>{Name1,Name2,...}</code>, i.e.,
-a comma-separated list of target names, within braces, is not sent to the default logger,
-but to the loggers specified explicitly in the list.
-In such a list you can again specify the default logger with the target name <code>_Default</code>.</p>
-<p>These log calls will not be affected by the value of <code>flexi_logger</code>’s log specification;
-they will always be written, as you might want it for alerts or auditing.</p>
+<p>The message of a log call with a <em>target value</em> that has the form <code>{Name1,Name2,...}</code>, i.e.,
+a comma-separated list of <em>target names</em>, within braces, is not sent to the default output
+channel, but to the loggers specified explicitly in the list. In such a list
+you can also specify the default output channel with the built-in target name <code>_Default</code>.</p>
+<p>Log calls that are directed to an additional output channel will not be affected by
+the value of <code>flexi_logger</code>’s log specification;
+they will always be handed over to the respective <code>LogWriter</code>,
+as you might want it for alerts or auditing.</p>
 <p>In the following example we define an alert writer, and a macro to facilitate using it
 (and avoid using the explicit target specification in the macro call), and
 show some example calls.</p>
@@ -45,8 +50,8 @@ show some example calls.</p>
 </span><span class="kw">pub fn </span>alert_logger() -&gt; Box&lt;FileLogWriter&gt; {
     Box::new(FileLogWriter::builder(
         FileSpec::default()
-            .discriminant(<span class="string">&quot;Alert&quot;</span>)
-            .suffix(<span class="string">&quot;alerts&quot;</span>)
+            .discriminant(<span class="string">"Alert"</span>)
+            .suffix(<span class="string">"alerts"</span>)
         )
         .print_message()
         .try_build()
@@ -57,39 +62,38 @@ show some example calls.</p>
 </span><span class="attr">#[macro_use]
 </span><span class="kw">mod </span>macros {
     <span class="attr">#[macro_export]
-    </span><span class="macro">macro_rules! </span>alert_error {
+    </span><span class="macro">macro_rules!</span> alert_error {
         ($(<span class="macro-nonterminal">$arg</span>:tt)<span class="kw-2">*</span>) =&gt; (
-            <span class="macro">error!</span>(target: <span class="string">&quot;{Alert,_Default}&quot;</span>, $(<span class="macro-nonterminal">$arg</span>)<span class="kw-2">*</span>);
+            <span class="macro">error!</span>(target: <span class="string">"{Alert,_Default}"</span>, $(<span class="macro-nonterminal">$arg</span>)<span class="kw-2">*</span>);
         )
     }
 }
 
 <span class="kw">fn </span>main() {
-    Logger::try_with_env_or_str(<span class="string">&quot;info&quot;</span>)
-        .expect(<span class="string">&quot;LogSpecification String has errors&quot;</span>)
+    Logger::try_with_env_or_str(<span class="string">"info"</span>)
+        .expect(<span class="string">"LogSpecification String has errors"</span>)
         .print_message()
         .log_to_file(FileSpec::default())
-        .add_writer(<span class="string">&quot;Alert&quot;</span>, alert_logger())
+        .add_writer(<span class="string">"Alert"</span>, alert_logger())
         .start()
-        .unwrap_or_else(|e| <span class="macro">panic!</span>(<span class="string">&quot;Logger initialization failed with {}&quot;</span>, e));
+        .unwrap_or_else(|e| <span class="macro">panic!</span>(<span class="string">"Logger initialization failed with {}"</span>, e));
 
 
     <span class="comment">// Explicitly send logs to different loggers
-    </span><span class="macro">error!</span>(target : <span class="string">&quot;{Alert}&quot;</span>, <span class="string">&quot;This is only an alert&quot;</span>);
-    <span class="macro">error!</span>(target : <span class="string">&quot;{Alert,_Default}&quot;</span>, <span class="string">&quot;This is an alert and log message&quot;</span>);
+    </span><span class="macro">error!</span>(target : <span class="string">"{Alert}"</span>, <span class="string">"This is only an alert"</span>);
+    <span class="macro">error!</span>(target : <span class="string">"{Alert,_Default}"</span>, <span class="string">"This is an alert and log message"</span>);
 
     <span class="comment">// Nicer: use the explicit macro
-    </span><span class="macro">alert_error!</span>(<span class="string">&quot;This is another alert and log message&quot;</span>);
+    </span><span class="macro">alert_error!</span>(<span class="string">"This is another alert and log message"</span>);
 
     <span class="comment">// Standard log macros write only to the normal log
-    </span><span class="macro">error!</span>(<span class="string">&quot;This is a normal error message&quot;</span>);
-    <span class="macro">warn!</span>(<span class="string">&quot;This is a warning&quot;</span>);
-    <span class="macro">info!</span>(<span class="string">&quot;This is an info message&quot;</span>);
-    <span class="macro">debug!</span>(<span class="string">&quot;This is a debug message - you will not see it&quot;</span>);
-    <span class="macro">trace!</span>(<span class="string">&quot;This is a trace message - you will not see it&quot;</span>);
+    </span><span class="macro">error!</span>(<span class="string">"This is a normal error message"</span>);
+    <span class="macro">warn!</span>(<span class="string">"This is a warning"</span>);
+    <span class="macro">info!</span>(<span class="string">"This is an info message"</span>);
+    <span class="macro">debug!</span>(<span class="string">"This is a debug message - you will not see it"</span>);
+    <span class="macro">trace!</span>(<span class="string">"This is a trace message - you will not see it"</span>);
 }
-</code></pre></div>
-</li>
+</code></pre></div></li>
 </ul>
-</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.ArcFileLogWriter.html" title="struct flexi_logger::writers::ArcFileLogWriter">ArcFileLogWriter</a></div><div class="desc docblock-short">A shareable <code>FileLogWriter</code> with a handle.</div></li><li><div class="item-name"><a class="struct" href="struct.FileLogWriter.html" title="struct flexi_logger::writers::FileLogWriter">FileLogWriter</a></div><div class="desc docblock-short">A configurable <a href="trait.LogWriter.html" title="trait flexi_logger::writers::LogWriter"><code>LogWriter</code></a> implementation that writes to a file or a sequence of files.</div></li><li><div class="item-name"><a class="struct" href="struct.FileLogWriterBuilder.html" title="struct flexi_logger::writers::FileLogWriterBuilder">FileLogWriterBuilder</a></div><div class="desc docblock-short">Builder for <a href="struct.FileLogWriter.html" title="struct flexi_logger::writers::FileLogWriter"><code>FileLogWriter</code></a>.</div></li><li><div class="item-name"><a class="struct" href="struct.FileLogWriterConfig.html" title="struct flexi_logger::writers::FileLogWriterConfig">FileLogWriterConfig</a></div><div class="desc docblock-short">Configuration of a <code>FileLogWriter</code>.</div></li><li><div class="item-name"><a class="struct" href="struct.FileLogWriterHandle.html" title="struct flexi_logger::writers::FileLogWriterHandle">FileLogWriterHandle</a></div><div class="desc docblock-short">Handle to the <code>FileLogWriter</code> in an <code>ArcFileLogWriter</code>
-that shuts down the <code>FileLogWriter</code> in its <code>Drop</code> implementation.</div></li></ul><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.LogWriter.html" title="trait flexi_logger::writers::LogWriter">LogWriter</a></div><div class="desc docblock-short">Writes to a single log output stream.</div></li></ul></section></div></main></body></html>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.ArcFileLogWriter.html" title="struct flexi_logger::writers::ArcFileLogWriter">ArcFile<wbr>LogWriter</a></dt><dd>A shareable <code>FileLogWriter</code> with a handle.</dd><dt><a class="struct" href="struct.FileLogWriter.html" title="struct flexi_logger::writers::FileLogWriter">File<wbr>LogWriter</a></dt><dd>A configurable <a href="trait.LogWriter.html" title="trait flexi_logger::writers::LogWriter"><code>LogWriter</code></a> implementation that writes to a file or a sequence of files.</dd><dt><a class="struct" href="struct.FileLogWriterBuilder.html" title="struct flexi_logger::writers::FileLogWriterBuilder">File<wbr>LogWriter<wbr>Builder</a></dt><dd>Builder for <a href="struct.FileLogWriter.html" title="struct flexi_logger::writers::FileLogWriter"><code>FileLogWriter</code></a>.</dd><dt><a class="struct" href="struct.FileLogWriterConfig.html" title="struct flexi_logger::writers::FileLogWriterConfig">File<wbr>LogWriter<wbr>Config</a></dt><dd>Configuration of a <code>FileLogWriter</code>.</dd><dt><a class="struct" href="struct.FileLogWriterHandle.html" title="struct flexi_logger::writers::FileLogWriterHandle">File<wbr>LogWriter<wbr>Handle</a></dt><dd>Handle to the <code>FileLogWriter</code> in an <code>ArcFileLogWriter</code>
+that shuts down the <code>FileLogWriter</code> in its <code>Drop</code> implementation.</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.LogWriter.html" title="trait flexi_logger::writers::LogWriter">LogWriter</a></dt><dd>Writes to a single log output stream.</dd></dl></section></div></main></body></html>

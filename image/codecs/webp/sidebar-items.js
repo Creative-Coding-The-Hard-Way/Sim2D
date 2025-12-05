@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["vp8"],"struct":["WebPDecoder"]};
+window.SIDEBAR_ITEMS = {"struct":["WebPDecoder","WebPEncoder"]};

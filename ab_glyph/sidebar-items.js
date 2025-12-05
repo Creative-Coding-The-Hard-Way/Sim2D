@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["GlyphImageFormat","OutlineCurve"],"fn":["point"],"struct":["CodepointIdIter","FontArc","FontRef","FontVec","Glyph","GlyphId","GlyphImage","InvalidFont","Outline","OutlinedGlyph","PxScale","PxScaleFactor","PxScaleFont","Rect","VariationAxis"],"trait":["Font","ScaleFont","VariableFont"],"type":["Point"]};

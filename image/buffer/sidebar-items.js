@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["EnumeratePixels","EnumeratePixelsMut","EnumerateRows","EnumerateRowsMut","Pixels","PixelsMut","Rows","RowsMut"],"trait":["ConvertBuffer"]};
+window.SIDEBAR_ITEMS = {"struct":["EnumeratePixels","EnumeratePixelsMut","EnumeratePixelsMutPar","EnumeratePixelsPar","EnumerateRows","EnumerateRowsMut","Pixels","PixelsMut","PixelsMutPar","PixelsPar","Rows","RowsMut"],"trait":["ConvertBuffer"]};

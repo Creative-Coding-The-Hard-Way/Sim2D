@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AcquireImageStatus","FrameStatus","PresentImageStatus"],"fn":["spirv_module","spirv_words"],"mod":["raii"],"struct":["Allocator","Block","CPUBuffer","Frame","FramesInFlight","Instance","OwnedBlock","RequiredDeviceFeatures","Swapchain","SyncCommands","UniformBuffer","VulkanContext"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["GraphicsError"],"struct":["AssetLoader","Assets","CachedFont","FontId","G2D","Image","Renderer","TextureId"]};

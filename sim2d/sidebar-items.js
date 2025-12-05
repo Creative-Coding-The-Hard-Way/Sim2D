@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["application","ext","graphics","math"],"struct":["Sim2D"],"trait":["Sketch"],"type":["DynSketch"]};
+window.SIDEBAR_ITEMS = {"fn":["main","ortho_projection"],"mod":["graphics_2d"],"struct":["Args","Example","FrameConstants"],"type":["Gfx"]};

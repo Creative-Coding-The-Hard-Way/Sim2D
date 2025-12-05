@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["SHADER_ENTRYPOINT"],"struct":["Material"]};

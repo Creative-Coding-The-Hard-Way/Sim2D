@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["GeometryMesh","Vertex"],"trait":["Mesh"]};
