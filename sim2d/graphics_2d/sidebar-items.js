@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["INITIAL_CAPACITY"],"mod":["dynamic_buffer","frame_constants","material","mesh","texture","utility"],"struct":["DrawParams","FrameDraw","Graphics2D"]};
+window.SIDEBAR_ITEMS = {"constant":["INITIAL_CAPACITY"],"mod":["dynamic_buffer","frame_constants","material","mesh","texture","utility"],"struct":["DrawParams","FrameDraw","Graphics2D","MeshTransform"]};

@@ -67,45 +67,111 @@
 <a href=#67 id=67 data-nosnippet>67</a>    ///
 <a href=#68 id=68 data-nosnippet>68</a>    /// # Safety
 <a href=#69 id=69 data-nosnippet>69</a>    ///
-<a href=#70 id=70 data-nosnippet>70</a>    /// The caller is required to synchronize access to the underlying buffer.
-<a href=#71 id=71 data-nosnippet>71</a>    /// Importantly: if [data] is longer than the underlying buffer, then the
-<a href=#72 id=72 data-nosnippet>72</a>    /// buffer will be reallocated with more memory.
-<a href=#73 id=73 data-nosnippet>73</a>    </span><span class="kw">pub unsafe fn </span>write_data(
-<a href=#74 id=74 data-nosnippet>74</a>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-<a href=#75 id=75 data-nosnippet>75</a>        ctx: <span class="kw-2">&amp;</span>VulkanContext,
-<a href=#76 id=76 data-nosnippet>76</a>        data: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[DataT]],
-<a href=#77 id=77 data-nosnippet>77</a>    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
-<a href=#78 id=78 data-nosnippet>78</a>        <span class="kw">let </span>total_size = data.iter().map(|chunk| chunk.len()).sum();
-<a href=#79 id=79 data-nosnippet>79</a>        <span class="kw">let </span>reallocated = <span class="kw">if </span><span class="self">self</span>.cpu_buffer.capacity() &lt; total_size {
-<a href=#80 id=80 data-nosnippet>80</a>            <span class="kw">let </span>new_size = round_to_power_of_two(total_size);
-<a href=#81 id=81 data-nosnippet>81</a>            <span class="macro">log::info!</span>(
-<a href=#82 id=82 data-nosnippet>82</a>                <span class="string">"reallocate buffer. Current size: {}, required size: {}, new size: {}"</span>,
-<a href=#83 id=83 data-nosnippet>83</a>                <span class="self">self</span>.cpu_buffer.capacity(),
-<a href=#84 id=84 data-nosnippet>84</a>                total_size,
-<a href=#85 id=85 data-nosnippet>85</a>                new_size
-<a href=#86 id=86 data-nosnippet>86</a>            );
-<a href=#87 id=87 data-nosnippet>87</a>            <span class="self">self</span>.cpu_buffer = CPUBuffer::allocate(ctx, new_size, <span class="self">self</span>.usage)
-<a href=#88 id=88 data-nosnippet>88</a>                .context(<span class="string">"Unable to reallocate new buffer!"</span>)<span class="question-mark">?</span>;
-<a href=#89 id=89 data-nosnippet>89</a>            <span class="self">self</span>.buffer_device_address = <span class="kw">unsafe </span>{
-<a href=#90 id=90 data-nosnippet>90</a>                ctx.get_buffer_device_address(<span class="kw-2">&amp;</span>vk::BufferDeviceAddressInfo {
-<a href=#91 id=91 data-nosnippet>91</a>                    buffer: <span class="self">self</span>.cpu_buffer.buffer(),
-<a href=#92 id=92 data-nosnippet>92</a>                    ..Default::default()
-<a href=#93 id=93 data-nosnippet>93</a>                })
-<a href=#94 id=94 data-nosnippet>94</a>            };
-<a href=#95 id=95 data-nosnippet>95</a>
-<a href=#96 id=96 data-nosnippet>96</a>            <span class="bool-val">true </span><span class="comment">// cpu buffer was reallocated
-<a href=#97 id=97 data-nosnippet>97</a>        </span>} <span class="kw">else </span>{
-<a href=#98 id=98 data-nosnippet>98</a>            <span class="bool-val">false </span><span class="comment">// cpu buffer was not reallocated
-<a href=#99 id=99 data-nosnippet>99</a>        </span>};
-<a href=#100 id=100 data-nosnippet>100</a>
-<a href=#101 id=101 data-nosnippet>101</a>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
-<a href=#102 id=102 data-nosnippet>102</a>        <span class="kw">for </span>chunk <span class="kw">in </span>data {
-<a href=#103 id=103 data-nosnippet>103</a>            <span class="kw">unsafe </span>{
-<a href=#104 id=104 data-nosnippet>104</a>                <span class="self">self</span>.cpu_buffer.write_data(offset, chunk)<span class="question-mark">?</span>;
-<a href=#105 id=105 data-nosnippet>105</a>            }
-<a href=#106 id=106 data-nosnippet>106</a>            offset += chunk.len();
-<a href=#107 id=107 data-nosnippet>107</a>        }
-<a href=#108 id=108 data-nosnippet>108</a>
-<a href=#109 id=109 data-nosnippet>109</a>        <span class="prelude-val">Ok</span>(reallocated)
-<a href=#110 id=110 data-nosnippet>110</a>    }
-<a href=#111 id=111 data-nosnippet>111</a>}</code></pre></div></section></main></body></html>
+<a href=#70 id=70 data-nosnippet>70</a>    /// The caller is responsible for synchronizing access to the underlying
+<a href=#71 id=71 data-nosnippet>71</a>    /// buffer. This method can reallocate the buffer, which will cause
+<a href=#72 id=72 data-nosnippet>72</a>    /// problems if the GPU is still accessing the buffer when this function
+<a href=#73 id=73 data-nosnippet>73</a>    /// is called.
+<a href=#74 id=74 data-nosnippet>74</a>    </span><span class="kw">pub unsafe fn </span>write_chunked_data(
+<a href=#75 id=75 data-nosnippet>75</a>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<a href=#76 id=76 data-nosnippet>76</a>        ctx: <span class="kw-2">&amp;</span>VulkanContext,
+<a href=#77 id=77 data-nosnippet>77</a>        data: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[DataT]],
+<a href=#78 id=78 data-nosnippet>78</a>    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+<a href=#79 id=79 data-nosnippet>79</a>        <span class="kw">let </span>reallocated = <span class="kw">unsafe </span>{
+<a href=#80 id=80 data-nosnippet>80</a>            <span class="self">self</span>.maybe_reallocate(
+<a href=#81 id=81 data-nosnippet>81</a>                ctx,
+<a href=#82 id=82 data-nosnippet>82</a>                data.iter().map(|chunk| chunk.len()).sum(),
+<a href=#83 id=83 data-nosnippet>83</a>            )<span class="question-mark">?
+<a href=#84 id=84 data-nosnippet>84</a>        </span>};
+<a href=#85 id=85 data-nosnippet>85</a>
+<a href=#86 id=86 data-nosnippet>86</a>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
+<a href=#87 id=87 data-nosnippet>87</a>        <span class="kw">for </span>chunk <span class="kw">in </span>data {
+<a href=#88 id=88 data-nosnippet>88</a>            <span class="kw">unsafe </span>{
+<a href=#89 id=89 data-nosnippet>89</a>                <span class="self">self</span>.cpu_buffer.write_data(offset, chunk)<span class="question-mark">?</span>;
+<a href=#90 id=90 data-nosnippet>90</a>            }
+<a href=#91 id=91 data-nosnippet>91</a>            offset += chunk.len();
+<a href=#92 id=92 data-nosnippet>92</a>        }
+<a href=#93 id=93 data-nosnippet>93</a>
+<a href=#94 id=94 data-nosnippet>94</a>        <span class="prelude-val">Ok</span>(reallocated)
+<a href=#95 id=95 data-nosnippet>95</a>    }
+<a href=#96 id=96 data-nosnippet>96</a>
+<a href=#97 id=97 data-nosnippet>97</a>    <span class="doccomment">/// Writes iterated data to the underlying buffer.
+<a href=#98 id=98 data-nosnippet>98</a>    ///
+<a href=#99 id=99 data-nosnippet>99</a>    /// Must be an exact size iterator so the buffer can be reallocated if
+<a href=#100 id=100 data-nosnippet>100</a>    /// necessary without an additional copy on the CPU.
+<a href=#101 id=101 data-nosnippet>101</a>    ///
+<a href=#102 id=102 data-nosnippet>102</a>    /// # Safety
+<a href=#103 id=103 data-nosnippet>103</a>    ///
+<a href=#104 id=104 data-nosnippet>104</a>    /// The caller is responsible for synchronizing access to the underlying
+<a href=#105 id=105 data-nosnippet>105</a>    /// buffer. This method can reallocate the buffer, which will cause
+<a href=#106 id=106 data-nosnippet>106</a>    /// problems if the GPU is still accessing the buffer when this function
+<a href=#107 id=107 data-nosnippet>107</a>    /// is called.
+<a href=#108 id=108 data-nosnippet>108</a>    </span><span class="kw">pub unsafe fn </span>write_iterated_data&lt;I&gt;(
+<a href=#109 id=109 data-nosnippet>109</a>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<a href=#110 id=110 data-nosnippet>110</a>        ctx: <span class="kw-2">&amp;</span>VulkanContext,
+<a href=#111 id=111 data-nosnippet>111</a>        data: I,
+<a href=#112 id=112 data-nosnippet>112</a>    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt;
+<a href=#113 id=113 data-nosnippet>113</a>    <span class="kw">where
+<a href=#114 id=114 data-nosnippet>114</a>        </span>I: ExactSizeIterator&lt;Item = DataT&gt;,
+<a href=#115 id=115 data-nosnippet>115</a>    {
+<a href=#116 id=116 data-nosnippet>116</a>        <span class="kw">let </span>reallocated = <span class="kw">unsafe </span>{
+<a href=#117 id=117 data-nosnippet>117</a>            <span class="self">self</span>.maybe_reallocate(
+<a href=#118 id=118 data-nosnippet>118</a>                ctx,
+<a href=#119 id=119 data-nosnippet>119</a>                data.len() * std::mem::size_of::&lt;DataT&gt;(),
+<a href=#120 id=120 data-nosnippet>120</a>            )<span class="question-mark">?
+<a href=#121 id=121 data-nosnippet>121</a>        </span>};
+<a href=#122 id=122 data-nosnippet>122</a>
+<a href=#123 id=123 data-nosnippet>123</a>        <span class="kw">for </span>(index, item) <span class="kw">in </span>data.enumerate() {
+<a href=#124 id=124 data-nosnippet>124</a>            <span class="kw">unsafe </span>{ <span class="self">self</span>.cpu_buffer.write_data(index, <span class="kw-2">&amp;</span>[item])<span class="question-mark">? </span>}
+<a href=#125 id=125 data-nosnippet>125</a>        }
+<a href=#126 id=126 data-nosnippet>126</a>
+<a href=#127 id=127 data-nosnippet>127</a>        <span class="prelude-val">Ok</span>(reallocated)
+<a href=#128 id=128 data-nosnippet>128</a>    }
+<a href=#129 id=129 data-nosnippet>129</a>
+<a href=#130 id=130 data-nosnippet>130</a>    <span class="doccomment">/// Checks that the buffer has enough space for `required_size` and
+<a href=#131 id=131 data-nosnippet>131</a>    /// reallocates the underlying storage if needed.
+<a href=#132 id=132 data-nosnippet>132</a>    ///
+<a href=#133 id=133 data-nosnippet>133</a>    /// # Returns
+<a href=#134 id=134 data-nosnippet>134</a>    ///
+<a href=#135 id=135 data-nosnippet>135</a>    /// Returns `true` when the buffer was reallocated and `false` if not.
+<a href=#136 id=136 data-nosnippet>136</a>    ///
+<a href=#137 id=137 data-nosnippet>137</a>    /// # Safety
+<a href=#138 id=138 data-nosnippet>138</a>    ///
+<a href=#139 id=139 data-nosnippet>139</a>    /// Unsafe because the caller must synchronize access to the buffer and
+<a href=#140 id=140 data-nosnippet>140</a>    /// ensure it is not in use by the GPU when this function is called as
+<a href=#141 id=141 data-nosnippet>141</a>    /// the buffer _could_ be deleted during reallocation.
+<a href=#142 id=142 data-nosnippet>142</a>    </span><span class="kw">unsafe fn </span>maybe_reallocate(
+<a href=#143 id=143 data-nosnippet>143</a>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<a href=#144 id=144 data-nosnippet>144</a>        ctx: <span class="kw-2">&amp;</span>VulkanContext,
+<a href=#145 id=145 data-nosnippet>145</a>        required_size: usize,
+<a href=#146 id=146 data-nosnippet>146</a>    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+<a href=#147 id=147 data-nosnippet>147</a>        <span class="kw">if </span><span class="self">self</span>.cpu_buffer.capacity() &gt;= required_size {
+<a href=#148 id=148 data-nosnippet>148</a>            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
+<a href=#149 id=149 data-nosnippet>149</a>        }
+<a href=#150 id=150 data-nosnippet>150</a>
+<a href=#151 id=151 data-nosnippet>151</a>        <span class="kw">let </span>new_size = round_to_power_of_two(required_size);
+<a href=#152 id=152 data-nosnippet>152</a>
+<a href=#153 id=153 data-nosnippet>153</a>        <span class="macro">log::trace!</span>(
+<a href=#154 id=154 data-nosnippet>154</a>            <span class="string">"Reallocating. Current size: {}, Required size: {}, New size: {}"</span>,
+<a href=#155 id=155 data-nosnippet>155</a>            <span class="self">self</span>.cpu_buffer.capacity(),
+<a href=#156 id=156 data-nosnippet>156</a>            required_size,
+<a href=#157 id=157 data-nosnippet>157</a>            new_size
+<a href=#158 id=158 data-nosnippet>158</a>        );
+<a href=#159 id=159 data-nosnippet>159</a>
+<a href=#160 id=160 data-nosnippet>160</a>        <span class="self">self</span>.cpu_buffer = CPUBuffer::allocate(ctx, new_size, <span class="self">self</span>.usage)
+<a href=#161 id=161 data-nosnippet>161</a>            .context(<span class="string">"Unable to reallocate new buffer!"</span>)<span class="question-mark">?</span>;
+<a href=#162 id=162 data-nosnippet>162</a>
+<a href=#163 id=163 data-nosnippet>163</a>        <span class="kw">if </span><span class="self">self
+<a href=#164 id=164 data-nosnippet>164</a>            </span>.usage
+<a href=#165 id=165 data-nosnippet>165</a>            .contains(vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS)
+<a href=#166 id=166 data-nosnippet>166</a>        {
+<a href=#167 id=167 data-nosnippet>167</a>            <span class="self">self</span>.buffer_device_address = <span class="kw">unsafe </span>{
+<a href=#168 id=168 data-nosnippet>168</a>                ctx.get_buffer_device_address(<span class="kw-2">&amp;</span>vk::BufferDeviceAddressInfo {
+<a href=#169 id=169 data-nosnippet>169</a>                    buffer: <span class="self">self</span>.cpu_buffer.buffer(),
+<a href=#170 id=170 data-nosnippet>170</a>                    ..Default::default()
+<a href=#171 id=171 data-nosnippet>171</a>                })
+<a href=#172 id=172 data-nosnippet>172</a>            }
+<a href=#173 id=173 data-nosnippet>173</a>        }
+<a href=#174 id=174 data-nosnippet>174</a>
+<a href=#175 id=175 data-nosnippet>175</a>        <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
+<a href=#176 id=176 data-nosnippet>176</a>    }
+<a href=#177 id=177 data-nosnippet>177</a>}</code></pre></div></section></main></body></html>

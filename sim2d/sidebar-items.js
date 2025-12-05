@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["main","ortho_projection"],"mod":["graphics_2d"],"struct":["Args","Example","FrameConstants"],"type":["Gfx"]};
+window.SIDEBAR_ITEMS = {"fn":["main","ortho_projection"],"mod":["graphics_2d"],"struct":["Args","Example"],"type":["Gfx"]};
