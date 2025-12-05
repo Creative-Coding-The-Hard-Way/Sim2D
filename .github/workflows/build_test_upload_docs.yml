@@ -45,7 +45,7 @@ jobs:
       run: cargo build --all --verbose --features glfw-src-build
 
     - name: Run tests
-      run: cargo test --lib --verbose --features glfw-src-build
+      run: cargo test --verbose --features glfw-src-build
 
     - name: Build Docs
       run: cargo doc --verbose --features glfw-src-build
