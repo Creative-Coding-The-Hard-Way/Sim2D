@@ -15,15 +15,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
 
-    - name: Install Vulkan loader
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: lukka/get-cmake@latest
+
+    - name: Install Dependencies
       run: |
-        wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
-        sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-jammy.list http://packages.lunarg.com/vulkan/lunarg-vulkan-jammy.list
         sudo apt update
-        sudo apt install -y vulkan-sdk
-        sudo apt install -y mesa-vulkan-drivers vulkan-utils libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+        sudo apt install -y libglfw3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libglfw3-dev cmake
+
+    - name: Install Vulkan SDK
+      uses: humbletim/install-vulkan-sdk@v1.2
+      with:
+        version: 1.4.328.1
+        cache: true
 
     - uses: actions/cache@v3
       with:
@@ -34,13 +42,13 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Build
-      run: cargo build --all --verbose
+      run: cargo build --all --verbose --features glfw-src-build
 
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test --lib --verbose --features glfw-src-build
 
     - name: Build Docs
-      run: cargo doc --verbose
+      run: cargo doc --verbose --features glfw-src-build
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3

@@ -371,15 +371,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a1d728cc89cf3aee9ff92b05e62b19ee65a02b5702cff7d5a377e32c6ae29d8d"
 
 [[package]]
-name = "cmake"
-version = "0.1.54"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7caa3f9de89ddbe2c607f4101924c5abec803763ae9534e4f4d7d8f84aa81f0"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "color_quant"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -513,7 +504,7 @@ dependencies = [
 [[package]]
 name = "demo_vk"
 version = "0.1.0"
-source = "git+https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git#de3cafc067127f444362b82bc151971507c86303"
+source = "git+https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git#0e126675c714647badb0b8bc8456b0ea1e46d8de"
 dependencies = [
  "anyhow",
  "argfile",
@@ -523,6 +514,7 @@ dependencies = [
  "ctrlc",
  "flexi_logger",
  "glfw",
+ "glfw-sys",
  "glob",
  "image",
  "indoc",
@@ -705,9 +697,9 @@ dependencies = [
 
 [[package]]
 name = "gif"
-version = "0.14.0"
+version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f954a9e9159ec994f73a30a12b96a702dde78f5547bcb561174597924f7d4162"
+checksum = "f5df2ba84018d80c213569363bdcd0c64e6933c67fe4c1d60ecf822971a3c35e"
 dependencies = [
  "color_quant",
  "weezl",
@@ -830,7 +822,6 @@ version = "6.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dad17b892202f333de24337bfc49ee23fca2d1fc648370365610b43c2864ccfa"
 dependencies = [
- "cmake",
  "pkg-config",
 ]
 
@@ -1030,9 +1021,9 @@ checksum = "7a79a3332a6609480d7d0c9eab957bca6b455b91bb84e66d19f5ff66294b85b8"
 
 [[package]]
 name = "libc"
-version = "0.2.177"
+version = "0.2.178"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2874a2af47a2325c2001a6e6fad9b16a53b802102b528163885171cf92b15976"
+checksum = "37c93d8daa9d8a012fd8ab92f088405fb202ea0b6ab73ee2482ae66af4f42091"
 
 [[package]]
 name = "libfuzzer-sys"
@@ -1062,9 +1053,9 @@ checksum = "df1d3c3b53da64cf5760482273a98e575c651a67eec7f77df96b5b642de8f039"
 
 [[package]]
 name = "log"
-version = "0.4.28"
+version = "0.4.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34080505efa8e45a4b816c349525ebe327ceaa8559756f0356cba97ef3bf7432"
+checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
 name = "loop9"
@@ -1113,9 +1104,9 @@ dependencies = [
 
 [[package]]
 name = "mio"
-version = "1.1.0"
+version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69d83b0086dc8ecf3ce9ae2874b2d1290252e2a30720bea58a5c6639b0092873"
+checksum = "a69bcab0ad47271a0234d9422b131806bf3968021e5dc9328caf2d4cd58557fc"
 dependencies = [
  "libc",
  "log",
@@ -1669,7 +1660,7 @@ dependencies = [
 [[package]]
 name = "shader_compiler"
 version = "0.1.0"
-source = "git+https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git#de3cafc067127f444362b82bc151971507c86303"
+source = "git+https://github.com/Creative-Coding-The-Hard-Way/demo-vk.git#0e126675c714647badb0b8bc8456b0ea1e46d8de"
 dependencies = [
  "anyhow",
 ]
