@@ -10,10 +10,11 @@
 #extension GL_EXT_shader_explicit_arithmetic_types_int32: enable
 
 struct Vertex {
-    vec2 pos;
-    vec2 uv;
+    vec3 pos;
+    float uv_x;
     vec4 color;
     int texture_index;
+    float uv_y;
 };
 
 struct MeshTransform {
@@ -51,7 +52,7 @@ void main() {
     Vertex vert = pc_Constants.vertices.data[gl_VertexIndex];
     out_VertexColor = vert.color;
     out_TextureIndex = vert.texture_index;
-    out_UV = vert.uv;
+    out_UV = vec2(vert.uv_x, vert.uv_y);
 
     mat4 transform =
         pc_Constants.mesh_transforms.data[pc_Constants.transform_index].transform;

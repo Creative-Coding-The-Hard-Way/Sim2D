@@ -139,10 +139,7 @@ impl Demo for Example {
         );
         self.geometry_mesh.set_scissor(vk::Rect2D {
             offset: vk::Offset2D { x: 0, y: 0 },
-            extent: vk::Extent2D {
-                width: width / 2,
-                height,
-            },
+            extent: vk::Extent2D { width, height },
         });
 
         self.geometry_mesh2.clear();
@@ -153,14 +150,20 @@ impl Demo for Example {
                 * Scale3::new(4.0, 4.0, 1.0).to_homogeneous(),
         );
         self.geometry_mesh2.set_color([0.0, 0.5, 0.9, 1.0]);
-        self.geometry_mesh2.triangle(
-            vector![0.0, 0.0],
-            vector![1.0, 0.0],
-            vector![0.0, 1.0],
-        );
         self.geometry_mesh2.set_scissor(vk::Rect2D {
             offset: vk::Offset2D { x: 0, y: 0 },
             extent: vk::Extent2D { width, height },
+        });
+        self.geometry_mesh2.aligned_quad(0, 0.0, 0.0, 2.0, 2.0);
+        self.geometry_mesh2.set_scissor(vk::Rect2D {
+            offset: vk::Offset2D {
+                x: (width / 2) as i32,
+                y: 0,
+            },
+            extent: vk::Extent2D {
+                width: width / 2,
+                height,
+            },
         });
 
         Ok(())
