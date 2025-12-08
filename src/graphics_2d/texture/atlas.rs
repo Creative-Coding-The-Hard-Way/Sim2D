@@ -15,6 +15,17 @@ const MAX_TEXTURES: u32 = 10_000;
 ///
 /// New textures can be added to the atlas at any time and will be available for
 /// use in the next frame.
+///
+/// # Shader Requirements
+///
+/// To use the texture atlas, the fragment shader must include a descriptor set
+/// with a sampler binding and a texture binding. This looks something like this
+/// in glsl:
+///
+/// ```glsl
+/// layout(set = 0, binding = 0) uniform sampler u_Sampler;
+/// layout(set = 0, binding = 1) uniform texture2D u_Textures[];
+/// ```
 pub struct TextureAtlas {
     // All textures currently in-use by the atlas.
     textures: Vec<Texture>,
