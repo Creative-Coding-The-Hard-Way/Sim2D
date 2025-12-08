@@ -76,8 +76,8 @@ impl FrameDraw {
     }
 }
 
-/// The 2D Graphics entrypoint.
-pub struct Graphics2D<PerFrameDataT: Copy = ()> {
+/// A renderer optimized for streaming new vertex data to the GPU every frame.
+pub struct StreamingRenderer<PerFrameDataT: Copy = ()> {
     frame_draw_resources: Vec<FrameDraw>,
     frame_constants: FrameConstants<PerFrameDataT>,
 
@@ -90,7 +90,7 @@ pub struct Graphics2D<PerFrameDataT: Copy = ()> {
 
 const INITIAL_CAPACITY: usize = 16_384;
 
-impl<PerFrameDataT: Copy> Graphics2D<PerFrameDataT> {
+impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
     pub fn new(gfx: &Gfx, texture_atlas: &TextureAtlas) -> Result<Self> {
         let frame_constants = FrameConstants::new(gfx)
             .context("Unable to create FrameData instance")?;

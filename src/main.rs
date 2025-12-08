@@ -13,7 +13,7 @@ use {
     nalgebra::{Matrix4, Rotation3, Scale3, Translation3, Vector3, vector},
     std::{f32, time::Instant},
     streaming_renderer::{
-        GeometryMesh, Graphics2D, TextureAtlas, TextureLoader,
+        GeometryMesh, StreamingRenderer, TextureAtlas, TextureLoader,
     },
 };
 
@@ -41,7 +41,7 @@ struct Example {
     projection: Matrix4<f32>,
     geometry_mesh: GeometryMesh,
     geometry_mesh2: GeometryMesh,
-    g2: Graphics2D,
+    g2: StreamingRenderer,
     start_time: Instant,
 }
 
@@ -90,7 +90,7 @@ impl Demo for Example {
         let mut texture_atlas =
             TextureAtlas::new(gfx).context("Unable to create texture atlas")?;
 
-        let g2 = Graphics2D::new(gfx, &texture_atlas)
+        let g2 = StreamingRenderer::new(gfx, &texture_atlas)
             .context("Unable to create g2 subsystem")?;
 
         let texture = TextureLoader::new(gfx.vulkan.clone())?
