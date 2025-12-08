@@ -1,5 +1,5 @@
 use {
-    crate::graphics_2d::utility::round_to_power_of_two,
+    crate::streaming_renderer::utility::round_to_power_of_two,
     anyhow::{Context, Result},
     ash::vk,
     demo_vk::graphics::vulkan::{CPUBuffer, VulkanContext},

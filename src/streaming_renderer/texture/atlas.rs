@@ -1,5 +1,6 @@
 use {
-    crate::{Gfx, graphics_2d::Texture},
+    super::Texture,
+    crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,
     demo_vk::graphics::vulkan::raii,

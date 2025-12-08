@@ -1,7 +1,6 @@
-mod graphics_2d;
+mod streaming_renderer;
 
 use {
-    crate::graphics_2d::{TextureAtlas, TextureLoader},
     anyhow::{Context, Result},
     ash::vk,
     clap::Parser,
@@ -11,9 +10,11 @@ use {
         graphics::vulkan::{Frame, RequiredDeviceFeatures},
     },
     glfw::Window,
-    graphics_2d::{GeometryMesh, Graphics2D},
     nalgebra::{Matrix4, Rotation3, Scale3, Translation3, Vector3, vector},
     std::{f32, time::Instant},
+    streaming_renderer::{
+        GeometryMesh, Graphics2D, TextureAtlas, TextureLoader,
+    },
 };
 
 #[derive(Debug, Parser)]

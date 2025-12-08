@@ -1,5 +1,6 @@
 use {
-    crate::graphics_2d::{Texture, utility::round_to_power_of_two},
+    super::Texture,
+    crate::streaming_renderer::utility::round_to_power_of_two,
     anyhow::{Context, Result},
     ash::vk::{self},
     demo_vk::graphics::vulkan::{CPUBuffer, SyncCommands, VulkanContext},

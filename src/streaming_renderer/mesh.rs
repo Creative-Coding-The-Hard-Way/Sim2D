@@ -1,5 +1,5 @@
 use {
-    crate::graphics_2d::material::Material,
+    super::Material,
     ash::vk,
     nalgebra::{Matrix4, Vector2},
     std::sync::Arc,
