@@ -4,6 +4,7 @@ mod loader;
 use {
     anyhow::{Context, Result},
     ash::vk,
+    bon::builder,
     demo_vk::graphics::vulkan::{OwnedBlock, VulkanContext, raii},
 };
 
@@ -17,6 +18,7 @@ pub use self::{atlas::TextureAtlas, loader::TextureLoader};
 /// The application is responsible for synchronizing access to Texture
 /// resources with the GPU and ensuring nothing is dropped early.
 pub struct Texture {
+    mip_levels: u32,
     width: u32,
     height: u32,
     image_view: raii::ImageView,
@@ -84,6 +86,7 @@ impl Texture {
         .context("Unable to create texture image view")?;
 
         Ok(Self {
+            mip_levels,
             width,
             height,
             image_view,
@@ -119,6 +122,46 @@ impl Texture {
         vk::Extent2D {
             width: self.width,
             height: self.height,
+        }
+    }
+
+    #[builder]
+    pub fn pipeline_barrier(
+        &self,
+        ctx: &VulkanContext,
+        command_buffer: vk::CommandBuffer,
+        old_layout: vk::ImageLayout,
+        new_layout: vk::ImageLayout,
+        src_access_mask: vk::AccessFlags,
+        dst_access_mask: vk::AccessFlags,
+        src_stage_mask: vk::PipelineStageFlags,
+        dst_stage_mask: vk::PipelineStageFlags,
+    ) {
+        let image_memory_barrier = vk::ImageMemoryBarrier {
+            old_layout,
+            new_layout,
+            src_access_mask,
+            dst_access_mask,
+            image: self.image.raw,
+            subresource_range: vk::ImageSubresourceRange {
+                aspect_mask: vk::ImageAspectFlags::COLOR,
+                base_mip_level: 0,
+                level_count: 1,
+                base_array_layer: 0,
+                layer_count: 1,
+            },
+            ..Default::default()
+        };
+        unsafe {
+            ctx.cmd_pipeline_barrier(
+                command_buffer,
+                src_stage_mask,
+                dst_stage_mask,
+                vk::DependencyFlags::empty(),
+                &[],
+                &[],
+                &[image_memory_barrier],
+            );
         }
     }
 }

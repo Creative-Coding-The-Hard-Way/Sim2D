@@ -10,7 +10,7 @@ use {
     glfw::Window,
     nalgebra::Matrix4,
     sim2d::streaming_renderer::{
-        GeometryMesh, StreamingRenderer, TextureAtlas, TextureLoader,
+        GeometryMesh, StreamingRenderer, Texture, TextureAtlas, TextureLoader,
     },
     std::{f32, time::Instant},
 };
@@ -45,6 +45,7 @@ struct Example {
     mesh: GeometryMesh,
     g2: StreamingRenderer,
     start_time: Instant,
+    draw_target: Texture,
 }
 
 impl Demo for Example {
@@ -94,11 +95,26 @@ impl Demo for Example {
 
         let g2 = StreamingRenderer::new(
             &gfx.vulkan,
-            gfx.swapchain.format(),
+            vk::Format::R16G16B16A16_SFLOAT,
             &gfx.frames_in_flight,
             &texture_atlas,
         )
         .context("Unable to create g2 subsystem")?;
+
+        let draw_target = Texture::builder()
+            .ctx(&gfx.vulkan)
+            .memory_property_flags(vk::MemoryPropertyFlags::DEVICE_LOCAL)
+            .image_usage_flags(
+                vk::ImageUsageFlags::COLOR_ATTACHMENT
+                    | vk::ImageUsageFlags::TRANSFER_SRC,
+            )
+            .format(vk::Format::R16G16B16A16_SFLOAT)
+            .dimensions((
+                gfx.swapchain.extent().width,
+                gfx.swapchain.extent().height,
+            ))
+            .build()
+            .context("Unable to create draw target")?;
 
         let texture = TextureLoader::new(gfx.vulkan.clone())?
             .load_from_file("Penguin.jpg", false)?;
@@ -106,6 +122,7 @@ impl Demo for Example {
         texture_atlas.add_texture(&gfx.vulkan, texture);
 
         Ok(Self {
+            draw_target,
             texture_atlas,
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
@@ -113,6 +130,28 @@ impl Demo for Example {
             g2,
             start_time: Instant::now(),
         })
+    }
+
+    fn rebuild_swapchain_resources(
+        &mut self,
+        #[allow(unused_variables)] window: &mut glfw::Window,
+        #[allow(unused_variables)] gfx: &mut Graphics<Self::Args>,
+    ) -> Result<()> {
+        self.draw_target = Texture::builder()
+            .ctx(&gfx.vulkan)
+            .memory_property_flags(vk::MemoryPropertyFlags::DEVICE_LOCAL)
+            .image_usage_flags(
+                vk::ImageUsageFlags::COLOR_ATTACHMENT
+                    | vk::ImageUsageFlags::TRANSFER_SRC,
+            )
+            .format(vk::Format::R16G16B16A16_SFLOAT)
+            .dimensions((
+                gfx.swapchain.extent().width,
+                gfx.swapchain.extent().height,
+            ))
+            .build()
+            .context("Unable to create draw target")?;
+        Ok(())
     }
 
     fn update(
@@ -142,37 +181,21 @@ impl Demo for Example {
         gfx: &mut Gfx,
         frame: &Frame,
     ) -> Result<()> {
-        let image_memory_barrier = vk::ImageMemoryBarrier {
-            old_layout: vk::ImageLayout::UNDEFINED,
-            new_layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
-            src_access_mask: vk::AccessFlags::empty(),
-            dst_access_mask: vk::AccessFlags::COLOR_ATTACHMENT_WRITE,
-            image: frame.swapchain_image(),
-            subresource_range: vk::ImageSubresourceRange {
-                aspect_mask: vk::ImageAspectFlags::COLOR,
-                base_mip_level: 0,
-                level_count: 1,
-                base_array_layer: 0,
-                layer_count: 1,
-            },
-            ..Default::default()
-        };
-        unsafe {
-            gfx.vulkan.cmd_pipeline_barrier(
-                frame.command_buffer(),
-                vk::PipelineStageFlags::TOP_OF_PIPE
-                    | vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
-                vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
-                vk::DependencyFlags::empty(),
-                &[],
-                &[],
-                &[image_memory_barrier],
-            );
-        }
+        self.draw_target
+            .pipeline_barrier()
+            .ctx(&gfx.vulkan)
+            .command_buffer(frame.command_buffer())
+            .old_layout(vk::ImageLayout::UNDEFINED)
+            .new_layout(vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL)
+            .src_access_mask(vk::AccessFlags::empty())
+            .src_stage_mask(vk::PipelineStageFlags::TOP_OF_PIPE)
+            .dst_access_mask(vk::AccessFlags::COLOR_ATTACHMENT_WRITE)
+            .dst_stage_mask(vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT)
+            .call();
 
         unsafe {
             let color_attachments = [vk::RenderingAttachmentInfo {
-                image_view: frame.swapchain_image_view(),
+                image_view: self.draw_target.view().raw,
                 image_layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
                 resolve_mode: vk::ResolveModeFlags::NONE,
                 load_op: vk::AttachmentLoadOp::CLEAR,
@@ -189,7 +212,7 @@ impl Demo for Example {
                 &vk::RenderingInfo {
                     render_area: vk::Rect2D {
                         offset: vk::Offset2D { x: 0, y: 0 },
-                        extent: gfx.swapchain.extent(),
+                        extent: self.draw_target.extent(),
                     },
                     layer_count: 1,
                     color_attachment_count: 1,
@@ -216,10 +239,92 @@ impl Demo for Example {
             gfx.vulkan.cmd_end_rendering(frame.command_buffer());
         }
 
+        self.draw_target
+            .pipeline_barrier()
+            .ctx(&gfx.vulkan)
+            .command_buffer(frame.command_buffer())
+            .old_layout(vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL)
+            .new_layout(vk::ImageLayout::TRANSFER_SRC_OPTIMAL)
+            .src_access_mask(vk::AccessFlags::COLOR_ATTACHMENT_WRITE)
+            .src_stage_mask(vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT)
+            .dst_access_mask(vk::AccessFlags::TRANSFER_READ)
+            .dst_stage_mask(vk::PipelineStageFlags::TRANSFER)
+            .call();
+
+        // SWAPCHAIN STUFF
+
         let image_memory_barrier = vk::ImageMemoryBarrier {
-            old_layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
+            old_layout: vk::ImageLayout::UNDEFINED,
+            new_layout: vk::ImageLayout::TRANSFER_DST_OPTIMAL,
+            src_access_mask: vk::AccessFlags::empty(),
+            dst_access_mask: vk::AccessFlags::TRANSFER_WRITE,
+            image: frame.swapchain_image(),
+            subresource_range: vk::ImageSubresourceRange {
+                aspect_mask: vk::ImageAspectFlags::COLOR,
+                base_mip_level: 0,
+                level_count: 1,
+                base_array_layer: 0,
+                layer_count: 1,
+            },
+            ..Default::default()
+        };
+        unsafe {
+            gfx.vulkan.cmd_pipeline_barrier(
+                frame.command_buffer(),
+                vk::PipelineStageFlags::ALL_COMMANDS,
+                vk::PipelineStageFlags::ALL_COMMANDS,
+                vk::DependencyFlags::empty(),
+                &[],
+                &[],
+                &[image_memory_barrier],
+            );
+        }
+
+        unsafe {
+            gfx.vulkan.cmd_blit_image(
+                frame.command_buffer(),
+                self.draw_target.image().raw,
+                vk::ImageLayout::TRANSFER_SRC_OPTIMAL,
+                frame.swapchain_image(),
+                vk::ImageLayout::TRANSFER_DST_OPTIMAL,
+                &[vk::ImageBlit {
+                    src_subresource: vk::ImageSubresourceLayers {
+                        aspect_mask: vk::ImageAspectFlags::COLOR,
+                        mip_level: 0,
+                        base_array_layer: 0,
+                        layer_count: 1,
+                    },
+                    src_offsets: [
+                        vk::Offset3D { x: 0, y: 0, z: 0 },
+                        vk::Offset3D {
+                            x: self.draw_target.width() as i32,
+                            y: self.draw_target.height() as i32,
+                            z: 1,
+                        },
+                    ],
+                    dst_subresource: vk::ImageSubresourceLayers {
+                        aspect_mask: vk::ImageAspectFlags::COLOR,
+                        mip_level: 0,
+                        base_array_layer: 0,
+                        layer_count: 1,
+                    },
+                    dst_offsets: [
+                        vk::Offset3D { x: 0, y: 0, z: 0 },
+                        vk::Offset3D {
+                            x: gfx.swapchain.extent().width as i32,
+                            y: gfx.swapchain.extent().height as i32,
+                            z: 1,
+                        },
+                    ],
+                }],
+                vk::Filter::NEAREST,
+            );
+        }
+
+        let image_memory_barrier = vk::ImageMemoryBarrier {
+            old_layout: vk::ImageLayout::TRANSFER_DST_OPTIMAL,
             new_layout: vk::ImageLayout::PRESENT_SRC_KHR,
-            src_access_mask: vk::AccessFlags::COLOR_ATTACHMENT_WRITE,
+            src_access_mask: vk::AccessFlags::TRANSFER_WRITE,
             dst_access_mask: vk::AccessFlags::empty(),
             image: frame.swapchain_image(),
             subresource_range: vk::ImageSubresourceRange {
@@ -234,8 +339,8 @@ impl Demo for Example {
         unsafe {
             gfx.vulkan.cmd_pipeline_barrier(
                 frame.command_buffer(),
-                vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
-                vk::PipelineStageFlags::BOTTOM_OF_PIPE,
+                vk::PipelineStageFlags::ALL_COMMANDS,
+                vk::PipelineStageFlags::ALL_COMMANDS,
                 vk::DependencyFlags::empty(),
                 &[],
                 &[],
