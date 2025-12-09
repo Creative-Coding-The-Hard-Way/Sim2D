@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["atlas","loader","texture_builder"],"struct":["Texture","TextureBuilder"]};

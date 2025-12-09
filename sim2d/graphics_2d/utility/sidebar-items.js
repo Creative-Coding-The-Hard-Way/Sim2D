@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["round_to_power_of_two"]};

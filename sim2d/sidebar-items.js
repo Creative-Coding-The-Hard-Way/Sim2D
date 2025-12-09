@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["main","ortho_projection"],"mod":["graphics_2d"],"struct":["Args","Example"],"type":["Gfx"]};
+window.SIDEBAR_ITEMS = {"mod":["streaming_renderer"]};
