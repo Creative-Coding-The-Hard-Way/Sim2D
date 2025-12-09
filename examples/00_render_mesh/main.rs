@@ -1,6 +1,6 @@
 use {
     anyhow::{Context, Result},
-    ash::vk,
+    ash::vk::{self, AccessFlags},
     clap::Parser,
     demo_vk::{
         app::FullscreenToggle,
@@ -12,7 +12,7 @@ use {
     sim2d::streaming_renderer::{
         GeometryMesh, StreamingRenderer, Texture, TextureAtlas, TextureLoader,
     },
-    std::{f32, time::Instant},
+    std::{f32, sync::Arc, time::Instant},
 };
 
 #[derive(Debug, Parser)]
@@ -46,6 +46,7 @@ struct Example {
     g2: StreamingRenderer,
     start_time: Instant,
     draw_target: Texture,
+    depth_target: Texture,
 }
 
 impl Demo for Example {
@@ -116,13 +117,28 @@ impl Demo for Example {
             .build()
             .context("Unable to create draw target")?;
 
-        let texture = TextureLoader::new(gfx.vulkan.clone())?
-            .load_from_file("Penguin.jpg", false)?;
+        let depth_target = Texture::builder()
+            .ctx(&gfx.vulkan)
+            .memory_property_flags(vk::MemoryPropertyFlags::DEVICE_LOCAL)
+            .image_usage_flags(vk::ImageUsageFlags::DEPTH_STENCIL_ATTACHMENT)
+            .format(vk::Format::D32_SFLOAT)
+            .dimensions((
+                gfx.swapchain.extent().width,
+                gfx.swapchain.extent().height,
+            ))
+            .build()
+            .context("Unable to create depth target!")?;
+
+        let texture = Arc::new(
+            TextureLoader::new(gfx.vulkan.clone())?
+                .load_from_file("Penguin.jpg", false)?,
+        );
 
         texture_atlas.add_texture(&gfx.vulkan, texture);
 
         Ok(Self {
             draw_target,
+            depth_target,
             texture_atlas,
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
@@ -151,6 +167,17 @@ impl Demo for Example {
             ))
             .build()
             .context("Unable to create draw target")?;
+        self.depth_target = Texture::builder()
+            .ctx(&gfx.vulkan)
+            .memory_property_flags(vk::MemoryPropertyFlags::DEVICE_LOCAL)
+            .image_usage_flags(vk::ImageUsageFlags::DEPTH_STENCIL_ATTACHMENT)
+            .format(vk::Format::D32_SFLOAT)
+            .dimensions((
+                gfx.swapchain.extent().width,
+                gfx.swapchain.extent().height,
+            ))
+            .build()
+            .context("Unable to create depth target!")?;
         Ok(())
     }
 
@@ -163,12 +190,21 @@ impl Demo for Example {
             * (f32::consts::PI / 3.0);
 
         self.mesh.clear();
+
         self.mesh.set_color([1.0, 1.0, 1.0, 1.0]);
         let z = 15.0;
         self.mesh.triangle(
             nalgebra::vector![-0.5, -0.5, z],
             nalgebra::vector![0.0, 0.5, z],
             nalgebra::vector![0.5, -0.5, z],
+        );
+
+        self.mesh.set_color([0.2, 0.2, 0.9, 1.0]);
+        let z = 25.0;
+        self.mesh.triangle(
+            nalgebra::vector![0.75 + -0.5, -0.5, z],
+            nalgebra::vector![0.75 + 0.0, 0.5, z],
+            nalgebra::vector![0.75 + 0.5, -0.5, z],
         );
 
         Ok(())
@@ -192,6 +228,23 @@ impl Demo for Example {
             .dst_access_mask(vk::AccessFlags::COLOR_ATTACHMENT_WRITE)
             .dst_stage_mask(vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT)
             .call();
+        self.depth_target
+            .pipeline_barrier()
+            .ctx(&gfx.vulkan)
+            .command_buffer(frame.command_buffer())
+            .old_layout(vk::ImageLayout::UNDEFINED)
+            .new_layout(vk::ImageLayout::DEPTH_ATTACHMENT_OPTIMAL)
+            .src_access_mask(
+                vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_READ
+                    | vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_WRITE,
+            )
+            .src_stage_mask(vk::PipelineStageFlags::ALL_COMMANDS)
+            .dst_access_mask(
+                vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_WRITE
+                    | vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_READ,
+            )
+            .dst_stage_mask(vk::PipelineStageFlags::EARLY_FRAGMENT_TESTS)
+            .call();
 
         unsafe {
             let color_attachments = [vk::RenderingAttachmentInfo {
@@ -207,6 +260,20 @@ impl Demo for Example {
                 },
                 ..Default::default()
             }];
+            let depth_attachment = vk::RenderingAttachmentInfo {
+                image_view: self.depth_target.view().raw,
+                image_layout: vk::ImageLayout::DEPTH_ATTACHMENT_OPTIMAL,
+                resolve_mode: vk::ResolveModeFlags::NONE,
+                load_op: vk::AttachmentLoadOp::CLEAR,
+                store_op: vk::AttachmentStoreOp::STORE,
+                clear_value: vk::ClearValue {
+                    depth_stencil: vk::ClearDepthStencilValue {
+                        depth: 1.0,
+                        stencil: 0,
+                    },
+                },
+                ..Default::default()
+            };
             gfx.vulkan.cmd_begin_rendering(
                 frame.command_buffer(),
                 &vk::RenderingInfo {
@@ -217,6 +284,7 @@ impl Demo for Example {
                     layer_count: 1,
                     color_attachment_count: 1,
                     p_color_attachments: color_attachments.as_ptr(),
+                    p_depth_attachment: &depth_attachment,
                     ..Default::default()
                 },
             );

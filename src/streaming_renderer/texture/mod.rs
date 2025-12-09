@@ -65,6 +65,8 @@ impl Texture {
         )
         .context("Unable to create texture image!")?;
 
+        let is_depth = image_usage_flags
+            .contains(vk::ImageUsageFlags::DEPTH_STENCIL_ATTACHMENT);
         let image_view = raii::ImageView::new(
             "Texture Image View",
             ctx.device.clone(),
@@ -74,7 +76,11 @@ impl Texture {
                 format,
                 components: vk::ComponentMapping::default(),
                 subresource_range: vk::ImageSubresourceRange {
-                    aspect_mask: vk::ImageAspectFlags::COLOR,
+                    aspect_mask: if is_depth {
+                        vk::ImageAspectFlags::DEPTH
+                    } else {
+                        vk::ImageAspectFlags::COLOR
+                    },
                     base_mip_level: 0,
                     level_count: mip_levels,
                     base_array_layer: 0,
@@ -137,6 +143,11 @@ impl Texture {
         src_stage_mask: vk::PipelineStageFlags,
         dst_stage_mask: vk::PipelineStageFlags,
     ) {
+        let is_depth_texture = dst_access_mask
+            .contains(vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_READ)
+            || dst_access_mask
+                .contains(vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_WRITE);
+
         let image_memory_barrier = vk::ImageMemoryBarrier {
             old_layout,
             new_layout,
@@ -144,7 +155,11 @@ impl Texture {
             dst_access_mask,
             image: self.image.raw,
             subresource_range: vk::ImageSubresourceRange {
-                aspect_mask: vk::ImageAspectFlags::COLOR,
+                aspect_mask: if is_depth_texture {
+                    vk::ImageAspectFlags::DEPTH
+                } else {
+                    vk::ImageAspectFlags::COLOR
+                },
                 base_mip_level: 0,
                 level_count: 1,
                 base_array_layer: 0,

@@ -3,6 +3,7 @@ use {
     anyhow::{Context, Result},
     ash::vk,
     demo_vk::graphics::vulkan::{VulkanContext, raii},
+    std::sync::Arc,
 };
 
 /// Used to constrain the variable descriptor array and pool sizes. This is well
@@ -28,7 +29,7 @@ const MAX_TEXTURES: u32 = 10_000;
 /// ```
 pub struct TextureAtlas {
     // All textures currently in-use by the atlas.
-    textures: Vec<Texture>,
+    textures: Vec<Arc<Texture>>,
 
     // The sampler used when reading textures.
     _sampler: raii::Sampler,
@@ -184,7 +185,7 @@ impl TextureAtlas {
     pub fn add_texture(
         &mut self,
         ctx: &VulkanContext,
-        texture: Texture,
+        texture: Arc<Texture>,
     ) -> i32 {
         let texture_index = self.textures.len() as i32;
         let view = texture.view().raw;

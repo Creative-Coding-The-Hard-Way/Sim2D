@@ -255,6 +255,7 @@ impl Material {
             view_mask: 0,
             color_attachment_count: 1,
             p_color_attachment_formats: color_attachment_formats.as_ptr(),
+            depth_attachment_format: vk::Format::D32_SFLOAT,
             ..Default::default()
         };
 
