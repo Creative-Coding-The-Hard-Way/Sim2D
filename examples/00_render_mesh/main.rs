@@ -8,7 +8,7 @@ use {
         graphics::vulkan::{Frame, RequiredDeviceFeatures},
     },
     glfw::Window,
-    nalgebra::{Matrix4, Rotation3, Scale3, Translation3, Vector3, vector},
+    nalgebra::Matrix4,
     sim2d::streaming_renderer::{
         GeometryMesh, StreamingRenderer, TextureAtlas, TextureLoader,
     },
@@ -33,12 +33,16 @@ pub fn ortho_projection(aspect: f32, height: f32) -> Matrix4<f32> {
     projection
 }
 
+pub fn perspective_projection(aspect: f32) -> Matrix4<f32> {
+    nalgebra::Perspective3::new(aspect, 90.0, 1.0, 1000.0).to_homogeneous()
+        * nalgebra::Scale3::new(1.0, -1.0, -1.0).to_homogeneous()
+}
+
 struct Example {
     texture_atlas: TextureAtlas,
     fullscreen: FullscreenToggle,
     projection: Matrix4<f32>,
-    geometry_mesh: GeometryMesh,
-    geometry_mesh2: GeometryMesh,
+    mesh: GeometryMesh,
     g2: StreamingRenderer,
     start_time: Instant,
 }
@@ -105,14 +109,7 @@ impl Demo for Example {
             texture_atlas,
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
-            geometry_mesh: GeometryMesh::new(
-                100,
-                g2.default_material().clone(),
-            ),
-            geometry_mesh2: GeometryMesh::new(
-                100,
-                g2.default_material().clone(),
-            ),
+            mesh: GeometryMesh::new(100, g2.default_material().clone()),
             g2,
             start_time: Instant::now(),
         })
@@ -123,52 +120,17 @@ impl Demo for Example {
         #[allow(unused_variables)] window: &mut glfw::Window,
         #[allow(unused_variables)] gfx: &mut Graphics<Self::Args>,
     ) -> Result<()> {
-        let (width, height) = window.get_size();
-        let (width, height) = (width as u32, height as u32);
-        let t = Instant::now().duration_since(self.start_time).as_secs_f32()
+        let _t = Instant::now().duration_since(self.start_time).as_secs_f32()
             * (f32::consts::PI / 3.0);
 
-        self.geometry_mesh.clear();
-        self.geometry_mesh.set_transform(
-            self.projection
-                * Translation3::new(-3.0, 0.0, 0.0).to_homogeneous()
-                * Rotation3::new(Vector3::z() * t).to_homogeneous()
-                * Scale3::new(4.0, 4.0, 1.0).to_homogeneous(),
+        self.mesh.clear();
+        self.mesh.set_color([1.0, 1.0, 1.0, 1.0]);
+        let z = 15.0;
+        self.mesh.triangle(
+            nalgebra::vector![-0.5, -0.5, z],
+            nalgebra::vector![0.0, 0.5, z],
+            nalgebra::vector![0.5, -0.5, z],
         );
-        self.geometry_mesh.set_color([1.0, 0.0, 0.0, 1.0]);
-        self.geometry_mesh.triangle(
-            vector![0.0, 0.0],
-            vector![1.0, 0.0],
-            vector![0.0, 1.0],
-        );
-        self.geometry_mesh.set_scissor(vk::Rect2D {
-            offset: vk::Offset2D { x: 0, y: 0 },
-            extent: vk::Extent2D { width, height },
-        });
-
-        self.geometry_mesh2.clear();
-        self.geometry_mesh2.set_transform(
-            self.projection
-                * Translation3::new(3.0, 0.0, 0.0).to_homogeneous()
-                * Rotation3::new(Vector3::z() * -t).to_homogeneous()
-                * Scale3::new(4.0, 4.0, 1.0).to_homogeneous(),
-        );
-        self.geometry_mesh2.set_color([0.0, 0.5, 0.9, 1.0]);
-        self.geometry_mesh2.set_scissor(vk::Rect2D {
-            offset: vk::Offset2D { x: 0, y: 0 },
-            extent: vk::Extent2D { width, height },
-        });
-        self.geometry_mesh2.aligned_quad(0, 0.0, 0.0, 2.0, 2.0);
-        self.geometry_mesh2.set_scissor(vk::Rect2D {
-            offset: vk::Offset2D {
-                x: (width / 2) as i32,
-                y: 0,
-            },
-            extent: vk::Extent2D {
-                width: width / 2,
-                height,
-            },
-        });
 
         Ok(())
     }
@@ -249,11 +211,7 @@ impl Demo for Example {
             );
             self.g2
                 .bind_texture_atlas(&gfx.vulkan, frame, &self.texture_atlas);
-            self.g2.prepare_meshes(
-                &gfx.vulkan,
-                frame,
-                &[&self.geometry_mesh, &self.geometry_mesh2],
-            )?;
+            self.g2.prepare_meshes(&gfx.vulkan, frame, &[&self.mesh])?;
             self.g2.write_draw_commands(&gfx.vulkan, frame)?;
             gfx.vulkan.cmd_end_rendering(frame.command_buffer());
         }
@@ -315,7 +273,15 @@ impl Demo for Example {
             }
             glfw::WindowEvent::FramebufferSize(width, height) => {
                 self.projection =
-                    ortho_projection(width as f32 / height as f32, 10.0);
+                    perspective_projection(width as f32 / height as f32);
+                self.mesh.set_transform(self.projection);
+                self.mesh.set_scissor(vk::Rect2D {
+                    offset: vk::Offset2D { x: 0, y: 0 },
+                    extent: vk::Extent2D {
+                        width: width as u32,
+                        height: height as u32,
+                    },
+                });
             }
             _ => {}
         };

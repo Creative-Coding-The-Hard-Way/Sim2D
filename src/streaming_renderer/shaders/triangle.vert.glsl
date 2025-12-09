@@ -57,5 +57,5 @@ void main() {
     mat4 transform =
         pc_Constants.mesh_transforms.data[pc_Constants.transform_index].transform;
 
-    gl_Position = transform * vec4(vert.pos.x, vert.pos.y, 0.0, 1.0);
+    gl_Position = transform * vec4(vert.pos.x, vert.pos.y, vert.pos.z, 1.0);
 }

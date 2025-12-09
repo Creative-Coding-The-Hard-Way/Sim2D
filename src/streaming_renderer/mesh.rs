@@ -1,7 +1,7 @@
 use {
     super::Material,
     ash::vk,
-    nalgebra::{Matrix4, Vector2},
+    nalgebra::{Matrix4, Vector2, Vector3},
     std::sync::Arc,
 };
 
@@ -118,31 +118,16 @@ impl GeometryMesh {
     /// Adds a triangle to the mesh.
     pub fn triangle(
         &mut self,
-        p1: Vector2<f32>,
-        p2: Vector2<f32>,
-        p3: Vector2<f32>,
+        p1: Vector3<f32>,
+        p2: Vector3<f32>,
+        p3: Vector3<f32>,
     ) {
         let base_index = self.vertices.len() as u32;
 
         self.vertices.extend_from_slice(&[
-            Vertex::new(
-                [p1.data.0[0][0], p1.data.0[0][1], 0.0],
-                [0.0, 0.0],
-                self.color,
-                -1,
-            ),
-            Vertex::new(
-                [p2.data.0[0][0], p2.data.0[0][1], 0.0],
-                [0.0, 0.0],
-                self.color,
-                -1,
-            ),
-            Vertex::new(
-                [p3.data.0[0][0], p3.data.0[0][1], 0.0],
-                [0.0, 0.0],
-                self.color,
-                -1,
-            ),
+            Vertex::new(p1.data.0[0], [0.0, 0.0], self.color, -1),
+            Vertex::new(p2.data.0[0], [0.0, 0.0], self.color, -1),
+            Vertex::new(p3.data.0[0], [0.0, 0.0], self.color, -1),
         ]);
         self.indices.extend_from_slice(&[
             base_index,
