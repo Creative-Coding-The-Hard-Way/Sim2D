@@ -1,9 +1,8 @@
 use {
     super::Texture,
-    crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::raii,
+    demo_vk::graphics::vulkan::{VulkanContext, raii},
 };
 
 /// Used to constrain the variable descriptor array and pool sizes. This is well
@@ -40,10 +39,10 @@ pub struct TextureAtlas {
 }
 
 impl TextureAtlas {
-    pub fn new(gfx: &Gfx) -> Result<Self> {
+    pub fn new(ctx: &VulkanContext) -> Result<Self> {
         let sampler = raii::Sampler::new(
             "TextureAtlas Immutable Sampler",
-            gfx.vulkan.device.clone(),
+            ctx.device.clone(),
             &vk::SamplerCreateInfo {
                 mag_filter: vk::Filter::LINEAR,
                 min_filter: vk::Filter::NEAREST,
@@ -107,7 +106,7 @@ impl TextureAtlas {
             .push_next(&mut binding_flags_create_info);
             raii::DescriptorSetLayout::new(
                 "TextureAtlas Descriptor Set layout",
-                gfx.vulkan.device.clone(),
+                ctx.device.clone(),
                 &create_info,
             )
             .context("Unable to create TextureAtlas descriptor set layout!")?
@@ -125,7 +124,7 @@ impl TextureAtlas {
             ];
             raii::DescriptorPool::new(
                 "TextureAtlas DescriptorPool",
-                gfx.vulkan.device.clone(),
+                ctx.device.clone(),
                 &vk::DescriptorPoolCreateInfo {
                     flags: vk::DescriptorPoolCreateFlags::UPDATE_AFTER_BIND,
                     max_sets: 1,
@@ -154,11 +153,9 @@ impl TextureAtlas {
                 &mut descriptor_set_variable_descriptor_count_allocate_info,
             );
             unsafe {
-                gfx.vulkan
-                    .allocate_descriptor_sets(&allocate_info)
-                    .context(
-                        "Unable to allocate TextureAtlas descriptor set!",
-                    )?[0]
+                ctx.allocate_descriptor_sets(&allocate_info).context(
+                    "Unable to allocate TextureAtlas descriptor set!",
+                )?[0]
             }
         };
 
@@ -184,7 +181,11 @@ impl TextureAtlas {
 
     /// Adds a texture to the atlas and returns the index which can be used in
     /// vertices to reference the texture again.
-    pub fn add_texture(&mut self, gfx: &Gfx, texture: Texture) -> i32 {
+    pub fn add_texture(
+        &mut self,
+        ctx: &VulkanContext,
+        texture: Texture,
+    ) -> i32 {
         let texture_index = self.textures.len() as i32;
         let view = texture.view().raw;
         self.textures.push(texture);
@@ -197,7 +198,7 @@ impl TextureAtlas {
                 image_view: view,
                 image_layout: vk::ImageLayout::SHADER_READ_ONLY_OPTIMAL,
             };
-            gfx.vulkan.update_descriptor_sets(
+            ctx.update_descriptor_sets(
                 &[vk::WriteDescriptorSet {
                     dst_set: self.descriptor_set,
                     dst_binding: 1,

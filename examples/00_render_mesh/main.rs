@@ -1,5 +1,3 @@
-mod streaming_renderer;
-
 use {
     anyhow::{Context, Result},
     ash::vk,
@@ -11,10 +9,10 @@ use {
     },
     glfw::Window,
     nalgebra::{Matrix4, Rotation3, Scale3, Translation3, Vector3, vector},
-    std::{f32, time::Instant},
-    streaming_renderer::{
+    sim2d::streaming_renderer::{
         GeometryMesh, StreamingRenderer, TextureAtlas, TextureLoader,
     },
+    std::{f32, time::Instant},
 };
 
 #[derive(Debug, Parser)]
@@ -87,16 +85,21 @@ impl Demo for Example {
             (w as f32, h as f32)
         };
 
-        let mut texture_atlas =
-            TextureAtlas::new(gfx).context("Unable to create texture atlas")?;
+        let mut texture_atlas = TextureAtlas::new(&gfx.vulkan)
+            .context("Unable to create texture atlas")?;
 
-        let g2 = StreamingRenderer::new(gfx, &texture_atlas)
-            .context("Unable to create g2 subsystem")?;
+        let g2 = StreamingRenderer::new(
+            &gfx.vulkan,
+            gfx.swapchain.format(),
+            &gfx.frames_in_flight,
+            &texture_atlas,
+        )
+        .context("Unable to create g2 subsystem")?;
 
         let texture = TextureLoader::new(gfx.vulkan.clone())?
             .load_from_file("Penguin.jpg", false)?;
 
-        texture_atlas.add_texture(gfx, texture);
+        texture_atlas.add_texture(&gfx.vulkan, texture);
 
         Ok(Self {
             texture_atlas,
@@ -232,13 +235,26 @@ impl Demo for Example {
                     ..Default::default()
                 },
             );
-            self.g2.bind_texture_atlas(gfx, frame, &self.texture_atlas);
+            gfx.vulkan.cmd_set_viewport(
+                frame.command_buffer(),
+                0,
+                &[vk::Viewport {
+                    x: 0.0,
+                    y: 0.0,
+                    width: gfx.swapchain.extent().width as f32,
+                    height: gfx.swapchain.extent().height as f32,
+                    min_depth: 0.0,
+                    max_depth: 1.0,
+                }],
+            );
+            self.g2
+                .bind_texture_atlas(&gfx.vulkan, frame, &self.texture_atlas);
             self.g2.prepare_meshes(
-                gfx,
+                &gfx.vulkan,
                 frame,
                 &[&self.geometry_mesh, &self.geometry_mesh2],
             )?;
-            self.g2.write_draw_commands(gfx, frame)?;
+            self.g2.write_draw_commands(&gfx.vulkan, frame)?;
             gfx.vulkan.cmd_end_rendering(frame.command_buffer());
         }
 

@@ -1,8 +1,7 @@
 use {
-    crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::raii,
+    demo_vk::graphics::vulkan::{VulkanContext, raii},
     std::ffi::CStr,
 };
 
@@ -122,7 +121,7 @@ pub struct Material {
 impl Material {
     /// Builds a pipeline layout for use with Material pipelines.
     pub(super) fn create_pipeline_layout(
-        gfx: &Gfx,
+        ctx: &VulkanContext,
         texture_atlas_descriptor_set_layout: &raii::DescriptorSetLayout,
         frame_constants_descriptor_set_layout: &raii::DescriptorSetLayout,
     ) -> Result<raii::PipelineLayout> {
@@ -137,7 +136,7 @@ impl Material {
         }];
         raii::PipelineLayout::new(
             "FirstTriangle",
-            gfx.vulkan.device.clone(),
+            ctx.device.clone(),
             &vk::PipelineLayoutCreateInfo {
                 set_layout_count: raw_descriptor_set_layouts.len() as u32,
                 p_set_layouts: raw_descriptor_set_layouts.as_ptr(),
@@ -150,7 +149,8 @@ impl Material {
 
     /// Creates a new material for use when rendering meshes.
     pub(super) fn new(
-        gfx: &Gfx,
+        ctx: &VulkanContext,
+        image_format: vk::Format,
         pipeline_layout: &raii::PipelineLayout,
         vertex_shader_module: &raii::ShaderModule,
         fragment_shader_module: &raii::ShaderModule,
@@ -250,7 +250,7 @@ impl Material {
             ..Default::default()
         };
 
-        let color_attachment_formats = [gfx.swapchain.format()];
+        let color_attachment_formats = [image_format];
         let mut rendering_info = vk::PipelineRenderingCreateInfo {
             view_mask: 0,
             color_attachment_count: 1,
@@ -280,7 +280,7 @@ impl Material {
         .push_next(&mut rendering_info);
 
         let pipeline = raii::Pipeline::new_graphics_pipeline(
-            gfx.vulkan.device.clone(),
+            ctx.device.clone(),
             &create_info,
         )
         .context("Unable to create pipeline!")?;

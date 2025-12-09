@@ -1,5 +1,5 @@
-//! G2 is the 2D graphics API. It support drawing arbitrary shapes which
-//! typically change every frame.
+//! Mesh, Material, Texture, and pipeline resources for rendering geometry
+//! that's expected to change every frame.
 
 mod dynamic_buffer;
 mod frame_constants;
@@ -10,10 +10,11 @@ pub(crate) mod utility;
 
 use {
     self::{frame_constants::FrameConstants, mesh::Mesh},
-    crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::{Frame, VulkanContext, raii, spirv_words},
+    demo_vk::graphics::vulkan::{
+        Frame, FramesInFlight, VulkanContext, raii, spirv_words,
+    },
     dynamic_buffer::DynamicBuffer,
     material::Material,
     std::sync::Arc,
@@ -86,18 +87,24 @@ pub struct StreamingRenderer<PerFrameDataT: Copy = ()> {
     default_vertex_shader_module: raii::ShaderModule,
     default_fragment_shader_module: raii::ShaderModule,
     default_material: Arc<Material>,
+    image_format: vk::Format,
 }
 
 const INITIAL_CAPACITY: usize = 16_384;
 
 impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
-    pub fn new(gfx: &Gfx, texture_atlas: &TextureAtlas) -> Result<Self> {
-        let frame_constants = FrameConstants::new(gfx)
+    pub fn new(
+        ctx: &VulkanContext,
+        image_format: vk::Format,
+        frames_in_flight: &FramesInFlight,
+        texture_atlas: &TextureAtlas,
+    ) -> Result<Self> {
+        let frame_constants = FrameConstants::new(ctx, frames_in_flight)
             .context("Unable to create FrameData instance")?;
 
         // create pipeline resources
         let pipeline_layout = Material::create_pipeline_layout(
-            gfx,
+            ctx,
             texture_atlas.descriptor_set_layout(),
             frame_constants.descriptor_set_layout(),
         )
@@ -105,14 +112,12 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
 
         let frame_draw_resources = {
             let mut resources =
-                Vec::with_capacity(gfx.frames_in_flight.frame_count());
-            for frame_index in 0..gfx.frames_in_flight.frame_count() {
-                resources.push(FrameDraw::new(&gfx.vulkan).context(
-                    format!(
-                        "Unable to create draw resources for frame {}",
-                        frame_index
-                    ),
-                )?);
+                Vec::with_capacity(frames_in_flight.frame_count());
+            for frame_index in 0..frames_in_flight.frame_count() {
+                resources.push(FrameDraw::new(ctx).context(format!(
+                    "Unable to create draw resources for frame {}",
+                    frame_index
+                ))?);
             }
             resources
         };
@@ -123,7 +128,7 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
                     .context("Unable to pack default vertex shader source")?;
             raii::ShaderModule::new(
                 "DefaultVertexShader",
-                gfx.vulkan.device.clone(),
+                ctx.device.clone(),
                 &vk::ShaderModuleCreateInfo {
                     code_size: vertex_shader_words.len() * 4,
                     p_code: vertex_shader_words.as_ptr(),
@@ -138,7 +143,7 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
                     .context("Unable to pack default fragment shader source")?;
             raii::ShaderModule::new(
                 "DefaultFragmentShader",
-                gfx.vulkan.device.clone(),
+                ctx.device.clone(),
                 &vk::ShaderModuleCreateInfo {
                     code_size: fragment_shader_words.len() * 4,
                     p_code: fragment_shader_words.as_ptr(),
@@ -149,7 +154,8 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
         };
         let default_material = Arc::new(
             Material::new(
-                gfx,
+                ctx,
+                image_format,
                 &pipeline_layout,
                 &default_vertex_shader_module,
                 &default_fragment_shader_module,
@@ -165,6 +171,7 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
             default_vertex_shader_module,
             default_fragment_shader_module,
             default_material,
+            image_format,
         })
     }
 
@@ -175,12 +182,13 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
     /// is omitted.
     pub fn new_material(
         &self,
-        gfx: &Gfx,
+        ctx: &VulkanContext,
         vertex_shader: Option<&raii::ShaderModule>,
         fragment_shader: Option<&raii::ShaderModule>,
     ) -> Result<Arc<Material>> {
         let material = Material::new(
-            gfx,
+            ctx,
+            self.image_format,
             &self.pipeline_layout,
             vertex_shader.unwrap_or(&self.default_vertex_shader_module),
             fragment_shader.unwrap_or(&self.default_fragment_shader_module),
@@ -201,7 +209,7 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
     /// only render whatever meshes were provided last.
     pub fn prepare_meshes(
         &mut self,
-        gfx: &Gfx,
+        ctx: &VulkanContext,
         frame: &Frame,
         meshes: &[&dyn Mesh],
     ) -> Result<()> {
@@ -241,14 +249,14 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
         unsafe {
             frame_draw
                 .vertex_buffer
-                .write_chunked_data(&gfx.vulkan, &vertex_data)
+                .write_chunked_data(ctx, &vertex_data)
                 .context("Unable to write frame vertex data!")?;
             frame_draw
                 .index_buffer
-                .write_chunked_data(&gfx.vulkan, &index_data)
+                .write_chunked_data(ctx, &index_data)
                 .context("Unable to write index data!")?;
             frame_draw.transforms.write_iterated_data(
-                &gfx.vulkan,
+                ctx,
                 meshes.iter().map(|mesh| MeshTransform {
                     matrix: mesh.transform().data.0,
                 }),
@@ -273,12 +281,12 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
     /// layouts.
     pub fn bind_texture_atlas(
         &mut self,
-        gfx: &Gfx,
+        ctx: &VulkanContext,
         frame: &Frame,
         texture_atlas: &TextureAtlas,
     ) {
         unsafe {
-            gfx.vulkan.cmd_bind_descriptor_sets(
+            ctx.cmd_bind_descriptor_sets(
                 frame.command_buffer(),
                 vk::PipelineBindPoint::GRAPHICS,
                 self.pipeline_layout.raw,
@@ -295,24 +303,12 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
     ///       there is only one internal vertex buffer per frame.
     pub fn write_draw_commands(
         &mut self,
-        gfx: &Gfx,
+        ctx: &VulkanContext,
         frame: &Frame,
     ) -> Result<()> {
         let frame_draw = &mut self.frame_draw_resources[frame.frame_index()];
         unsafe {
-            gfx.vulkan.cmd_set_viewport(
-                frame.command_buffer(),
-                0,
-                &[vk::Viewport {
-                    x: 0.0,
-                    y: 0.0,
-                    width: gfx.swapchain.extent().width as f32,
-                    height: gfx.swapchain.extent().height as f32,
-                    min_depth: 0.0,
-                    max_depth: 1.0,
-                }],
-            );
-            gfx.vulkan.cmd_bind_descriptor_sets(
+            ctx.cmd_bind_descriptor_sets(
                 frame.command_buffer(),
                 vk::PipelineBindPoint::GRAPHICS,
                 self.pipeline_layout.raw,
@@ -320,13 +316,13 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
                 &[self.frame_constants.descriptor_set_for_frame(frame)],
                 &[],
             );
-            gfx.vulkan.cmd_bind_index_buffer(
+            ctx.cmd_bind_index_buffer(
                 frame.command_buffer(),
                 frame_draw.index_buffer.raw(),
                 0,
                 vk::IndexType::UINT32,
             );
-            gfx.vulkan.cmd_push_constants(
+            ctx.cmd_push_constants(
                 frame.command_buffer(),
                 self.pipeline_layout.raw,
                 vk::ShaderStageFlags::VERTEX,
@@ -336,7 +332,7 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
                     .buffer_device_address()
                     .to_le_bytes(),
             );
-            gfx.vulkan.cmd_push_constants(
+            ctx.cmd_push_constants(
                 frame.command_buffer(),
                 self.pipeline_layout.raw,
                 vk::ShaderStageFlags::VERTEX,
@@ -352,7 +348,7 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
             let pipeline = draw_params.material.pipeline().raw;
             if pipeline != last_bound_pipeline {
                 unsafe {
-                    gfx.vulkan.cmd_bind_pipeline(
+                    ctx.cmd_bind_pipeline(
                         frame.command_buffer(),
                         vk::PipelineBindPoint::GRAPHICS,
                         pipeline,
@@ -361,19 +357,19 @@ impl<PerFrameDataT: Copy> StreamingRenderer<PerFrameDataT> {
                 last_bound_pipeline = pipeline;
             }
             unsafe {
-                gfx.vulkan.cmd_push_constants(
+                ctx.cmd_push_constants(
                     frame.command_buffer(),
                     self.pipeline_layout.raw,
                     vk::ShaderStageFlags::VERTEX,
                     16,
                     &draw_params.transform_index.to_le_bytes(),
                 );
-                gfx.vulkan.cmd_set_scissor(
+                ctx.cmd_set_scissor(
                     frame.command_buffer(),
                     0,
                     &[draw_params.scissor],
                 );
-                gfx.vulkan.cmd_draw_indexed(
+                ctx.cmd_draw_indexed(
                     frame.command_buffer(),
                     draw_params.index_count, // index count
                     1,                       // instance count

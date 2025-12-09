@@ -1,8 +1,9 @@
 use {
-    crate::Gfx,
     anyhow::{Context, Result},
     ash::vk,
-    demo_vk::graphics::vulkan::{Frame, UniformBuffer, raii},
+    demo_vk::graphics::vulkan::{
+        Frame, FramesInFlight, UniformBuffer, VulkanContext, raii,
+    },
 };
 
 /// Manages all resources required to provide frame-constant data to the shader
@@ -28,8 +29,11 @@ pub struct FrameConstants<UserDataT: Copy> {
 
 impl<UserDataT: Copy> FrameConstants<UserDataT> {
     /// Creates a new instance.
-    pub fn new(gfx: &Gfx) -> Result<Self> {
-        let frame_count = gfx.frames_in_flight.frame_count() as u32;
+    pub fn new(
+        ctx: &VulkanContext,
+        frames_in_flight: &FramesInFlight,
+    ) -> Result<Self> {
+        let frame_count = frames_in_flight.frame_count() as u32;
 
         let descriptor_set_layout = {
             let bindings = [vk::DescriptorSetLayoutBinding {
@@ -43,7 +47,7 @@ impl<UserDataT: Copy> FrameConstants<UserDataT> {
             }];
             raii::DescriptorSetLayout::new(
                 "FirstTriangleDescLayout",
-                gfx.vulkan.device.clone(),
+                ctx.device.clone(),
                 &vk::DescriptorSetLayoutCreateInfo {
                     binding_count: bindings.len() as u32,
                     p_bindings: bindings.as_ptr(),
@@ -60,7 +64,7 @@ impl<UserDataT: Copy> FrameConstants<UserDataT> {
             }];
             raii::DescriptorPool::new(
                 "FrameData DescriptorPool",
-                gfx.vulkan.device.clone(),
+                ctx.device.clone(),
                 &vk::DescriptorPoolCreateInfo {
                     max_sets: frame_count,
                     pool_size_count: pool_sizes.len() as u32,
@@ -72,28 +76,25 @@ impl<UserDataT: Copy> FrameConstants<UserDataT> {
         };
 
         let descriptor_sets = {
-            let layouts = (0..gfx.frames_in_flight.frame_count())
+            let layouts = (0..frames_in_flight.frame_count())
                 .map(|_| descriptor_set_layout.raw)
                 .collect::<Vec<_>>();
             unsafe {
-                gfx.vulkan
-                    .allocate_descriptor_sets(&vk::DescriptorSetAllocateInfo {
-                        descriptor_pool: descriptor_pool.raw,
-                        descriptor_set_count: layouts.len() as u32,
-                        p_set_layouts: layouts.as_ptr(),
-                        ..Default::default()
-                    })
-                    .context("Error while allocating descriptor sets")?
+                ctx.allocate_descriptor_sets(&vk::DescriptorSetAllocateInfo {
+                    descriptor_pool: descriptor_pool.raw,
+                    descriptor_set_count: layouts.len() as u32,
+                    p_set_layouts: layouts.as_ptr(),
+                    ..Default::default()
+                })
+                .context("Error while allocating descriptor sets")?
             }
         };
 
-        let uniform_buffer = UniformBuffer::allocate_per_frame(
-            &gfx.vulkan,
-            &gfx.frames_in_flight,
-        )
-        .context("Unable to allocate UniformBuffer for FrameData")?;
+        let uniform_buffer =
+            UniformBuffer::allocate_per_frame(ctx, &frames_in_flight)
+                .context("Unable to allocate UniformBuffer for FrameData")?;
 
-        Self::write_descriptor_sets(gfx, &descriptor_sets, &uniform_buffer);
+        Self::write_descriptor_sets(ctx, &descriptor_sets, &uniform_buffer);
 
         Ok(Self {
             descriptor_sets,
@@ -116,7 +117,7 @@ impl<UserDataT: Copy> FrameConstants<UserDataT> {
     }
 
     fn write_descriptor_sets(
-        gfx: &Gfx,
+        ctx: &VulkanContext,
         descriptor_sets: &[vk::DescriptorSet],
         uniform_buffer: &UniformBuffer<UserDataT>,
     ) {
@@ -152,6 +153,6 @@ impl<UserDataT: Copy> FrameConstants<UserDataT> {
                 }]
             })
             .collect();
-        unsafe { gfx.vulkan.update_descriptor_sets(&writes, &[]) };
+        unsafe { ctx.update_descriptor_sets(&writes, &[]) };
     }
 }
