@@ -1,6 +1,6 @@
 use {
     anyhow::{Context, Result},
-    ash::vk::{self, AccessFlags},
+    ash::vk::{self},
     clap::Parser,
     demo_vk::{
         app::FullscreenToggle,
@@ -10,7 +10,7 @@ use {
     glfw::Window,
     nalgebra::Matrix4,
     sim2d::streaming_renderer::{
-        GeometryMesh, StreamingRenderer, Texture, TextureAtlas, TextureLoader,
+        StreamingRenderer, Texture, TextureAtlas, TextureLoader, TrianglesMesh,
     },
     std::{f32, sync::Arc, time::Instant},
 };
@@ -42,7 +42,7 @@ struct Example {
     texture_atlas: TextureAtlas,
     fullscreen: FullscreenToggle,
     projection: Matrix4<f32>,
-    mesh: GeometryMesh,
+    mesh: TrianglesMesh,
     g2: StreamingRenderer,
     start_time: Instant,
     draw_target: Texture,
@@ -71,7 +71,7 @@ impl Demo for Example {
                     descriptor_binding_sampled_image_update_after_bind:
                         vk::TRUE,
 
-                    // required for graphics2d mesh vertex buffers
+                    // required for mesh buffers (vertex and transforms)
                     buffer_device_address: vk::TRUE,
                     ..Default::default()
                 },
@@ -142,7 +142,7 @@ impl Demo for Example {
             texture_atlas,
             fullscreen: FullscreenToggle::new(window),
             projection: ortho_projection(w / h, 10.0),
-            mesh: GeometryMesh::new(100, g2.default_material().clone()),
+            mesh: TrianglesMesh::new(100, g2.default_material().clone()),
             g2,
             start_time: Instant::now(),
         })
@@ -191,17 +191,20 @@ impl Demo for Example {
 
         self.mesh.clear();
 
-        self.mesh.set_color([1.0, 1.0, 1.0, 1.0]);
-        let z = 15.0;
-        self.mesh.triangle(
-            nalgebra::vector![-0.5, -0.5, z],
-            nalgebra::vector![0.0, 0.5, z],
+        let z = 2.0;
+        self.mesh.quad(
+            [1.0, 1.0, 1.0, 1.0],
+            0,
+            nalgebra::vector![-0.5, 0.5, z],
+            nalgebra::vector![0.5, 0.5, z],
             nalgebra::vector![0.5, -0.5, z],
+            nalgebra::vector![-0.5, -0.5, z],
         );
 
-        self.mesh.set_color([0.2, 0.2, 0.9, 1.0]);
-        let z = 25.0;
+        let z = 3.0;
         self.mesh.triangle(
+            [0.2, 0.2, 0.9, 1.0],
+            -1,
             nalgebra::vector![0.75 + -0.5, -0.5, z],
             nalgebra::vector![0.75 + 0.0, 0.5, z],
             nalgebra::vector![0.75 + 0.5, -0.5, z],

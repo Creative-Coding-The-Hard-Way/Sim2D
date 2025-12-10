@@ -21,7 +21,7 @@ use {
 };
 
 pub use self::{
-    mesh::{GeometryMesh, Vertex},
+    mesh::{TrianglesMesh, Vertex},
     texture::{Texture, TextureAtlas, TextureLoader},
 };
 

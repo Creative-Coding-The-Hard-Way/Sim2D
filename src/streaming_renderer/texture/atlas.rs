@@ -46,7 +46,7 @@ impl TextureAtlas {
             ctx.device.clone(),
             &vk::SamplerCreateInfo {
                 mag_filter: vk::Filter::LINEAR,
-                min_filter: vk::Filter::NEAREST,
+                min_filter: vk::Filter::LINEAR,
                 mipmap_mode: vk::SamplerMipmapMode::LINEAR,
                 address_mode_u: vk::SamplerAddressMode::CLAMP_TO_EDGE,
                 address_mode_v: vk::SamplerAddressMode::CLAMP_TO_EDGE,

@@ -91,7 +91,7 @@ impl<UserDataT: Copy> FrameConstants<UserDataT> {
         };
 
         let uniform_buffer =
-            UniformBuffer::allocate_per_frame(ctx, &frames_in_flight)
+            UniformBuffer::allocate_per_frame(ctx, frames_in_flight)
                 .context("Unable to allocate UniformBuffer for FrameData")?;
 
         Self::write_descriptor_sets(ctx, &descriptor_sets, &uniform_buffer);

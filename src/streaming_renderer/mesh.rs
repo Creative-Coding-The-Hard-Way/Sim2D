@@ -1,7 +1,7 @@
 use {
     super::Material,
     ash::vk,
-    nalgebra::{Matrix4, Vector2, Vector3},
+    nalgebra::{Matrix4, Vector3},
     std::sync::Arc,
 };
 
@@ -43,10 +43,9 @@ pub trait Mesh {
     fn scissor(&self) -> vk::Rect2D;
 }
 
-/// The GeometryMesh supports constructing procedural geometry, things like
-/// lines, circles, and triangles.
-pub struct GeometryMesh {
-    color: [f32; 4],
+/// This mesh supports drawing arbitrary triangles and quads in three
+/// dimensions.
+pub struct TrianglesMesh {
     vertices: Vec<Vertex>,
     indices: Vec<u32>,
     material: Arc<Material>,
@@ -54,7 +53,7 @@ pub struct GeometryMesh {
     scissor: vk::Rect2D,
 }
 
-impl Mesh for GeometryMesh {
+impl Mesh for TrianglesMesh {
     fn vertices(&self) -> &[Vertex] {
         &self.vertices
     }
@@ -76,12 +75,11 @@ impl Mesh for GeometryMesh {
     }
 }
 
-impl GeometryMesh {
+impl TrianglesMesh {
     /// Creates a new empty Mesh with pre-allocated internal memory for
     /// vertex data.
     pub fn new(initial_capacity: usize, material: Arc<Material>) -> Self {
         Self {
-            color: [1.0, 1.0, 1.0, 1.0],
             vertices: Vec::with_capacity(initial_capacity),
             indices: Vec::with_capacity(initial_capacity),
             material,
@@ -111,13 +109,14 @@ impl GeometryMesh {
         self.indices.clear();
     }
 
-    pub fn set_color(&mut self, color: [f32; 4]) {
-        self.color = color;
-    }
-
     /// Adds a triangle to the mesh.
+    ///
+    /// Note: triangles must be in clockwise winding order, else they will be
+    /// culled.
     pub fn triangle(
         &mut self,
+        color: [f32; 4],
+        texture_index: i32,
         p1: Vector3<f32>,
         p2: Vector3<f32>,
         p3: Vector3<f32>,
@@ -125,9 +124,9 @@ impl GeometryMesh {
         let base_index = self.vertices.len() as u32;
 
         self.vertices.extend_from_slice(&[
-            Vertex::new(p1.data.0[0], [0.0, 0.0], self.color, -1),
-            Vertex::new(p2.data.0[0], [0.0, 0.0], self.color, -1),
-            Vertex::new(p3.data.0[0], [0.0, 0.0], self.color, -1),
+            Vertex::new(p1.data.0[0], [0.0, 0.0], color, texture_index),
+            Vertex::new(p2.data.0[0], [0.0, 0.0], color, texture_index),
+            Vertex::new(p3.data.0[0], [0.0, 0.0], color, texture_index),
         ]);
         self.indices.extend_from_slice(&[
             base_index,
@@ -136,57 +135,36 @@ impl GeometryMesh {
         ]);
     }
 
-    /// Adds an axis-aligned quad to the mesh.
-    pub fn aligned_quad(
+    /// Adds a quad to the mesh.
+    ///
+    /// Note: corners should be specified in a clockwise winding order, else the
+    /// triangles that make up the resulting quad may be culled.
+    pub fn quad(
         &mut self,
+        color: [f32; 4],
         texture_index: i32,
-        center_x: f32,
-        center_y: f32,
-        width: f32,
-        height: f32,
+        top_left: Vector3<f32>,
+        top_right: Vector3<f32>,
+        bot_right: Vector3<f32>,
+        bot_left: Vector3<f32>,
     ) {
         let base_index = self.vertices.len() as u32;
 
-        let left = center_x - width / 2.0;
-        let right = center_x + width / 2.0;
-        let top = center_y + height / 2.0;
-        let bottom = center_y - height / 2.0;
-
         self.vertices.extend_from_slice(&[
-            Vertex::new(
-                [left, top, 0.0],
-                [0.0, 0.0],
-                self.color,
-                texture_index,
-            ),
-            Vertex::new(
-                [left, bottom, 0.0],
-                [0.0, 1.0],
-                self.color,
-                texture_index,
-            ),
-            Vertex::new(
-                [right, bottom, 0.0],
-                [1.0, 1.0],
-                self.color,
-                texture_index,
-            ),
-            Vertex::new(
-                [right, top, 0.0],
-                [1.0, 0.0],
-                self.color,
-                texture_index,
-            ),
+            Vertex::new(top_left.data.0[0], [0.0, 0.0], color, texture_index),
+            Vertex::new(top_right.data.0[0], [1.0, 0.0], color, texture_index),
+            Vertex::new(bot_right.data.0[0], [1.0, 1.0], color, texture_index),
+            Vertex::new(bot_left.data.0[0], [0.0, 1.0], color, texture_index),
         ]);
         self.indices.extend_from_slice(&[
             // triangle 1
-            base_index,     // top left
-            base_index + 1, // bottom left
-            base_index + 2, // bottom right
+            base_index,
+            base_index + 1,
+            base_index + 2,
             // triangle 2
-            base_index,     // top left
-            base_index + 2, // bottom right
-            base_index + 3, // top right
+            base_index,
+            base_index + 2,
+            base_index + 3,
         ]);
     }
 }
