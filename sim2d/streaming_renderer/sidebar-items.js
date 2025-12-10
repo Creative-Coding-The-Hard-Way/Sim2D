@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["GeometryMesh","StreamingRenderer","Texture","TextureAtlas","TextureLoader","Vertex"]};
+window.SIDEBAR_ITEMS = {"struct":["StreamingRenderer","Texture","TextureAtlas","TextureLoader","TrianglesMesh","Vertex"]};

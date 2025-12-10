@@ -91,7 +91,7 @@
 <a href=#91 id=91 data-nosnippet>91</a>        };
 <a href=#92 id=92 data-nosnippet>92</a>
 <a href=#93 id=93 data-nosnippet>93</a>        <span class="kw">let </span>uniform_buffer =
-<a href=#94 id=94 data-nosnippet>94</a>            UniformBuffer::allocate_per_frame(ctx, <span class="kw-2">&amp;</span>frames_in_flight)
+<a href=#94 id=94 data-nosnippet>94</a>            UniformBuffer::allocate_per_frame(ctx, frames_in_flight)
 <a href=#95 id=95 data-nosnippet>95</a>                .context(<span class="string">"Unable to allocate UniformBuffer for FrameData"</span>)<span class="question-mark">?</span>;
 <a href=#96 id=96 data-nosnippet>96</a>
 <a href=#97 id=97 data-nosnippet>97</a>        <span class="self">Self</span>::write_descriptor_sets(ctx, <span class="kw-2">&amp;</span>descriptor_sets, <span class="kw-2">&amp;</span>uniform_buffer);
